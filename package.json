@@ -1,23 +1,17 @@
 {
-	"name": "bidkat",
+	"name": "scheduler.js",
 	"version": "0.0.1",
-	"description": "Automatic bid tracker for Craigslist",
-	"keywords": ["bid", "negotiate", "track"],
-	"author": "Bill Scheidel <bill@bunkat.com>",
+	"description": "Determine next occurrences of complex recurring schedules",
+	"keywords": ["schedule", "occurrences", "recur"],
+	"author": "BunKat <bill@bunkat.com>",
 	"main": "index",
-	"engines": 
-		{ 
-			"node": ">= 0.6.6 < 0.7.0"
-		},
 	"scripts": 
 		{ 
 			"test": "make test"
 		},
 	"devDependencies":
 		{
-			"express": ">= 2.5.x",
 			"mocha": "*",
-			"should": "*",
-			"superagent": "*"	
+			"should": "*"	
 		}
 }
