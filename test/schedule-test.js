@@ -2,7 +2,15 @@ var schedule = require('../lib/schedule').schedule;
 var should = require('should');
 
 describe('Schedule', function() {
-	
+
+		it('should compile', function() {
+			var s = schedule();
+			console.log(s);
+		});
+
+
+
+/*	
 	describe('on', function() {
 		
 		it('should report error on invalid restriction name', function() {
@@ -50,6 +58,6 @@ describe('Schedule', function() {
 		});
 
 	});
-
+*/
 
 });
