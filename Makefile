@@ -4,8 +4,9 @@ TESTS = test/*.js
 REPORTER = dot
 
 build:
-		cat SOURCE > ./bin/scheduler.js \
-		uglifyjs ./bin/scheduler.js > scheduler.min.js	
+		cat $(SOURCE) > scheduler.min.js
+		./node_modules/.bin/uglifyjs --overwrite scheduler.min.js
+		gzip -c scheduler.min.js -9 > scheduler.min.js.gz
 				
 
 test:
