@@ -1,0 +1,17 @@
+<html>
+
+<body>
+
+
+</body>
+
+<script src="../../lib/schedule.js"></script>
+<script src="../../lib/scheduler.js"></script>
+<script>
+
+var s = schedule().onTimes('8:30 am');
+var next = scheduler(60).getNext(s, 10);
+alert(next.toLocaleString());
+
+</script>
+</html>
