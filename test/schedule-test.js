@@ -6,19 +6,19 @@ describe('Schedule', function() {
 	describe('onTime', function() {
 		
 		it('should create a single time restriction with valid input', function() {
-			var s = schedule().onTimes('8:15 am GMT-0800');
+			var s = schedule().onTimes('8:15 am GMT');
 			s.time.should.eql([['08:15:00','08:15:00']]);
 		});
 
 		it('should create a time range restriction with valid input', function() {
 			var s = schedule().onTimes('8:15 pm GMT-0800', '6:15 am GMT-0800');
-			s.time.should.eql([['06:15:00','20:15:00']]);
+			s.time.should.eql([['04:15:00','14:15:00']]);
 		});
 
 
 	});
 
-	describe('onMins', function() {
+	describe('on', function() {
 		
 		it('should create a single minute restriction with valid input', function() {
 			var s = schedule().onMins(5);
