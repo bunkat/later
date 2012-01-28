@@ -5,10 +5,13 @@ REPORTER = dot
 
 build:
 		cat lib/scheduler.js > scheduler-core.min.js
+		cat lib/sched2.js > schedule.min.js
 		cat $(SOURCE) > scheduler.min.js
 		./node_modules/.bin/uglifyjs --overwrite scheduler.min.js
+		./node_modules/.bin/uglifyjs --overwrite schedule.min.js
 		./node_modules/.bin/uglifyjs --overwrite scheduler-core.min.js --lift-vars --define year ='y' --define month ='m' --define dayOfMonth ='d' --define dayOfWeek ='w' --define hour ='h' --define minute ='n' --define second ='s' 
-		
+
+		gzip -c schedule.min.js -9 > schedule.min.js.gz		
 		gzip -c scheduler.min.js -9 > scheduler.min.js.gz
 		gzip -c scheduler-core.min.js -9 > scheduler-core.min.js.gz
 				
