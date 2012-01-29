@@ -4,7 +4,7 @@ var recur = require('../lib/sched2');
 var should = require('should');
 
 describe('Scheduler', function() {
-
+/*
 	it('on should schedule a single minute constraint', function() {
 		
 		var s1 = recur().on(2).minute();
@@ -88,7 +88,7 @@ describe('Scheduler', function() {
 		
 		var s = recur().every().minute().between(2, 7).every(2).hour().from('05:00').to('09:00');
 	});
-
+*/
 	it('getNext should pass all of the tests', function () {
 		var s, i = 0;
 		console.log('\nRunning scheduler tests...\n');
@@ -96,7 +96,7 @@ describe('Scheduler', function() {
 		for(var key in tests) {
 			var test = tests[key];
 			s = scheduler(test.res, test.offset || 0);
-			var actual = s.getNext(test.sched, test.count, test.start, test.except);
+			var actual = s.get(test.sched, test.count, test.start);
 			
 			console.log('Test ' + i++ + ': ' + test.name);
 			actual.should.eql(test.expected);
@@ -109,18 +109,18 @@ describe('Scheduler', function() {
 		// start of years tests
 		{ 
 		  name: 	'years is valid',
-		  sched:    recur().onYears(2012).except().on(1).month(),
+		  sched:    recur().on(2012).year(),
 		  start:    new Date('2012-02-28T00:00:05Z'),
 		  count: 	1,
-		  expected: new Date('2012-02-28T00:00:05Z')
-		},/*{ 
+		  expected: [new Date('2012-02-28T00:00:05Z')]
+		},{ 
 		  name: 	'years in future',
-		  sched:    recur().onYears(2013),
+		  sched:    recur().on(2013).year(),
 		  start:    new Date('2012-02-28T23:59:00Z'),
 		  count: 	1,
-		  expected: new Date('2013-01-01T00:00:00Z')
+		  expected: [new Date('2013-01-01T00:00:00Z')]
 		},
-
+/*
 		// start of week of year tests (ISO Week Number)
 		{ 
 		  name: 	'weeks of year 1 is valid',
@@ -159,61 +159,67 @@ describe('Scheduler', function() {
 		  count: 	1,
 		  expected: new Date('2013-01-21T00:00:00Z')
 		},
-
+*/
 		// start of days of year tests
 		{ 
 		  name: 	'days of year is valid',
-		  sched:    schedule().onDaysOfYear(15),
+		  sched:    recur().on(15).dayOfYear(),
 		  start:    new Date('2012-01-15T05:00:05Z'),
 		  count: 	1,
-		  expected: new Date('2012-01-15T05:00:05Z')
+		  expected: [new Date('2012-01-15T05:00:05Z')]
 		},{ 
 		  name: 	'days of year in future',
-		  sched:    schedule().onDaysOfYear(15),
+		  sched:    recur().on(15).dayOfYear(),
 		  start:    new Date('2012-01-10T23:59:00Z'),
 		  count: 	1,
-		  expected: new Date('2012-01-15T00:00:00Z')
+		  expected: [new Date('2012-01-15T00:00:00Z')]
 		},{ 
 		  name: 	'days of year in future crossing month',
-		  sched:    schedule().onDaysOfYear(45),
+		  sched:    recur().on(45).dayOfYear(),
 		  start:    new Date('2012-01-10T23:59:00Z'),
 		  count: 	1,
-		  expected: new Date('2012-02-14T00:00:00Z')
+		  expected: [new Date('2012-02-14T00:00:00Z')]
 		},{ 
 		  name: 	'days of year in past crossing year',
-		  sched:    schedule().onDaysOfYear(15),
+		  sched:    recur().on(15).dayOfYear(),
 		  start:    new Date('2012-01-20T23:59:00Z'),
 		  count: 	1,
-		  expected: new Date('2013-01-15T00:00:00Z')
+		  expected: [new Date('2013-01-15T00:00:00Z')]
 		},{ 
 		  name: 	'last day of year',
-		  sched:    schedule().onLastDayOfYear(),
+		  sched:    recur().last().dayOfYear(),
 		  start:    new Date('2012-01-20T23:59:00Z'),
 		  count: 	1,
-		  expected: new Date('2012-12-31T00:00:00Z')
+		  expected: [new Date('2012-12-31T00:00:00Z')]
 		},
 
 		// start of months tests
 		{ 
 		  name: 	'months is valid',
-		  sched:    schedule().onMonths(2),
+		  sched:    recur().on(2).month(),
 		  start:    new Date('2012-02-28T00:00:05Z'),
 		  count: 	1,
-		  expected: new Date('2012-02-28T00:00:05Z')
+		  expected: [new Date('2012-02-28T00:00:05Z')]
 		},{ 
 		  name: 	'months in future',
-		  sched:    schedule().onMonths(5),
+		  sched:    recur().on(5).month(),
 		  start:    new Date('2012-02-28T23:59:00Z'),
 		  count: 	1,
-		  expected: new Date('2012-05-01T00:00:00Z')
+		  expected: [new Date('2012-05-01T00:00:00Z')]
 		},{ 
 		  name: 	'months in past crossing year',
-		  sched:    schedule().onMonths(5),
+		  sched:    recur().on(5).month(),
 		  start:    new Date('2012-12-31T23:59:15Z'),
 		  count: 	1,
-		  expected: new Date('2013-05-01T00:00:00Z')
+		  expected: [new Date('2013-05-01T00:00:00Z')]
+		},{ 
+		  name: 	'last month of year',
+		  sched:    recur().last().month(),
+		  start:    new Date('2012-02-31T23:59:15Z'),
+		  count: 	1,
+		  expected: [new Date('2012-12-01T00:00:00Z')]
 		},
-
+/*
 		// start of week of month tests
 		{ 
 		  name: 	'week of month is valid',
@@ -252,40 +258,46 @@ describe('Scheduler', function() {
 		  count: 	1,
 		  expected: new Date('2012-02-26T00:00:00Z')
 		},
-
+*/
 		// start of day of month tests
 		{ 
 		  name: 	'day of month is valid',
-		  sched:    schedule().onDaysOfMonth(4),
+		  sched:    recur().on(4).dayOfMonth(),
 		  start:    new Date('2012-01-04T05:05:00Z'),
 		  count: 	1,
-		  expected: new Date('2012-01-04T05:05:00Z')
+		  expected: [new Date('2012-01-04T05:05:00Z')]
 		},{ 
 		  name: 	'day of month in future',
-		  sched:    schedule().onDaysOfMonth(4),
+		  sched:    recur().on(4).dayOfMonth(),
 		  start:    new Date('2012-01-02T02:02:00Z'),
 		  count: 	1,
-		  expected: new Date('2012-01-04T00:00:00Z')
+		  expected: [new Date('2012-01-04T00:00:00Z')]
 		},{ 
 		  name: 	'day of month in past crossing month',
-		  sched:    schedule().onDaysOfMonth(4),
+		  sched:    recur().on(4).dayOfMonth(),
 		  start:    new Date('2012-01-27T11:34:15Z'),
 		  count: 	1,
-		  expected: new Date('2012-02-04T00:00:00Z')
+		  expected: [new Date('2012-02-04T00:00:00Z')]
 		},{ 
 		  name: 	'day of month in past crossing year',
-		  sched:    schedule().onDaysOfMonth(4),
+		  sched:    recur().on(4).dayOfMonth(),
 		  start:    new Date('2011-12-29T12:14:15Z'),
 		  count: 	1,
-		  expected: new Date('2012-01-04T00:00:00Z')
+		  expected: [new Date('2012-01-04T00:00:00Z')]
 		},{ 
 		  name: 	'day of month in past crossing leap year',
-		  sched:    schedule().onDaysOfMonth(4),
+		  sched:    recur().on(4).dayOfMonth(),
 		  start:    new Date('2012-02-28T23:22:15Z'),
 		  count: 	1,
-		  expected: new Date('2012-03-04T00:00:00Z')
+		  expected: [new Date('2012-03-04T00:00:00Z')]
+		},{ 
+		  name: 	'last day of month',
+		  sched:    recur().last().dayOfMonth(),
+		  start:    new Date('2012-02-14T23:22:15Z'),
+		  count: 	1,
+		  expected: [new Date('2012-02-29T00:00:00Z')]
 		},
-
+/*
 		// start of day instance of month tests
 		{ 
 		  name: 	'day instance of month is valid',
@@ -628,6 +640,7 @@ describe('Scheduler', function() {
 		  count: 	1,
 		  expected: new Date('2012-02-29T00:00:05Z')
 		},
-	];
 */
+	];
+
 });

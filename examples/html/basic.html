@@ -22,7 +22,7 @@ Results:
 $(document).ready(function() {
 
 	//var r = recur().every().minute().between(2, 7).and().on(2).hour().except().on(5).minute();
-	var r = recur().except().on(5).minute();
+	var r = recur().on(5).month();
 	var s = scheduler(60, 0);
 	var actual = s.getNext(r, new Date());
 	
