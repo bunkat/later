@@ -89,11 +89,9 @@ describe('Scheduler', function() {
 		var s = recur().every().minute().between(2, 7).every(2).hour().from('05:00').to('09:00');
 	});
 
-	/*it('getNext should pass all of the tests', function () {
+	it('getNext should pass all of the tests', function () {
 		var s, i = 0;
 		console.log('\nRunning scheduler tests...\n');
-
-		schedule().on.hours(2, 4, 6, 10).every.mins(2).between(2,5);
 
 		for(var key in tests) {
 			var test = tests[key];
@@ -111,13 +109,13 @@ describe('Scheduler', function() {
 		// start of years tests
 		{ 
 		  name: 	'years is valid',
-		  sched:    schedule().onYears(2012),
+		  sched:    recur().onYears(2012).except().on(1).month(),
 		  start:    new Date('2012-02-28T00:00:05Z'),
 		  count: 	1,
 		  expected: new Date('2012-02-28T00:00:05Z')
-		},{ 
+		},/*{ 
 		  name: 	'years in future',
-		  sched:    schedule().onYears(2013),
+		  sched:    recur().onYears(2013),
 		  start:    new Date('2012-02-28T23:59:00Z'),
 		  count: 	1,
 		  expected: new Date('2013-01-01T00:00:00Z')
