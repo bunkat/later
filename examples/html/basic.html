@@ -22,9 +22,9 @@ Results:
 $(document).ready(function() {
 
 	//var r = recur().every().minute().between(2, 7).and().on(2).hour().except().on(5).minute();
-	var r = recur().on(5).month();
-	var s = scheduler(60, 0);
-	var actual = s.getNext(r, new Date());
+	var r = recur().on(3).dayOfWeek();
+	var s = scheduler();
+	var actual = s.get(r, 3, new Date());
 	
 	/*var s = schedule().onDaysOfWeek(3).onTimes('8:30:15 pm').onMonths(3,5).onYears(2014);
 	var next = scheduler(60).getNext(s, 10);

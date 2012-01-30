@@ -1,13 +1,14 @@
 {
-	"name": "scheduler.js",
+	"name": "later.js",
 	"version": "0.0.1",
-	"description": "Determine next occurrences of complex recurring schedules",
+	"description": "Determine later occurrences of recurring schedules",
 	"keywords": ["schedule", "occurrences", "recur"],
 	"author": "BunKat <bill@bunkat.com>",
 	"main": "index",
 	"scripts": 
 		{ 
-			"test": "make test"
+			"test": "make test",
+			"build": "make build"
 		},
 	"devDependencies":
 		{
