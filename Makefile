@@ -4,18 +4,14 @@ TESTS = test/*.js
 REPORTER = dot
 
 build:
-		cat lib/scheduler.js > scheduler-core.min.js
-		cat lib/sched2.js > schedule.min.js
-		cat $(SOURCE) > scheduler.min.js
-		./node_modules/.bin/uglifyjs --overwrite scheduler.min.js
-		./node_modules/.bin/uglifyjs --overwrite schedule.min.js
-		./node_modules/.bin/uglifyjs --overwrite scheduler-core.min.js
+		cat $(SOURCE) > later.min.js
+		cat lib/later.js > later-core.min.js
+		./node_modules/.bin/uglifyjs --overwrite later.min.js
+		./node_modules/.bin/uglifyjs --overwrite later-core.min.js
 
-		gzip -c schedule.min.js -9 > schedule.min.js.gz		
-		gzip -c scheduler.min.js -9 > scheduler.min.js.gz
-		gzip -c scheduler-core.min.js -9 > scheduler-core.min.js.gz
+		gzip -c later.min.js -9 > later.min.js.gz		
+		gzip -c later-core.min.js -9 > later-core.min.js.gz
 				
-
 test:
 		@NODE_ENV=test ./node_modules/.bin/mocha \
 				--require should \

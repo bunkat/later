@@ -1,6 +1,6 @@
-var scheduler = require('../lib/scheduler');
+var scheduler = require('../lib/later');
 //var schedule = require('../lib/schedule');
-var recur = require('../lib/sched2');
+var recur = require('../lib/recur');
 var should = require('should');
 
 describe('Scheduler', function() {
@@ -500,6 +500,12 @@ describe('Scheduler', function() {
 		  start:    new Date('2012-05-28T02:02:00Z'),
 		  count: 	1,
 		  expected: [new Date('2012-05-28T05:00:00Z')]
+		},{ 
+		  name: 	'last',
+		  sched:    recur().last().hour(),
+		  start:    new Date('2012-05-28T02:02:00Z'),
+		  count: 	1,
+		  expected: [new Date('2012-05-28T23:00:00Z')]
 		},{ 
 		  name: 	'hours in past crossing day',
 		  sched:    recur().on(5).hour(),
