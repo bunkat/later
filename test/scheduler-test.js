@@ -4,6 +4,16 @@ var recur = require('../lib/recur');
 var should = require('should');
 
 describe('Scheduler', function() {
+
+	it('it should be based on the offset', function () {
+		
+		var r = recur().on(8).hour();
+		scheduler().getNext(r);
+
+	});
+
+
+
 /*
 	it('on should schedule a single minute constraint', function() {
 		
@@ -88,7 +98,7 @@ describe('Scheduler', function() {
 		
 		var s = recur().every().minute().between(2, 7).every(2).hour().from('05:00').to('09:00');
 	});
-*/
+
 	it('getNext should pass all of the tests', function () {
 		var s, i = 0;
 		console.log('\nRunning scheduler tests...\n');
@@ -479,13 +489,7 @@ describe('Scheduler', function() {
 		  start:    new Date('2012-02-28T23:22:15Z'),
 		  count: 	1,
 		  expected: [new Date('2012-02-29T05:05:00Z')]
-		},/*{ 
-		  name: 	'times using time zone',
-		  sched:    schedule().onTimes('5:05 am PST'),
-		  start:    new Date('2012-02-28T23:22:15-08:00'),
-		  count: 	1,
-		  expected: new Date('2012-02-29T05:05:00-08:00')
-		},*/
+		},
 
 		// start of hours tests
 		{ 
@@ -557,15 +561,8 @@ describe('Scheduler', function() {
 		  expected: [new Date('2012-02-28T10:00:00Z'),
 		  			 new Date('2012-02-28T12:00:00Z'),
 		  			 new Date('2012-02-28T14:00:00Z')]
-		},/*{ 
-		  name: 	'hours using local',
-		  sched:    schedule().onHours(5),
-		  offset:   (new Date()).getTimezoneOffset(),
-		  start:    new Date(),
-		  count: 	1,
-		  expected: new Date('2012-01-27T05:00:00-08:00')
 		},
-*/
+
 		// start of minutes tests
 		{ 
 		  name: 	'minutes is valid',
@@ -713,5 +710,5 @@ describe('Scheduler', function() {
 		},
 
 	];
-
+*/
 });
