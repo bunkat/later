@@ -5,100 +5,6 @@ var should = require('should');
 
 describe('Scheduler', function() {
 
-	it('it should be based on the offset', function () {
-		
-		var r = recur().on(8).hour();
-		scheduler().getNext(r);
-
-	});
-
-
-
-/*
-	it('on should schedule a single minute constraint', function() {
-		
-		var s1 = recur().on(2).minute();
-		s1.schedules[0].m.should.eql([2]);
-
-		var s2 = recur().on(5).minute();
-		s1.schedules[0].m.should.eql([2]);
-		s2.schedules[0].m.should.eql([5]);
-	});
-
-	it('on first should schedule a single minute constraint', function() {
-		
-		var s = recur().first().minute();
-		s.schedules[0].m.should.eql([0]);
-	});
-
-	it('and should create a composite schedule', function() {
-		
-		var s = recur().first().minute().and().on(2).minute();
-		s.schedules[0].m.should.eql([0]);
-		s.schedules[1].m.should.eql([2]);
-	});
-
-	it('except should create an exception schedule', function() {
-		
-		var s = recur().every(15).minute().except().on(30).minute();
-		s.schedules[0].m.should.eql([0, 15, 30, 45]);
-		s.exceptions[0].m.should.eql([30]);
-	});
-
-	it('on last should schedule a single minute constraint', function() {
-		
-		var s = recur().last().minute();
-		s.schedules[0].m.should.eql([59]);
-	});
-
-	it('on should schedule multiple minute constraints', function() {
-		
-		var s = recur().on(2, 5, 7).minute();
-		s.schedules[0].m.should.eql([2,5,7]);
-	});
-
-	it('every should schedule multiple minute range constraints', function() {
-		
-		var s = recur().every(15).minute();
-		s.schedules[0].m.should.eql([0,15,30,45]);
-	});
-
-	it('between should modify an every constraint', function() {
-		
-		var s = recur().every(15).minute().between(5, 40);
-		s.schedules[0].m.should.eql([5,20,35]);
-	});
-
-	it('through should schedule a minute range constraint', function() {
-		
-		var s = recur().every().minute().between(2, 7);
-		s.schedules[0].m.should.eql([2,3,4,5,6,7]);
-	});
-
-	it('from and to should apply constraints', function() {
-		
-		var s = recur().every().minute().between(2, 7).on(2).hour().from('05:00').to('09:00');
-		s.schedules[0].m.should.eql([2,3,4,5,6,7]);
-		s.schedules[0].h.should.eql([2]);
-		s.schedules[0].from.should.eql(['05:00']);
-		s.schedules[0].to.should.eql(['09:00']);
-	});
-
-	it('at should apply constraints', function() {
-		
-		var s = recur().every().minute().between(2, 7).on(2).hour().at('05:00');
-		s.schedules[0].m.should.eql([2,3,4,5,6,7]);
-		s.schedules[0].h.should.eql([2]);
-		s.schedules[0].from.should.eql(['05:00']);
-		s.schedules[0].to.should.eql(['05:00']);
-	});
-
-
-	it('from and to should apply constraints', function() {
-		
-		var s = recur().every().minute().between(2, 7).every(2).hour().from('05:00').to('09:00');
-	});
-
 	it('getNext should pass all of the tests', function () {
 		var s, i = 0;
 		console.log('\nRunning scheduler tests...\n');
@@ -709,6 +615,23 @@ describe('Scheduler', function() {
 		  expected: [new Date('2012-02-29T00:00:05Z')]
 		},
 
+		// interesting schedules
+		{
+		  name: 	'Wednesday every 4 weeks at 8am starting on the 5th week of the year',
+		  sched:    recur().every(4).weekOfYear().startingOn(5).on(3).dayOfWeek().at('08:00:00'),
+		  start:    new Date('2012-01-01T23:59:15Z'),
+		  count: 	6,
+		  expected: [new Date('2012-02-01T08:00:00Z'),
+		  			 new Date('2012-02-29T08:00:00Z'),
+		  		     new Date('2012-03-28T08:00:00Z'),
+		  		     new Date('2012-04-25T08:00:00Z'),
+		  		     new Date('2012-05-23T08:00:00Z'),
+		  		     new Date('2012-06-20T08:00:00Z')]		  
+
+
+
+		}
+
 	];
-*/
+
 });
