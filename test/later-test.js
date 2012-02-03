@@ -1,4 +1,5 @@
 var recur = require('../lib/recur');
+var cron = require('../lib/cron.parser');
 var later = require('../lib/later');
 var should = require('should');
 
@@ -707,6 +708,70 @@ describe('Later', function() {
 										
 		});
 
+		describe('weeks of year', function() {
+
+			it('should return null if no valid week is found', function() {
+				this.timeout(1);
+				var r = recur().on(3).weekOfYear().on(2012).year();
+				var start = new Date('2012-04-28T00:00:05Z');
+				var expected = null;
+
+				var l = later().getNext(r, start);
+				should.not.exist(l);
+			});
+						
+			it('should skip forward to the next valid week within the same year', function() {
+				this.timeout(1);
+				var r = recur().on(3).weekOfYear();
+				var start = new Date('2012-01-10T23:59:00Z');
+				var expected = new Date('2012-01-16T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});	
+
+			it('should skip forward to the last week within the same year', function() {
+				this.timeout(1);
+				var r = recur().last().weekOfYear();
+				var start = new Date('2012-04-06T00:05:05Z');
+				var expected = new Date('2012-12-24T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});
+
+			it('should skip forward to the first week within the next month', function() {
+				this.timeout(1);
+				var r = recur().on(6).weekOfYear();
+				var start = new Date('2012-01-10T23:59:00Z');
+				var expected = new Date('2012-02-06T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});	
+			
+			it('should skip forward over a 52 week year to next year', function() {
+				this.timeout(1);
+				var r = recur().on(4).weekOfYear();
+				var start = new Date('2007-02-07T23:59:00Z');
+				var expected = new Date('2008-01-21T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});	
+
+			it('should skip forward over a 53 week year to next year', function() {
+				this.timeout(1);
+				var r = recur().on(4).weekOfYear();
+				var start = new Date('2005-02-07T23:59:00Z');
+				var expected = new Date('2006-01-23T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});	
+										
+		});
+
 		describe('years', function() {
 
 			it('should return null if no valid year is found', function() {
@@ -824,6 +889,108 @@ describe('Later', function() {
 			l.should.be.true;
 		});
 
+		describe('should return true if week of year is valid', function() {
+			
+			it('test 1', function() {
+				this.timeout(1);
+				var r = recur().on(53).weekOfYear();
+				var start = new Date('2005-01-01T00:00:00Z');
+
+				var l = later().isValid(r, start);
+				l.should.be.true;
+			});
+
+			it('test 2', function() {
+				this.timeout(1);
+				var r = recur().on(53).weekOfYear();
+				var start = new Date('2005-01-02T00:00:00Z');
+
+				var l = later().isValid(r, start);
+				l.should.be.true;
+			});
+
+			it('test 3', function() {
+				this.timeout(1);
+				var r = recur().on(52).weekOfYear();
+				var start = new Date('2005-12-31T00:00:00Z');
+
+				var l = later().isValid(r, start);
+				l.should.be.true;
+			});
+
+			it('test 4', function() {
+				this.timeout(1);
+				var r = recur().on(1).weekOfYear();
+				var start = new Date('2007-01-01T00:00:00Z');
+
+				var l = later().isValid(r, start);
+				l.should.be.true;
+			});
+
+			it('test 5', function() {
+				this.timeout(1);
+				var r = recur().on(52).weekOfYear();
+				var start = new Date('2007-12-30T00:00:00Z');
+
+				var l = later().isValid(r, start);
+				l.should.be.true;
+			});
+
+			it('test 6', function() {
+				this.timeout(1);
+				var r = recur().on(1).weekOfYear();
+				var start = new Date('2007-12-31T00:00:00Z');
+
+				var l = later().isValid(r, start);
+				l.should.be.true;
+			});
+
+			it('test 7', function() {
+				this.timeout(1);
+				var r = recur().on(1).weekOfYear();
+				var start = new Date('2008-01-01T00:00:00Z');
+
+				var l = later().isValid(r, start);
+				l.should.be.true;
+			});
+
+			it('test 8', function() {
+				this.timeout(1);
+				var r = recur().on(52).weekOfYear();
+				var start = new Date('2008-12-28T00:00:00Z');
+
+				var l = later().isValid(r, start);
+				l.should.be.true;
+			});
+
+			it('test 9', function() {
+				this.timeout(1);
+				var r = recur().on(1).weekOfYear();
+				var start = new Date('2008-12-29T00:00:00Z');
+
+				var l = later().isValid(r, start);
+				l.should.be.true;
+			});
+
+			it('test 10', function() {
+				this.timeout(1);
+				var r = recur().on(53).weekOfYear();
+				var start = new Date('2009-12-31T00:00:00Z');
+
+				var l = later().isValid(r, start);
+				l.should.be.true;
+			});
+
+			it('test 11', function() {
+				this.timeout(1);
+				var r = recur().on(53).weekOfYear();
+				var start = new Date('2010-01-03T00:00:00Z');
+
+				var l = later().isValid(r, start);
+				l.should.be.true;
+			});
+		});
+
 		it('should return true if year is valid', function() {
 			this.timeout(1);
 			var r = recur().on(2012).year();
@@ -836,8 +1003,99 @@ describe('Later', function() {
 	});
 
 	describe('get', function() {
+	
+		describe('interesting schedules using cron', function() {
+
+			it('should find the next 5 every last day of month at 10am and 10pm', function() {
+				this.timeout(1);
+				var r = cron().parse('0 10,22 L * ? *');
+				var start = new Date('2012-01-01T00:00:00Z');
+				var expected = [
+					new Date('2012-01-31T10:00:00Z'),
+					new Date('2012-01-31T22:00:00Z'),
+					new Date('2012-02-29T10:00:00Z'),
+					new Date('2012-02-29T22:00:00Z'),
+					new Date('2012-03-31T10:00:00Z')
+				]
+				
+				var l = later().get(r, 5, start);
+				l.should.eql(expected);	
+			});
+
+			it('should find the next 5 Friday the 13ths', function() {
+				this.timeout(1);
+				var r = cron().parse('0 0 13 * 5');
+				var start = new Date('2012-01-01T00:00:00Z');
+				var expected = [
+					new Date('2012-01-13T00:00:00Z'),
+					new Date('2012-04-13T00:00:00Z'),
+					new Date('2012-07-13T00:00:00Z'),
+					new Date('2013-09-13T00:00:00Z'),
+					new Date('2013-12-13T00:00:00Z')
+				];
+
+				var l = later().get(r, 5, start);
+				l.should.eql(expected);			
+			});			
+
+			it('should find the next 5 patch tuesdays (2nd tuesday of the month)', function() {
+				this.timeout(1);
+				var r = cron().parse('0 0 ? * 2#2');
+				var start = new Date('2012-01-01T00:00:00Z');
+				var expected = [
+					new Date('2012-01-10T00:00:00Z'),
+					new Date('2012-02-14T00:00:00Z'),
+					new Date('2012-03-13T00:00:00Z'),
+					new Date('2012-04-10T00:00:00Z'),
+					new Date('2012-05-08T00:00:00Z')
+				];
+
+				var l = later().get(r, 5, start);
+				l.should.eql(expected);			
+			});
+
+			it('should find the next 5 dates closest to the 15 that falls on a weekday', function() {
+				this.timeout(1);
+				var r = cron().parse('0 5 15W * ?')
+				var start = new Date('2012-01-01T00:00:00Z');
+				var expected = [
+					new Date('2012-01-16T05:00:00Z'),
+					new Date('2012-02-15T05:00:00Z'),
+					new Date('2012-03-15T05:00:00Z'),
+					new Date('2012-04-16T05:00:00Z'),
+					new Date('2012-05-15T05:00:00Z')
+				];
+
+				var l = later().get(r, 5, start);
+				l.should.eql(expected);			
+			});
+
+			it('should find the last second of every month', function() {
+				this.timeout(1);
+				var r = cron().parse('L L L L * ?', true)
+				var start = new Date('2012-01-01T00:00:00Z');
+				var expected = [
+					new Date('2012-01-31T23:59:59Z'),
+					new Date('2012-02-29T23:59:59Z'),
+					new Date('2012-03-31T23:59:59Z'),
+					new Date('2012-04-30T23:59:59Z'),
+					new Date('2012-05-31T23:59:59Z'),
+					new Date('2012-06-30T23:59:59Z'),
+					new Date('2012-07-31T23:59:59Z'),
+					new Date('2012-08-31T23:59:59Z'),
+					new Date('2012-09-30T23:59:59Z'),
+					new Date('2012-10-31T23:59:59Z'),
+					new Date('2012-11-30T23:59:59Z'),
+					new Date('2012-12-31T23:59:59Z')
+				];
+
+				var l = later().get(r, 12, start);
+				l.should.eql(expected);			
+			});
+		});
+	
 		
-		describe('interesting schedules', function() {
+		describe('interesting schedules using recur', function() {
 			
 			it('should find the next 5 Friday the 13ths', function() {
 				this.timeout(1);
@@ -875,13 +1133,13 @@ describe('Later', function() {
 				this.timeout(1);
 				var r = recur().at('00:00:00').on(15).dayOfMonth().on(1,2,3,4,5).dayOfWeek();
 						      r.and().at('00:00:00').on(14).dayOfMonth().on(5).dayOfWeek();
-						      r.and().at('00:00:00').on(13).dayOfMonth().on(5).dayOfWeek();
+						      r.and().at('00:00:00').on(16).dayOfMonth().on(1).dayOfWeek();
 				var start = new Date('2012-01-01T00:00:00Z');
 				var expected = [
-					new Date('2012-01-13T00:00:00Z'),
+					new Date('2012-01-16T00:00:00Z'),
 					new Date('2012-02-15T00:00:00Z'),
 					new Date('2012-03-15T00:00:00Z'),
-					new Date('2012-04-13T00:00:00Z'),
+					new Date('2012-04-16T00:00:00Z'),
 					new Date('2012-05-15T00:00:00Z')
 				];
 
@@ -922,7 +1180,7 @@ describe('Later', function() {
 				l.should.eql(expected);			
 			});
 
-			it('should find the last second of every month', function() {
+			it('should find the first second of every month', function() {
 				this.timeout(1);
 				var r = recur().first().dayOfMonth().first().hour().first().minute().first().second();
 				var start = new Date('2012-01-01T00:00:00Z');

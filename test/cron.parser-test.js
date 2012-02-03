@@ -300,23 +300,29 @@ describe('CronParser', function() {
 			p.schedules[0].should.have.ownProperty('d').and.eql({d: [4,5], dc: [-1]});
 		});
 
-		// it('should parse a single day instance', function() {
-		// 	var p = parser().parse('* * * * * 1#2', true);
-		// 	p.schedules[0].should.have.ownProperty('d').and.eql({d: [1], dc:[1]});
-		// });
+		it('should parse a single day instance', function() {
+			var p = parser().parse('* * * * * 1#2', true);
+			p.schedules[0].should.have.ownProperty('d').and.eql({d: [1], dc:[1]});
+		});
 
-		// it('should parse multiple single day instance', function() {
-		// 	var p = parser().parse('* * * * * 1#2,3#3', true);
-		// 	p.schedules[0].should.have.ownProperty('d').and.eql({d: [1], dc:[1]});
-		// 	p.schedules[1].should.have.ownProperty('d').and.eql({d: [3], dc:[2]});
-		// });
+		it('should parse multiple single day instance', function() {
+			var p = parser().parse('* * * * * 1#2,3#3', true);
+			p.schedules[0].should.have.ownProperty('d').and.eql({d: [1], dc:[1]});
+			p.schedules[1].should.have.ownProperty('d').and.eql({d: [3], dc:[2]});
+		});
 
-		// it('should parse multiple single day instance in combination', function() {
-		// 	var p = parser().parse('* * * * * 2,1#2,3#3', true);
-		// 	p.schedules[0].should.have.ownProperty('d').and.eql({d: [2]});
-		// 	p.schedules[1].should.have.ownProperty('d').and.eql({d: [1], dc:[1]});
-		// 	p.schedules[2].should.have.ownProperty('d').and.eql({d: [3], dc:[2]});
-		// });
+		it('should parse multiple single day instance with mins and secs', function() {
+			var p = parser().parse('5 5 * * * 1#2,3#3', true);
+			p.schedules[0].should.eql({s: [5], m:[5], d: [1], dc:[1]});
+			p.schedules[1].should.eql({s: [5], m:[5], d: [3], dc:[2]});
+		});
+
+		it('should parse multiple single day instance in combination', function() {
+			var p = parser().parse('* * * * * 2,1#2,3#3', true);
+			p.schedules[0].should.have.ownProperty('d').and.eql({d: [2]});
+			p.schedules[1].should.have.ownProperty('d').and.eql({d: [1], dc:[1]});
+			p.schedules[2].should.have.ownProperty('d').and.eql({d: [3], dc:[2]});
+		});
 
 		it('should parse a single value in words', function() {
 			var p = parser().parse('* * * * * MON', true);
@@ -343,32 +349,32 @@ describe('CronParser', function() {
 	describe('years', function() {
 
 		it('should parse asterisk to mean any value', function() {
-			var p = parser().parse('* * * * * *', false);
+			var p = parser().parse('* * * * * * *', true);
 			p.schedules[0].should.not.have.ownProperty('Y');
 		});		
 
 		it('should parse a single value', function() {
-			var p = parser().parse('* * * * * 2012', false);
+			var p = parser().parse('* * * * * * 2012', true);
 			p.schedules[0].should.have.ownProperty('Y').and.eql({Y: [2012]});
 		});
 
 		it('should parse multiple values', function() {
-			var p = parser().parse('* * * * * 2012,2014,2020', false);
+			var p = parser().parse('* * * * * * 2012,2014,2020', true);
 			p.schedules[0].should.have.ownProperty('Y').and.eql({Y: [2012,2014,2020]});
 		});
 
 		it('should parse a range value', function() {
-			var p = parser().parse('* * * * * 2012-2014', false);
+			var p = parser().parse('* * * * * * 2012-2014', true);
 			p.schedules[0].should.have.ownProperty('Y').and.eql({Y: [2012,2013,2014]});
 		});
 
 		it('should parse a range with increment value', function() {
-			var p = parser().parse('* * * * * 2012-2016/2', false);
+			var p = parser().parse('* * * * * * 2012-2016/2', true);
 			p.schedules[0].should.have.ownProperty('Y').and.eql({Y: [2012,2014,2016]});
 		});
 
 		it('should parse an asterisk with increment value', function() {
-			var p = parser().parse('* * * * * */100', false);
+			var p = parser().parse('* * * * * * */100', true);
 			p.schedules[0].should.have.ownProperty('Y').and.eql({Y: [1970,2070]});
 		});
 	
