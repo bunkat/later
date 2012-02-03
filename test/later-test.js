@@ -208,11 +208,12 @@ describe('Later', function() {
 
 			it('should return null if no valid hour is found', function() {
 				this.timeout(1);
-				var r = recur().on(67).hour().on(1).month().on(2012).year();
-				var start = new Date('2012-02-28T00:00:05Z');
+				var r = recur().on(3).hour().on(2).month();
+				var start = new Date('2012-02-01T00:00:05Z');
+				var end = new Date('2012-02-29T00:00:05Z');
 				var expected = null;
 
-				var l = later().getNext(r, start);
+				var l = later().getNext(r, start, end);
 				should.not.exist(l);
 			});
 						
@@ -534,6 +535,70 @@ describe('Later', function() {
 										
 		});
 
+		describe('weeks of month', function() {
+
+			it('should return null if no valid week is found', function() {
+				this.timeout(1);
+				var r = recur().on(67).weekOfMonth().on(1).month().on(2012).year();
+				var start = new Date('2012-02-28T00:00:05Z');
+				var expected = null;
+
+				var l = later().getNext(r, start);
+				should.not.exist(l);
+			});
+		
+			it('should skip forward to the next valid week within the same month', function() {
+				this.timeout(1);
+				var r = recur().on(2).weekOfMonth();
+				var start = new Date('2012-02-02T02:02:00Z');
+				var expected = new Date('2012-02-05T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});	
+
+			it('should skip forward to the last week within the same month', function() {
+				this.timeout(1);
+				var r = recur().last().weekOfMonth();
+				var start = new Date('2012-02-04T02:02:00Z');
+				var expected = new Date('2012-02-26T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});
+
+			it('should skip forward to the first week within the next month', function() {
+				this.timeout(1);
+				var r = recur().first().weekOfMonth();
+				var start = new Date('2012-02-07T22:07:01Z');
+				var expected = new Date('2012-03-01T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});
+						
+			it('should skip forward to the next valid week within the next month', function() {
+				this.timeout(1);
+				var r = recur().on(2).weekOfMonth();
+				var start = new Date('2012-01-28T11:34:15Z');
+				var expected = new Date('2012-02-05T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});	
+			
+			it('should skip forward to the next valid week within the next year', function() {
+				this.timeout(1);
+				var r = recur().on(2).weekOfMonth();
+				var start = new Date('2011-12-29T12:14:15Z');
+				var expected = new Date('2012-01-08T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});	
+										
+		});
+
 		describe('months', function() {
 
 			it('should return null if no valid month is found', function() {
@@ -732,6 +797,15 @@ describe('Later', function() {
 			l.should.be.true;
 		});
 
+		it('should return true if week of month is valid', function() {
+			this.timeout(1);
+			var r = recur().on(2).weekOfMonth();
+			var start = new Date('2012-01-11T05:05:00Z');
+
+			var l = later().isValid(r, start);
+			l.should.be.true;
+		});
+				
 		it('should return true if month is valid', function() {
 			this.timeout(1);
 			var r = recur().on(5).month();
@@ -828,6 +902,23 @@ describe('Later', function() {
 				];
 
 				var l = later().get(r, 5, start);
+				l.should.eql(expected);			
+			});
+
+			it('should recur Wednesday every 4 weeks at 8am starting on the 5th week', function() {
+				this.timeout(1);
+				var r = recur().every(4).weekOfYear().startingOn(5).on(3).dayOfWeek().at('08:00:00');
+				var start = new Date('2012-01-01T23:59:15Z');
+				var expected = [
+					new Date('2012-02-01T08:00:00Z'),
+		  			new Date('2012-02-29T08:00:00Z'),
+		  		    new Date('2012-03-28T08:00:00Z'),
+		  		    new Date('2012-04-25T08:00:00Z'),
+		  		    new Date('2012-05-23T08:00:00Z'),
+		  		    new Date('2012-06-20T08:00:00Z')
+				];
+
+				var l = later().get(r, 6, start);
 				l.should.eql(expected);			
 			});
 
