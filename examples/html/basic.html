@@ -19,10 +19,16 @@ Results:
 <script src="../../lib/later.js" type="text/javascript"></script>
 <script type="text/javascript">
 
-var r = recur().every(2).weekOfYear().startingOn(2).on(3,5).dayOfWeek().every(5).minute();
-var s = later();
-var next = s.get(r, 20000, new Date('1/1/2012'));
-	
+//var r = recur().every(2).weekOfYear().startingOn(2).on(3,5).dayOfWeek().at('08:00:00');
+//var r = recur().every(5).minute();
+//var s = later();
+var r = recur().at('08:00:00').on(5).dayOfWeek().on(13).dayOfMonth();
+var s = scheduler(60, true);
+
+for (var i = 0; i < 1000; i++) {
+	//s.get(r, 20, new Date('1/1/2012'));
+	s.get(r, 10);
+}
 
 
 </script>

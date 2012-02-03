@@ -78,9 +78,14 @@ describe('Recur', function() {
 
 	describe('every', function() {
 		
-		it('should calculate the appropriate constraint', function() {
+		it('should calculate the appropriate minute constraint', function() {
 			var r = recur().every(15).minute();
 			r.schedules[0].m.should.eql([0, 15, 30, 45]);
+		});
+
+		it('should calculate the appropriate week of year constraint', function() {
+			var r = recur().every(10).weekOfYear();
+			r.schedules[0].wy.should.eql([1, 11, 21, 31, 41, 51]);
 		});
 
 	});

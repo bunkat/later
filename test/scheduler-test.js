@@ -5,6 +5,18 @@ var should = require('should');
 
 describe('Scheduler', function() {
 
+	it('should work with local time zone', function () {
+		
+		var r = recur().at('08:00:00').on(21).dayOfMonth().on(2).month();
+		var s = scheduler(60, true).get(r, 10);
+		for(var i = 0; i < s.length; i++) {
+			console.log(s[i].toLocaleString());
+		}
+
+
+	});
+
+
 	it('getNext should pass all of the tests', function () {
 		var s, i = 0;
 		console.log('\nRunning scheduler tests...\n');
@@ -627,9 +639,6 @@ describe('Scheduler', function() {
 		  		     new Date('2012-04-25T08:00:00Z'),
 		  		     new Date('2012-05-23T08:00:00Z'),
 		  		     new Date('2012-06-20T08:00:00Z')]		  
-
-
-
 		}
 
 	];
