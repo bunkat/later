@@ -8,10 +8,12 @@ build:
 		cat lib/later.js > later-core.min.js
 		cat lib/later.js lib/recur.js > later-recur.min.js
 		cat lib/later.js lib/cron.parser.js > later-cron.min.js
+		cat lib/en.parser.js > en.parser.min.js
 		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite later.min.js
 		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite later-core.min.js
 		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite later-recur.min.js
 		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite later-cron.min.js
+		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite en.parser.min.js
 
 		gzip -c later.min.js -9 > later.min.js.gz		
 		gzip -c later-core.min.js -9 > later-core.min.js.gz
@@ -24,4 +26,8 @@ test:
 				--reporter $(REPORTER) \
 				$(TESTS)
 
-.PHONY:	build test 
+lint:
+		find lib/. -name "*.js" -print0 | xargs -0 ./node_modules/.bin/jslint \
+				--white --vars --plusplus --continue
+
+.PHONY:	build test lint 

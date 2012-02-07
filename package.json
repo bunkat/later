@@ -13,6 +13,7 @@
 	"devDependencies":
 		{
 			"mocha": "*",
-			"should": "*"	
+			"should": "*",
+			"jslint": "*"	
 		}
 }
