@@ -1,10 +1,23 @@
 {
-	"name": "later.js",
+	"name": "later",
 	"version": "0.0.1",
 	"description": "Determine later occurrences of recurring schedules",
-	"keywords": ["schedule", "occurrences", "recur"],
+	"keywords": ["schedule", "occurrences", "recur", "cron"],
 	"author": "BunKat <bill@bunkat.com>",
-	"main": "index",
+	"main": "./lib/exports",
+	"repository" :
+		{ 
+		  "type" : "git",
+		  "url" : "git://github.com/bunkat/later.git"
+		},
+    "bugs" : 
+    	{ 
+	    	"web" : "http://github.com/bunkat/later/issues" 
+    	},
+	"engines" 
+		{ 
+			"node": ">= 0.4.0"
+		},
 	"scripts": 
 		{ 
 			"test": "make test",
@@ -14,6 +27,7 @@
 		{
 			"mocha": "*",
 			"should": "*",
-			"jslint": "*"	
+			"jslint": "*",
+			"uglify-js": "*"	
 		}
 }
