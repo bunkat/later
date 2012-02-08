@@ -1,0 +1,19 @@
+<html>
+<body>
+</body>
+
+<script src="../../later.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+// create the desired schedule
+var schedule = enParser().parse('every 5 minutes');
+
+// calculate the next 5 occurrences with a minimum resolution of 60 seconds, using local time
+var results = later(60, true).get(schedule, 5);
+
+for (var i = 0; i < results.length; i++) {
+	document.write('<p>' + results[i].toLocaleString() + '</p>');
+}
+
+</script>
+</html>

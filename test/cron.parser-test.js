@@ -1,4 +1,4 @@
-var parser = require('../lib/cron.parser');
+var parser = require('../lib/cron.parser').cronParser;
 var should = require('should');
 
 describe('CronParser', function() {

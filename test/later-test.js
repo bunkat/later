@@ -1,7 +1,7 @@
-var recur = require('../lib/recur');
-var cron = require('../lib/cron.parser');
-var text = require('../lib/en.parser');
-var later = require('../lib/later');
+var recur = require('../lib/recur').recur;
+var cron = require('../lib/cron.parser').cronParser;
+var text = require('../lib/en.parser').enParser;
+var later = require('../lib/later').later;
 var should = require('should');
 
 describe('Later', function() {
@@ -53,10 +53,10 @@ describe('Later', function() {
 			it('should skip forward to the next valid second within the next minute', function() {
 				this.timeout(1);
 				var r = recur().on(12).second();
-				var start = new Date('2012-02-28T22:00:15Z');
-				var expected = new Date('2012-02-28T22:01:12Z');
+				var start = new Date('2012-02-28T22:00:15');
+				var expected = new Date('2012-02-28T22:01:12');
 
-				var l = later().getNext(r, start);
+				var l = later(1, true).getNext(r, start);
 				l.should.eql(expected);
 			});	
 			
@@ -93,10 +93,10 @@ describe('Later', function() {
 			it('should skip forward to the next valid second within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(5).second();
-				var start = new Date('2012-12-31T23:59:15Z');
-				var expected = new Date('2013-01-01T00:00:05Z');
+				var start = new Date('2012-12-31T23:59:15');
+				var expected = new Date('2013-01-01T00:00:05');
 
-				var l = later().getNext(r, start);
+				var l = later(1, true).getNext(r, start);
 				l.should.eql(expected);
 			});	
 			
@@ -272,10 +272,10 @@ describe('Later', function() {
 			it('should skip forward to the next valid hour within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(6).hour();
-				var start = new Date('2012-012-31T23:42:15Z');
-				var expected = new Date('2013-01-01T06:00:00Z');
+				var start = new Date('2012-012-31T23:42:15');
+				var expected = new Date('2013-01-01T06:00:00');
 
-				var l = later().getNext(r, start);
+				var l = later(1,true).getNext(r, start);
 				l.should.eql(expected);
 			});	
 						
@@ -336,10 +336,10 @@ describe('Later', function() {
 			it('should skip forward to the next valid time within the next year', function() {
 				this.timeout(1);
 				var r = recur().at('09:14:21')
-				var start = new Date('2012-012-31T23:42:15Z');
-				var expected = new Date('2013-01-01T09:14:21Z');
+				var start = new Date('2012-012-31T23:42:15');
+				var expected = new Date('2013-01-01T09:14:21');
 
-				var l = later().getNext(r, start);
+				var l = later(1, true).getNext(r, start);
 				l.should.eql(expected);
 			});	
 						
@@ -1002,6 +1002,23 @@ describe('Later', function() {
 		});
 	
 	});
+
+
+	describe('local time', function() {
+		
+		it('should match the hour in local time', function() {
+			this.timeout(1);
+			var r = recur().on(6).hour();
+			var start = new Date('2012-06-05');
+			var expected = new Date('2012-06-05T06:00:00');
+
+			var l = later(1, true).getNext(r, start);
+			l.should.eql(expected);
+		})
+
+	})
+
+
 
 	describe('get', function() {
 	

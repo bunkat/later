@@ -1,4 +1,4 @@
-var recur = require('../lib/recur');
+var recur = require('../lib/recur').recur;
 var should = require('should');
 
 describe('Recur', function() {
