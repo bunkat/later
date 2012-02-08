@@ -210,7 +210,7 @@ describe('Later', function() {
 
 			it('should return null if no valid hour is found', function() {
 				this.timeout(1);
-				var r = recur().on(3).hour().on(2).month();
+				var r = recur().on(3).hour().on(3).month();
 				var start = new Date('2012-02-01T00:00:05Z');
 				var end = new Date('2012-02-29T00:00:05Z');
 				var expected = null;
@@ -369,7 +369,7 @@ describe('Later', function() {
 						
 			it('should skip forward to the next valid week day within the same week', function() {
 				this.timeout(1);
-				var r = recur().on(3).dayOfWeek();
+				var r = recur().on(4).dayOfWeek();
 				var start = new Date('2012-02-13T12:07:15Z');
 				var expected = new Date('2012-02-15T00:00:00Z');
 
@@ -399,7 +399,7 @@ describe('Later', function() {
 						
 			it('should skip forward to the next valid week day within the next month', function() {
 				this.timeout(1);
-				var r = recur().on(5).dayOfWeek();
+				var r = recur().on(6).dayOfWeek();
 				var start = new Date('2012-02-28T22:34:15Z');
 				var expected = new Date('2012-03-02T00:00:00Z');
 
@@ -409,7 +409,7 @@ describe('Later', function() {
 			
 			it('should skip forward to the next valid week day within the next year', function() {
 				this.timeout(1);
-				var r = recur().on(3).dayOfWeek();
+				var r = recur().on(4).dayOfWeek();
 				var start = new Date('2012-012-31T23:42:15Z');
 				var expected = new Date('2013-01-02T00:00:00Z');
 
@@ -433,7 +433,7 @@ describe('Later', function() {
 						
 			it('should skip forward to the next valid day instance within the same month', function() {
 				this.timeout(1);
-				var r = recur().on(2).dayOfWeekCount();
+				var r = recur().on(3).dayOfWeekCount();
 				var start = new Date('2012-02-13T12:07:15Z');
 				var expected = new Date('2012-02-15T00:00:00Z');
 
@@ -463,7 +463,7 @@ describe('Later', function() {
 			
 			it('should skip forward to the next valid week day within the next year', function() {
 				this.timeout(1);
-				var r = recur().on(3).dayOfWeekCount();
+				var r = recur().on(4).dayOfWeekCount();
 				var start = new Date('2012-012-31T23:42:15Z');
 				var expected = new Date('2013-01-22T00:00:00Z');
 
@@ -615,7 +615,7 @@ describe('Later', function() {
 						
 			it('should skip forward to the next valid month within the same year', function() {
 				this.timeout(1);
-				var r = recur().on(10).month();
+				var r = recur().on(11).month();
 				var start = new Date('2012-02-02T12:07:15Z');
 				var expected = new Date('2012-11-01T00:00:00Z');
 
@@ -645,7 +645,7 @@ describe('Later', function() {
 			
 			it('should skip forward to the next valid month within the next year', function() {
 				this.timeout(1);
-				var r = recur().on(6).month();
+				var r = recur().on(7).month();
 				var start = new Date('2012-012-31T23:42:15Z');
 				var expected = new Date('2013-07-01T00:00:00Z');
 
@@ -838,7 +838,7 @@ describe('Later', function() {
 
 		it('should return true if week day is valid', function() {
 			this.timeout(1);
-			var r = recur().on(1).dayOfWeek();
+			var r = recur().on(2).dayOfWeek();
 			var start = new Date('2012-02-13T05:05:05Z');
 
 			var l = later().isValid(r, start);
@@ -846,8 +846,8 @@ describe('Later', function() {
 		});
 
 		it('should return true if week day instance is valid', function() {
-			this.timeout(1);
-			var r = recur().on(1).dayOfWeekCount();
+			this.timeout(2);
+			var r = recur().on(2).dayOfWeekCount();
 			var start = new Date('2012-02-13T05:05:05Z');
 
 			var l = later().isValid(r, start);
@@ -875,7 +875,7 @@ describe('Later', function() {
 		it('should return true if month is valid', function() {
 			this.timeout(1);
 			var r = recur().on(5).month();
-			var start = new Date('2012-06-05T00:05:05Z');
+			var start = new Date('2012-05-05T00:05:05Z');
 
 			var l = later().isValid(r, start);
 			l.should.be.true;
@@ -1132,7 +1132,6 @@ describe('Later', function() {
 			it('should find the next 5 patch tuesdays (2nd tuesday of the month)', function() {
 				this.timeout(1);
 				var r = text().parse('on the 2nd day instance on tues at 00:00')
-				console.log(r.schedules);
 				var start = new Date('2012-01-01T00:00:00Z');
 				var expected = [
 					new Date('2012-01-10T00:00:00Z'),
@@ -1148,7 +1147,11 @@ describe('Later', function() {
 
 			it('should find the next 5 dates closest to the 15 that falls on a weekday', function() {
 				this.timeout(1);
-				var r = cron().parse('0 5 15W * ?')
+				var str = 'every weekday on the 14-16th day of the month at 5:00 am '
+				str += 'except on the 14th day of the month on mon-thu '
+				str += 'also on the 16th day of the month on tue-fri'
+
+				var r = text().parse(str);
 				var start = new Date('2012-01-01T00:00:00Z');
 				var expected = [
 					new Date('2012-01-16T05:00:00Z'),
@@ -1164,7 +1167,7 @@ describe('Later', function() {
 
 			it('should find the last second of every month', function() {
 				this.timeout(1);
-				var r = cron().parse('L L L L * ?', true)
+				var r = text().parse('on the last second on the last minute on the last hour on the last day of the month');
 				var start = new Date('2012-01-01T00:00:00Z');
 				var expected = [
 					new Date('2012-01-31T23:59:59Z'),
@@ -1184,12 +1187,13 @@ describe('Later', function() {
 				var l = later().get(r, 12, start);
 				l.should.eql(expected);			
 			});
-		});		
+		});	
+			
 		describe('interesting schedules using recur', function() {
 			
 			it('should find the next 5 Friday the 13ths', function() {
 				this.timeout(1);
-				var r = recur().on(5).dayOfWeek().on(13).dayOfMonth().at('00:00:00');
+				var r = recur().on(6).dayOfWeek().on(13).dayOfMonth().at('00:00:00');
 				var start = new Date('2012-01-01T00:00:00Z');
 				var expected = [
 					new Date('2012-01-13T00:00:00Z'),
@@ -1205,7 +1209,7 @@ describe('Later', function() {
 
 			it('should find the next 5 patch tuesdays (2nd tuesday of the month)', function() {
 				this.timeout(1);
-				var r = recur().on(2).dayOfWeek().on(1).dayOfWeekCount().at('00:00:00');
+				var r = recur().on(3).dayOfWeek().on(2).dayOfWeekCount().at('00:00:00');
 				var start = new Date('2012-01-01T00:00:00Z');
 				var expected = [
 					new Date('2012-01-10T00:00:00Z'),
@@ -1221,9 +1225,9 @@ describe('Later', function() {
 
 			it('should find the next 5 dates closest to the 15 that falls on a weekday', function() {
 				this.timeout(1);
-				var r = recur().at('00:00:00').on(15).dayOfMonth().on(1,2,3,4,5).dayOfWeek();
-						      r.and().at('00:00:00').on(14).dayOfMonth().on(5).dayOfWeek();
-						      r.and().at('00:00:00').on(16).dayOfMonth().on(1).dayOfWeek();
+				var r = recur().at('00:00:00').on(15).dayOfMonth().onWeekday();
+						      r.and().at('00:00:00').on(14).dayOfMonth().on(6).dayOfWeek();
+						      r.and().at('00:00:00').on(16).dayOfMonth().on(2).dayOfWeek();
 				var start = new Date('2012-01-01T00:00:00Z');
 				var expected = [
 					new Date('2012-01-16T00:00:00Z'),
@@ -1239,7 +1243,7 @@ describe('Later', function() {
 
 			it('should recur everyday except on weekends', function() {
 				this.timeout(1);
-				var r = recur().at('08:00:00').except().on(0,6).dayOfWeek();
+				var r = recur().at('08:00:00').except().on(1,7).dayOfWeek();
 				var start = new Date('2012-01-05T00:00:00Z');
 				var expected = [
 					new Date('2012-01-05T08:00:00Z'),
@@ -1255,7 +1259,7 @@ describe('Later', function() {
 
 			it('should recur Wednesday every 4 weeks at 8am starting on the 5th week', function() {
 				this.timeout(1);
-				var r = recur().every(4).weekOfYear().startingOn(5).on(3).dayOfWeek().at('08:00:00');
+				var r = recur().every(4).weekOfYear().startingOn(5).on(4).dayOfWeek().at('08:00:00');
 				var start = new Date('2012-01-01T23:59:15Z');
 				var expected = [
 					new Date('2012-02-01T08:00:00Z'),
