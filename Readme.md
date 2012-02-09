@@ -316,7 +316,11 @@ in _numRange_
 
 A valid schedule can be generated from any valid Cron expression. For more information on the Cron expression format, see: [http://en.wikipedia.org/wiki/Cron](http://en.wikipedia.org/wiki/Cron).  Currently Cron expressions are the most compact way to describe a schedule, but are slightly less flexible (no direct support for composite or exception schedules) and can be harder to read.
 
-    var s = cronParser().parse(* */5 * * * *);
+#### parse(expr [,_hasSeconds_])
+
+Parses the Cron expression `expr` and returns a valid schedule that can be used with _Later_.  If `expr` contains the seconds component (optionally appears before the minutes component), then `hasSeconds` must be set to true.
+
+    var s = cronParser().parse('* */5 * * * *', true);
 
 ## Creating Schedules Manually
 
