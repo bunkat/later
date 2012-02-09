@@ -226,6 +226,10 @@ Creates an exception schedule.
 
 Schedules can also be created using an English text expression syntax.  All valid schedules can be produced in this manner.  See the example folder and the test folder for lots of examples of valid schedules.
 
+    var s = enParser().parse('every 5 minutes');
+
+If the text expression could not be parsed, `s.Error` will contain the position in the string where parsing failed.
+
 #### _timePeriod_
 
 The valid time period expressions are:
@@ -385,14 +389,14 @@ By default, all schedules are calculated using UTC time. Set `useLocalTime` to t
 
 #### getNext(recur, _[startDate[, endDate]]_)
 
-Returns the next valid occurrence of the schedule definition, `recur`, that is passed in. Pass in `Date` objects to `startDate` and `endDate` to define the time range to find the next valid occurrence.  By default `startDate` is the current date and time and there is no `endDate`.
+Returns the next valid occurrence of the schedule definition, `recur`, that is passed in or null if no occurrences exist. Pass in `Date` objects to `startDate` and `endDate` to define the time range to find the next valid occurrence.  By default `startDate` is the current date and time and there is no `endDate`.
 
     var s = cronParser().parse(* */5 * * * *);
     later().getNext(s, new Date('1/1/2012'), new Date('1/1/2013'));
 
 #### get(recur, count, _[startDate[, endDate]]_)
 
-Returns the next `count` occurrences of the schedule definition, `recur`, that is passed in. Pass in `Date` objects to `startDate` and `endDate` to define the time range to find the next valid occurrences.  By default `startDate` is the current date and time and there is no `endDate`.
+Returns the next `count` occurrences of the schedule definition, `recur`, that is passed in or null if no occurrences exist. Pass in `Date` objects to `startDate` and `endDate` to define the time range to find the next valid occurrences.  By default `startDate` is the current date and time and there is no `endDate`.
 
     var s = cronParser().parse(* */5 * * * *);
     later().get(sched, 10, new Date('1/1/2012'), new Date('1/1/2013'));
