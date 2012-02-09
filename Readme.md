@@ -41,28 +41,29 @@ _Later_ supports constraints using following time periods (Note: Not all are sup
 
 #### Seconds (s)
 
-Denotes seconds within each minute.
+Denotes seconds within each minute.  
 Minimum value is 0, maximum value is 59. Specify 59 for last.  
 
 #### Minutes (m)
 
-Denotes minutes within each hour.
+Denotes minutes within each hour.  
 Minimum value is 0, maximum value is 59. Specify 59 for last.  
 
 #### Hours (h)
 
-Denotes hours within each day.
+Denotes hours within each day.  
 Minimum value is 0, maximum value is 23. Specify 23 for last.  
 
 #### Days Of Month (D)
 
-Denotes number of days within a month.
+Denotes number of days within a month.  
 Minimum value is 1, maximum value is 31.  Specify 0 for last.  
 
 #### Days Of Week (dw)
 
-Denotes the days within a week.
+Denotes the days within a week.  
 Minimum value is 1, maximum value is 7.  Specify 0 for last.
+    
     1 - Sunday
     2 - Monday
     3 - Tuesday
@@ -73,8 +74,9 @@ Minimum value is 1, maximum value is 7.  Specify 0 for last.
 
 #### Day of Week Count (dc)
 
-Denotes the number of times a particular day has occurred within a month.  Used to specify things like second Tuesday, or third Friday in a month.
+Denotes the number of times a particular day has occurred within a month.  Used to specify things like second Tuesday, or third Friday in a month.  
 Minimum value is 1, maximum value is 5.  Specify 0 for last.
+    
     1 - First occurrence
     2 - Second occurrence
     3 - Third occurrence
@@ -84,28 +86,30 @@ Minimum value is 1, maximum value is 5.  Specify 0 for last.
 
 #### Day of Year (dy)
 
-Denotes number of days within a year.
+Denotes number of days within a year.  
 Minimum value is 1, maximum value is 366.  Specify 0 for last.  
 
 #### Week of Month (wm)
 
-Denotes number of weeks within a month. The first week is the week that includes the 1st of the month. Subsequent weeks start on Sunday.    
+Denotes number of weeks within a month. The first week is the week that includes the 1st of the month. Subsequent weeks start on Sunday.     
 Minimum value is 1, maximum value is 5.  Specify 0 for last.  
 
-    February 2nd,  2012 - Week 1
-    February 5th,  2012 - Week 2
-    February 12th, 2012 - Week 3
-    February 19th, 2012 - Week 4
-    February 26th, 2012 - Week 5 (or 0)
+For example, February of 2012:
+
+    Week 1 - February 2nd,  2012
+    Week 2 - February 5th,  2012
+    Week 3 - February 12th, 2012 
+    Week 4 - February 19th, 2012 
+    Week 5 - February 26th, 2012
 
 #### Week of Year (wy)
 
-Denotes the ISO 8601 week date. For more information see: [http://en.wikipedia.org/wiki/ISO_week_date](http://en.wikipedia.org/wiki/ISO_week_date).
+Denotes the ISO 8601 week date. For more information see: [http://en.wikipedia.org/wiki/ISO_week_date](http://en.wikipedia.org/wiki/ISO_week_date).  
 Minimum value is 1, maximum value is 53.  Specify 0 for last.
 
 #### Month of Year (M)
 
-Denotes the months within a year.
+Denotes the months within a year.  
 Minimum value is 1, maximum value is 12.  Specify 0 for last.
 
     1 - January
@@ -123,7 +127,7 @@ Minimum value is 1, maximum value is 12.  Specify 0 for last.
 
 #### Year (Y)
 
-Denotes the four digit year.
+Denotes the four digit year.  
 Minimum value is 1970, maximum value is 2450 (arbitrary).  
 
 ## Composite Schedules
@@ -149,19 +153,18 @@ _Recur_ provides a simple, chainable API for creating schedules.  All valid sche
 #### Time periods
 
 Recur uses the following:
-```js
-second();
-minute();
-hour();
-dayOfWeek();
-dayOfWeekCount();
-dayOfMonth();
-dayOfYear();
-weekOfMonth();
-weekOfYear();
-month();
-year();
-```
+
+    second();
+    minute();
+    hour();
+    dayOfWeek();
+    dayOfWeekCount();
+    dayOfMonth();
+    dayOfYear();
+    weekOfMonth();
+    weekOfYear();
+    month();
+    year();
 
 #### on(_args_)
 
@@ -180,9 +183,13 @@ Shorthand for `on(2,3,4,5,6).dayOfWeek()`.
 
 #### every(x)
 
-Specifies an interval `x` of occurrences of a time period.
+Specifies an interval `x` of occurrences of a time period.  By default, intervals start at the minimum value of the time period and go until the maximum value of the time period. 
+
+For example:
 
     recur().every(2).month();
+
+Will include months 1,3,5,7,9,11.
 
 #### startingOn(x)
 
@@ -269,7 +276,7 @@ on the ( first | last | _numRange_ _timePeriod_ )
 
 #### _startingOn_
 
-(start(ing)? (at|on( the)?)?) _num_ _timePeriod
+(start(ing)? (at|on( the)?)?) _num_ _timePeriod_
 
 #### _between_
 
@@ -341,12 +348,12 @@ where `constraints` are of the form:
 constraint_id: [
   //valid values
 ],
-
 ```
 
 The `constraint_id` can be found in the _Time Periods_ section above following the constraint name along with the valid values.
 
 For example, the schedule _every hour on weekdays and every other hour on weekends_ would be defined as:
+
 ```js
 {schedules: [ 
   {
@@ -358,7 +365,6 @@ For example, the schedule _every hour on weekdays and every other hour on weeken
     d: [1,7]}
   ]
 };
-
 ```
 
 ## Calculating Occurrences
@@ -400,16 +406,19 @@ Returns true if `date` is a valid occurrence of the schedule defined by `recur`.
 Executes `callback` on the schedule defined by `recur` starting on `startDate`. The callback will be called with whatever is passed in as `arg`. The callback will continue to be called until either `stopExec` is called or there are no more valid occurrences of the schedule.  Only one schedule should be executed per `later` object to make stoping execution simpler.
 
 Do this:
+
 ```js
-var s1 = cronParser().parse(* */5 * * * *);
-var every5 = later();
-ever5.exec(s1, new Date(), cb);  
+var s1 = cronParser().parse(* */5 * * * *);  
+var every5 = later();  
+ever5.exec(s1, new Date(), cb);    
 
 var s2 = cronParser().parse(* */6 * * * *);
 var every6 = later();
 every6.exec(s2, new Date(), cb);
 ```
+
 Not this:
+
 ```js
 var s1 = cronParser().parse(* */5 * * * *);
 var s2 = cronParser().parse(* */6 * * * *);
@@ -429,6 +438,7 @@ To build the minified javascript files for _later_:
     $ make build
 
 There are 5 different javascript files that are built.
+
 * later.min.js contains all of the library files
 * later-core.min.js contains only the core engine for calculating occurrences
 * later-recur.min.js contains only the files needed to use Recur based scheduling
@@ -445,8 +455,8 @@ To run the tests for _later_, run `npm install` to get dependencies and then:
 
 Some basic performance tests are available on jsperf:
 
-  [Schedule Definition](http://jsperf.com/later-schedule-def)
-  [Recurrence Calculation](http://jsperf.com/later-schedule-calc)
+* [Schedule Definition](http://jsperf.com/later-schedule-def)
+* [Recurrence Calculation](http://jsperf.com/later-schedule-calc)
 
 ## License 
 
