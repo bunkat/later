@@ -420,11 +420,11 @@ Executes `callback` on the schedule defined by `recur` starting on `startDate`. 
 Do this:
 
 ```js
-var s1 = cronParser().parse('* */5 * * * *'');  
+var s1 = cronParser().parse('* */5 * * * *');  
 var every5 = later();  
 ever5.exec(s1, new Date(), cb);    
 
-var s2 = cronParser().parse('* */6 * * * *'');
+var s2 = cronParser().parse('* */6 * * * *');
 var every6 = later();
 every6.exec(s2, new Date(), cb);
 ```
@@ -432,8 +432,8 @@ every6.exec(s2, new Date(), cb);
 Not this:
 
 ```js
-var s1 = cronParser().parse('* */5 * * * *'');
-var s2 = cronParser().parse('* */6 * * * *'');
+var s1 = cronParser().parse('* */5 * * * *');
+var s2 = cronParser().parse('* */6 * * * *');
 var l = later();
 l.exec(s1, new Date(), cb);  
 l.exec(s2, new Date(), cb);
