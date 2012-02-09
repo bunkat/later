@@ -1074,7 +1074,7 @@ describe('Later', function() {
 
 			it('should find the next 5 dates closest to the 15 that falls on a weekday', function() {
 				this.timeout(1);
-				var r = cron().parse('0 5 15W * ?')
+				var r = cron().parse('0 5 15W * ?');
 				var start = new Date('2012-01-01T00:00:00Z');
 				var expected = [
 					new Date('2012-01-16T05:00:00Z'),
@@ -1090,7 +1090,7 @@ describe('Later', function() {
 
 			it('should find the last second of every month', function() {
 				this.timeout(1);
-				var r = cron().parse('L L L L * ?', true)
+				var r = cron().parse('L L L L * ?', true);
 				var start = new Date('2012-01-01T00:00:00Z');
 				var expected = [
 					new Date('2012-01-31T23:59:59Z'),
@@ -1164,9 +1164,9 @@ describe('Later', function() {
 
 			it('should find the next 5 dates closest to the 15 that falls on a weekday', function() {
 				this.timeout(1);
-				var str = 'every weekday on the 14-16th day of the month at 5:00 am '
-				str += 'except on the 14th day of the month on mon-thu '
-				str += 'also on the 16th day of the month on tue-fri'
+				var str = 'every weekday on the 14-16th day of the month at 5:00 am ';
+				str += 'except on the 14th day of the month on mon-thu ';
+				str += 'also on the 16th day of the month on tue-fri';
 
 				var r = text().parse(str);
 				var start = new Date('2012-01-01T00:00:00Z');
@@ -1243,8 +1243,8 @@ describe('Later', function() {
 			it('should find the next 5 dates closest to the 15 that falls on a weekday', function() {
 				this.timeout(1);
 				var r = recur().at('00:00:00').on(15).dayOfMonth().onWeekday();
-						      r.and().at('00:00:00').on(14).dayOfMonth().on(6).dayOfWeek();
-						      r.and().at('00:00:00').on(16).dayOfMonth().on(2).dayOfWeek();
+					r.and().at('00:00:00').on(14).dayOfMonth().on(6).dayOfWeek();
+					r.and().at('00:00:00').on(16).dayOfMonth().on(2).dayOfWeek();
 				var start = new Date('2012-01-01T00:00:00Z');
 				var expected = [
 					new Date('2012-01-16T00:00:00Z'),

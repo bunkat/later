@@ -4,7 +4,7 @@
 	"description": "Determine later occurrences of recurring schedules",
 	"keywords": ["schedule", "occurrences", "recur", "cron"],
 	"author": "BunKat <bill@bunkat.com>",
-	"main": "./lib/exports",
+	"main": "./app",
 	"repository" :
 		{ 
 		  "type" : "git",

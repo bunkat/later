@@ -2,10 +2,11 @@
 <body>
 </body>
 
-<script src="../../later.min.js" type="text/javascript"></script>
+<script src="../later.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 
 // create the desired schedule
+var schedule = cronParser().parse('every 5 minutes');
 var schedule = enParser().parse('every 5 minutes');
 
 // calculate the next 5 occurrences with a minimum resolution of 60 seconds, using local time
