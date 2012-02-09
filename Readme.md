@@ -1,22 +1,24 @@
-_Later_ is a simple library to describe recurring schedules and calculate future occurrences.  It also allows a callback to be executed on a provided schedule.  There are four ways that schedules can be defined: using the _recur_ api, using an English expression, using a Cron expression, or they can also be manually defined. _Later_ works in both the browser and [node](http://nodejs.org). 
+_Later_ is a simple library to describe recurring schedules and calculate future occurrences.  It also allows a callback to be executed on a provided schedule. The core engine for calculating schedules is only 1.3k minified and compressed. There are four ways that schedules can be defined: using the _Recur_ api, using an English expression, using a Cron expression, or they can also be manually defined. _Later_ works in both the browser and [node](http://nodejs.org).
 
 ## Node Example
 
-    var recur = require('later').recur
-      , cron = require('later').cronParser
-      , text = require('later').enParser
-      , later = require('later').later
-      , rSched, cSched, tSched, mSched, results;
+```js
+var recur = require('later').recur
+  , cron = require('later').cronParser
+  , text = require('later').enParser
+  , later = require('later').later
+  , rSched, cSched, tSched, mSched, results;
 
-    // equivalent schedules for every 5 minutes
-    rSched = recur().every(5).minute();
-    cSched = cron().parse('* */5 * * * *', true);
-    tSched = text().parse('every 5 minutes');
-    mSched = {schedules: [ {m: [0,5,10,15,20,25,30,35,40,45,50,55]}]};
+// equivalent schedules for every 5 minutes
+rSched = recur().every(5).minute();
+cSched = cron().parse('* */5 * * * *', true);
+tSched = text().parse('every 5 minutes');
+mSched = {schedules: [ {m: [0,5,10,15,20,25,30,35,40,45,50,55]}]};
 
-    // calculate the next occurrence, using a minimum resolution of 60 seconds
-    // otherwise every second of every minute would be valid occurrences
-    results = later(60).getNext(rSched);
+// calculate the next occurrence, using a minimum resolution of 60 seconds
+// otherwise every second of every minute would be valid occurrences
+results = later(60).getNext(rSched);
+```
 
 ## Browser Example
 
@@ -354,7 +356,7 @@ constraint_id: [
 ],
 ```
 
-The `constraint_id` can be found in the _Time Periods_ section above following the constraint name along with the valid values.
+The `constraint_id`s can be found in the _Time Periods_ section above following the constraint name along with the valid values.
 
 For example, the schedule _every hour on weekdays and every other hour on weekends_ would be defined as:
 
@@ -383,7 +385,7 @@ To calculate occurrences for a schedule that occurs every five minutes, either o
     var r = later(60).get(s,10);
 
     var s = recur().every(5).minute().first().second();
-    var r = later(60).get(s,10);
+    var r = later().get(s,10);
 
 By default, all schedules are calculated using UTC time. Set `useLocalTime` to true to do calculations using local time instead. This makes hour, minute, and time constraints fall on the expected values on a local machine.  Schedule definitions are always time zone agnostic. 
 
@@ -412,11 +414,11 @@ Executes `callback` on the schedule defined by `recur` starting on `startDate`. 
 Do this:
 
 ```js
-var s1 = cronParser().parse(* */5 * * * *);  
+var s1 = cronParser().parse('* */5 * * * *'');  
 var every5 = later();  
 ever5.exec(s1, new Date(), cb);    
 
-var s2 = cronParser().parse(* */6 * * * *);
+var s2 = cronParser().parse('* */6 * * * *'');
 var every6 = later();
 every6.exec(s2, new Date(), cb);
 ```
@@ -424,8 +426,8 @@ every6.exec(s2, new Date(), cb);
 Not this:
 
 ```js
-var s1 = cronParser().parse(* */5 * * * *);
-var s2 = cronParser().parse(* */6 * * * *);
+var s1 = cronParser().parse('* */5 * * * *'');
+var s2 = cronParser().parse('* */6 * * * *'');
 var l = later();
 l.exec(s1, new Date(), cb);  
 l.exec(s2, new Date(), cb);
@@ -443,21 +445,21 @@ To build the minified javascript files for _later_:
 
 There are 5 different javascript files that are built.
 
-* later.min.js contains all of the library files
-* later-core.min.js contains only the core engine for calculating occurrences
-* later-recur.min.js contains only the files needed to use Recur based scheduling
-* later-cron.min.js contains only the files needed to use Cron based scheduling
-* later-en.min.js contains only the files need to use English text based scheduling
+* __later.min.js__ contains all of the library files
+* __later-core.min.js__ contains only the core engine for calculating occurrences
+* __later-recur.min.js__ contains only the files needed to use Recur based scheduling
+* __later-cron.min.js__ contains only the files needed to use Cron based scheduling
+* __later-en.min.js__ contains only the files need to use English text based scheduling
 
 ## Running tests
 
-To run the tests for _later_, run `npm install` to get dependencies and then:
+To run the tests for _later_, run `npm install` to install dependencies and then:
 
     $ make test
 
 ## Performance
 
-Some basic performance tests are available on jsperf:
+Some basic performance tests are available on __jsperf__:
 
 * [Schedule Definition](http://jsperf.com/later-schedule-def)
 * [Recurrence Calculation](http://jsperf.com/later-schedule-calc)
