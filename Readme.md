@@ -20,6 +20,19 @@ mSched = {schedules: [ {m: [0,5,10,15,20,25,30,35,40,45,50,55]}]};
 // calculate the next occurrence, using a minimum resolution of 60 seconds
 // otherwise every second of every minute would be valid occurrences
 results = later(60).getNext(rSched);
+
+// calculates the next 10 occurrences starting on Jan 1st 2013
+results = later(60).get(rSched, 10, new Date('1/1/2013'));
+
+// executes fn every 5 minutes
+var fn = function() {
+  console.log(new Date().toLocaleString());
+}
+var l = later(60);
+l.exec(cSched, (new Date()), fn);
+
+// stops execution
+l.stopExec();
 ```
 
 ## Browser Example
