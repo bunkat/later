@@ -1,4 +1,6 @@
-_Later_ is a simple library to describe recurring schedules and calculate future occurrences.  It also allows a callback to be executed on a provided schedule. The core engine for calculating schedules is only 1.3k minified and compressed. There are four ways that schedules can be defined: using the _Recur_ api, using an English expression, using a Cron expression, or they can also be manually defined. _Later_ works in both the browser and [node](http://nodejs.org).
+_Later_ is a simple library for describing recurring schedules and calculating their future occurrences.  It supports a very flexible schedule definition including support for composite schedules and schedule exceptions.  _Later_ also supports executing a callback on a provided schedule. 
+
+There are four ways that schedules can be defined: using the chainable _Recur_ api, using an English expression, using a Cron expression, or they can also be manually defined. _Later_ works in both the browser and [node](http://nodejs.org) and the core engine for calculating schedules is only 1.3k minified and compressed.
 
 ## Node Example
 
@@ -39,7 +41,7 @@ results = later(60).getNext(rSched);
 
 ## Time Periods
 
-_Later_ supports constraints using following time periods (Note: Not all are supported using Cron expressions):
+_Later_ works as a very primitive constraints solver.  A _Later_ schedule is simply a set of constraints indicating the valid values for a set of time periods.  _Later_ then finds the first date and time (or any number of occurrences) that meets all of the constraints.  _Later_ supports constraints using following time periods (Note: Not all of these are supported when using Cron expressions):
 
 #### Seconds (s)
 
