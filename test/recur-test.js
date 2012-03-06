@@ -90,6 +90,25 @@ describe('Recur', function() {
 
 	});
 
+	describe('after', function() {
+		
+		it('should store the appropriate minute constraint', function() {
+			var r = recur().after(15).minute();
+			r.schedules[0].am.should.eql([15]);
+		});
+
+		it('should store the appropriate week of year constraint', function() {
+			var r = recur().after(10).weekOfYear();
+			r.schedules[0].awy.should.eql([10]);
+		});
+
+		it('should store the appropriate year constraint', function() {
+			var r = recur().after(10).year();
+			r.schedules[0].aY.should.eql([10]);
+		});
+
+	});
+
 	describe('first', function() {
 		
 		it('should calculate the appropriate constraint', function() {

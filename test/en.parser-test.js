@@ -86,6 +86,77 @@ describe('EnParser', function() {
 		});
 	});
 
+	describe('after', function() {
+
+		it('should parse after second restriction', function() {
+			var p = parser().parse('after 15 s');
+			p.schedules[0].should.have.ownProperty('as');
+			p.schedules[0].as.should.eql([15]);
+		});	
+
+		it('should parse after minute restriction', function() {
+			var p = parser().parse('after 15 minutes');
+			p.schedules[0].should.have.ownProperty('am');
+			p.schedules[0].am.should.eql([15]);
+		});		
+
+		it('should parse after hour restriction', function() {
+			var p = parser().parse('after 5 hours');
+			p.schedules[0].should.have.ownProperty('ah');
+			p.schedules[0].ah.should.eql([5]);
+		});	
+
+		it('should parse after day of week restriction', function() {
+			var p = parser().parse('after 2nd day of the week');
+			p.schedules[0].should.have.ownProperty('ad');
+			p.schedules[0].ad.should.eql([2]);
+		});
+
+		it('should parse after day of month restriction', function() {
+			var p = parser().parse('after 5 days of the month');
+			p.schedules[0].should.have.ownProperty('aD');
+			p.schedules[0].aD.should.eql([5]);
+		});	
+
+		it('should parse after day of month restriction', function() {
+			var p = parser().parse('after 5 days of the year');
+			p.schedules[0].should.have.ownProperty('ady');
+			p.schedules[0].ady.should.eql([5]);
+		});
+
+		it('should parse after week of month restriction', function() {
+			var p = parser().parse('after 2 weeks of month');
+			p.schedules[0].should.have.ownProperty('awm');
+			p.schedules[0].awm.should.eql([2]);
+		});	
+
+		it('should parse after month restriction', function() {
+			var p = parser().parse('after 5 month');
+			p.schedules[0].should.have.ownProperty('aM');
+			p.schedules[0].aM.should.eql([5]);
+		});
+
+		it('should parse after week of year restriction', function() {
+			var p = parser().parse('after 10 weeks of year');
+			p.schedules[0].should.have.ownProperty('awy');
+			p.schedules[0].awy.should.eql([10]);
+		});
+
+		it('should parse after year restriction', function() {
+			var p = parser().parse('after 10 years');
+			p.schedules[0].should.have.ownProperty('aY');
+			p.schedules[0].aY.should.eql([10]);
+		});
+
+		it('should parse multiple restrictions', function() {
+			var p = parser().parse('after 30th m after 5 months');
+			p.schedules[0].should.have.ownProperty('am');
+			p.schedules[0].am.should.eql([30]);
+			p.schedules[0].should.have.ownProperty('aM');
+			p.schedules[0].aM.should.eql([5]);
+		});
+	});
+
 	describe('on', function() {
 
 		it('should parse on second restriction', function() {

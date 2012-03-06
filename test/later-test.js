@@ -20,6 +20,16 @@ describe('Later', function() {
 				should.not.exist(l);
 			});
 
+			it('should skip forward to the next valid second after specified seconds', function() {
+				this.timeout(1);
+				var r = recur().after(45).second();
+				var start = new Date('2012-02-28T23:59:20Z');
+				var expected = new Date('2012-02-29T00:00:05Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});
+
 			it('should skip forward to the next valid second within the same minute', function() {
 				this.timeout(1);
 				var r = recur().on(45).second();
@@ -124,6 +134,16 @@ describe('Later', function() {
 				should.not.exist(l);
 			});
 						
+			it('should skip forward to the next valid minute after specified minutes', function() {
+				this.timeout(1);
+				var r = recur().after(45).minute();
+				var start = new Date('2012-02-28T23:59:20Z');
+				var expected = new Date('2012-02-29T00:44:20Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});
+
 			it('should skip forward to the next valid minute within the same hour', function() {
 				this.timeout(1);
 				var r = recur().on(12).minute();
@@ -218,7 +238,17 @@ describe('Later', function() {
 				var l = later().getNext(r, start, end);
 				should.not.exist(l);
 			});
-						
+
+			it('should skip forward to the next valid hour after specified hours', function() {
+				this.timeout(1);
+				var r = recur().after(3).hour();
+				var start = new Date('2012-02-28T23:59:20Z');
+				var expected = new Date('2012-02-29T02:59:20Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});
+									
 			it('should skip forward to the next valid hour within the same day', function() {
 				this.timeout(1);
 				var r = recur().on(14).hour();
@@ -366,7 +396,17 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				should.not.exist(l);
 			});
-						
+
+			it('should skip forward to the next valid day after specified days of week', function() {
+				this.timeout(1);
+				var r = recur().after(4).dayOfWeek();
+				var start = new Date('2012-02-28T13:59:20Z');
+				var expected = new Date('2012-03-03T13:59:20Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});
+									
 			it('should skip forward to the next valid week day within the same week', function() {
 				this.timeout(1);
 				var r = recur().on(4).dayOfWeek();
@@ -484,7 +524,17 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				should.not.exist(l);
 			});
-						
+
+			it('should skip forward to the next valid day after specified days', function() {
+				this.timeout(1);
+				var r = recur().after(7).dayOfMonth();
+				var start = new Date('2012-02-28T13:59:20Z');
+				var expected = new Date('2012-03-06T13:59:20Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});
+									
 			it('should skip forward to the next valid day within the same month', function() {
 				this.timeout(1);
 				var r = recur().on(14).dayOfMonth();
@@ -548,7 +598,17 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				should.not.exist(l);
 			});
-		
+
+			it('should skip forward to the next valid week after specified weeks of year', function() {
+				this.timeout(1);
+				var r = recur().after(2).weekOfMonth();
+				var start = new Date('2012-03-06T13:59:20Z');
+				var expected = new Date('2012-03-20T13:59:20Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});
+					
 			it('should skip forward to the next valid week within the same month', function() {
 				this.timeout(1);
 				var r = recur().on(2).weekOfMonth();
@@ -612,7 +672,17 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				should.not.exist(l);
 			});
-						
+
+			it('should skip forward to the next valid month after specified months', function() {
+				this.timeout(1);
+				var r = recur().after(7).month();
+				var start = new Date('2012-08-28T13:59:20Z');
+				var expected = new Date('2013-03-28T13:59:20Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});
+									
 			it('should skip forward to the next valid month within the same year', function() {
 				this.timeout(1);
 				var r = recur().on(11).month();
@@ -666,7 +736,17 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				should.not.exist(l);
 			});
-						
+
+			it('should skip forward to the next valid day after specified days of year', function() {
+				this.timeout(1);
+				var r = recur().after(17).dayOfYear();
+				var start = new Date('2012-08-28T13:59:20Z');
+				var expected = new Date('2012-09-14T13:59:20Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});
+									
 			it('should skip forward to the next valid day within the same year', function() {
 				this.timeout(1);
 				var r = recur().on(65).dayOfYear();
@@ -720,7 +800,17 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				should.not.exist(l);
 			});
-						
+
+			it('should skip forward to the next valid week after specified weeks of year', function() {
+				this.timeout(1);
+				var r = recur().after(2).weekOfYear();
+				var start = new Date('2012-03-06T13:59:20Z');
+				var expected = new Date('2012-03-20T13:59:20Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
+			});
+									
 			it('should skip forward to the next valid week within the same year', function() {
 				this.timeout(1);
 				var r = recur().on(3).weekOfYear();
@@ -783,6 +873,16 @@ describe('Later', function() {
 
 				var l = later().getNext(r, start);
 				should.not.exist(l);
+			});
+
+			it('should skip forward to the next valid year after specified years', function() {
+				this.timeout(1);
+				var r = recur().after(2).year();
+				var start = new Date('2012-08-28T13:59:20Z');
+				var expected = new Date('2014-08-28T13:59:20Z');
+
+				var l = later().getNext(r, start);
+				l.should.eql(expected);
 			});
 						
 			it('should skip forward to the next valid year', function() {
@@ -1018,6 +1118,19 @@ describe('Later', function() {
 
 	})
 
+	describe('composite afters', function() {
+		
+		it('should add composite after constraints together', function() {
+			this.timeout(1);
+			var r = recur().after(2).month().after(3).dayOfMonth();
+			var start = new Date('2012-03-06T13:59:20Z');
+			var expected = new Date('2012-05-09T13:59:20Z');
+
+			var l = later().getNext(r, start);
+			l.should.eql(expected);
+		})
+
+	})
 
 
 	describe('get', function() {

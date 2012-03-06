@@ -9,13 +9,17 @@ var recur = require('later').recur
   , cron = require('later').cronParser
   , text = require('later').enParser
   , later = require('later').later
-  , rSched, cSched, tSched, mSched, results;
+  , rSched, cSched, tSched, mSched, aSched, results;
 
-// equivalent schedules for every 5 minutes
+// equivalent schedules for every 5 minutes on the hour
 rSched = recur().every(5).minute();
 cSched = cron().parse('* */5 * * * *', true);
 tSched = text().parse('every 5 minutes');
 mSched = {schedules: [ {m: [0,5,10,15,20,25,30,35,40,45,50,55]}]};
+
+// schedule for every 5 minutes from the start time
+aSched = text().parse('after 5 minutes');
+aSched = recur().after(5).minute();
 
 // calculate the next occurrence, using a minimum resolution of 60 seconds
 // otherwise every second of every minute would be valid occurrences
@@ -147,6 +151,19 @@ Minimum value is 1, maximum value is 12.  Specify 0 for last.
 Denotes the four digit year.  
 Minimum value is 1970, maximum value is 2450 (arbitrary).  
 
+## After constraints
+
+Other than Cron expressions, all other types of schedules support after constraints.  Use after constraints when you want a schedule to first occur after a certain amount of time instead of at a specific date and time.  For example to specify a schedule that continually occurs after 5 minutes:
+
+   var s = enParser().parse('after 5 mins');
+
+
+After constraints can be chained together with the resultant after constraint being the sum of all of the constraints.  For example, to specify a schedule that occurs after 1 day and 15 minutes:
+
+    var s = recur().after(1).dayOfYear().after(2).minute();
+
+The first valid occurrence will be 24 hours and 2 minutes from the start date.
+
 ## Composite Schedules
 
 Other than Cron expressions, all other types of schedules support composite schedules.  A composite schedule can include multiple sets of constraints.  An occurrence is considered valid if it meets all of the constraints within any one set of the constraints defined.
@@ -207,6 +224,16 @@ For example:
     recur().every(2).month();
 
 Will include months 1,3,5,7,9,11.
+
+#### after(x)
+
+Specifies the minimum interval `x` of a time period that must pass between valid instances of the schedule.  
+
+For example:
+
+    recur().after(2).month();
+
+Will cause the first valid occurrence to be two months after the start date.
 
 #### startingOn(x)
 
@@ -307,6 +334,10 @@ between (the)? _num_ and _num_
 
 every ( weekend | weekday | _num_ _timePeriod_ ( _startingOn_ | _between_ ))
 
+#### _after_
+
+after _num_ _timePeriod_
+
 #### _onDayOfWeek_
 
 on _dayRange_
@@ -321,7 +352,7 @@ in _numRange_
 
 #### _schedule_
 
-( _specificTime_ | _recurringTime_ | _onDayOfWeek_ | _ofMonth_ | _inYear_ )\*
+( _specificTime_ | _recurringTime_ | _after_ | _onDayOfWeek_ | _ofMonth_ | _inYear_ )\*
 
 #### _compositeSchedule_
 
@@ -375,7 +406,7 @@ constraint_id: [
 ],
 ```
 
-The `constraint_id`s can be found in the _Time Periods_ section above following the constraint name along with the valid values.
+The `constraint_id`s can be found in the _Time Periods_ section above following the constraint name along with the valid values.  To specify an after constraint, prefix the desired constraint_id with `a`.
 
 For example, the schedule _every hour on weekdays and every other hour on weekends_ would be defined as:
 
