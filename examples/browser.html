@@ -6,11 +6,16 @@
 <script type="text/javascript">
 
 // create the desired schedule
-var schedule = cronParser().parse('every 5 minutes');
-var schedule = enParser().parse('every 5 minutes');
+var schedule = enParser().parse('every 3 months');
 
 // calculate the next 5 occurrences with a minimum resolution of 60 seconds, using local time
-var results = later(60, true).get(schedule, 5);
+var results = later(60, true).get(schedule, 2, new Date('1/1/2012'));
+
+var resolution = (results[1].getTime() - results[0].getTime()) / 1000;
+
+schedule = enParser().parse('every 1 minute');
+results = later(resolution, true).get(schedule, 10);
+
 
 for (var i = 0; i < results.length; i++) {
 	document.write('<p>' + results[i].toLocaleString() + '</p>');
