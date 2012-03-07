@@ -6,10 +6,11 @@
 <script type="text/javascript">
 
 // create the desired schedule
-var schedule = enParser().parse('after 30 minutes');
+var schedule = enParser().parse('after 6 days');
+
 
 // calculate the next 5 occurrences with a minimum resolution of 60 seconds, using local time
-var results = later(0, true).get(schedule, 20);
+var results = later(60, true).get(schedule, 20);
 
 
 for (var i = 0; i < results.length; i++) {

@@ -60,7 +60,7 @@ describe('EnParser', function() {
 		});	
 
 		it('should parse every week of month restriction', function() {
-			var p = parser().parse('every 2 weeks of month');
+			var p = parser().parse('every 2 weeks of the month');
 			p.schedules[0].should.have.ownProperty('wm');
 			p.schedules[0].wm.should.eql([1,3,5]);
 		});	
@@ -72,7 +72,7 @@ describe('EnParser', function() {
 		});
 
 		it('should parse every week of year restriction', function() {
-			var p = parser().parse('every 10 weeks of year');
+			var p = parser().parse('every 10 weeks of the year');
 			p.schedules[0].should.have.ownProperty('wy');
 			p.schedules[0].wy.should.eql([1,11,21,31,41,51]);
 		});
@@ -118,14 +118,26 @@ describe('EnParser', function() {
 			p.schedules[0].aD.should.eql([5]);
 		});	
 
+		it('should parse after day restriction', function() {
+			var p = parser().parse('after 5 days');
+			p.schedules[0].should.have.ownProperty('aD');
+			p.schedules[0].aD.should.eql([5]);
+		});	
+
 		it('should parse after day of month restriction', function() {
 			var p = parser().parse('after 5 days of the year');
 			p.schedules[0].should.have.ownProperty('ady');
 			p.schedules[0].ady.should.eql([5]);
 		});
 
+		it('should parse after week restriction', function() {
+			var p = parser().parse('after 2 weeks');
+			p.schedules[0].should.have.ownProperty('awy');
+			p.schedules[0].awy.should.eql([2]);
+		});	
+
 		it('should parse after week of month restriction', function() {
-			var p = parser().parse('after 2 weeks of month');
+			var p = parser().parse('after 2 weeks of the month');
 			p.schedules[0].should.have.ownProperty('awm');
 			p.schedules[0].awm.should.eql([2]);
 		});	
@@ -137,7 +149,7 @@ describe('EnParser', function() {
 		});
 
 		it('should parse after week of year restriction', function() {
-			var p = parser().parse('after 10 weeks of year');
+			var p = parser().parse('after 10 weeks of the year');
 			p.schedules[0].should.have.ownProperty('awy');
 			p.schedules[0].awy.should.eql([10]);
 		});
@@ -238,7 +250,7 @@ describe('EnParser', function() {
 		});	
 
 		it('should parse on week of month restriction', function() {
-			var p = parser().parse('on the 5 week of month');
+			var p = parser().parse('on the 5 week of the month');
 			p.schedules[0].should.have.ownProperty('wm');
 			p.schedules[0].wm.should.eql([5]);
 		});
@@ -250,7 +262,7 @@ describe('EnParser', function() {
 		});
 
 		it('should parse on week of year restriction', function() {
-			var p = parser().parse('on the 5 week of year');
+			var p = parser().parse('on the 5 week of the year');
 			p.schedules[0].should.have.ownProperty('wy');
 			p.schedules[0].wy.should.eql([5]);
 		});
