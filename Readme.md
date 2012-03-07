@@ -281,12 +281,12 @@ The valid time period expressions are:
 * (s|sec(ond)?(s)?),  
 * (m|min(ute)?(s)?),  
 * (h|hour(s)?),  
-* (day(s)? of the month),  
+* (day(s)?( of the month)?),  
 * day instance,  
 * day(s)? of the week,  
 * day(s)? of the year,  
-* week(s)? of year,  
-* week(s)? of month,  
+* week(s)?( of the year)?,  
+* week(s)? of the month,  
 * month(s)?,  
 * year  
 
