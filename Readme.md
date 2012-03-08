@@ -272,7 +272,7 @@ Schedules can also be created using an English text expression syntax.  All vali
 
     var s = enParser().parse('every 5 minutes');
 
-If the text expression could not be parsed, `s.Error` will contain the position in the string where parsing failed.
+If the text expression could not be parsed, `s.error` will contain the position in the string where parsing failed or -1 if no errors were found.
 
 #### _timePeriod_
 
@@ -390,7 +390,6 @@ Schedules are basic `json` objects that can be constructed directly if desired. 
     {
       // constraints
     },
-
   ]
 }
 ```
@@ -398,9 +397,6 @@ Schedules are basic `json` objects that can be constructed directly if desired. 
 where `constraints` are of the form:
 
 ```js
-{constraint_id: [
-  //valid values
-],
 constraint_id: [
   //valid values
 ],
