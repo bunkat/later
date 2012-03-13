@@ -286,7 +286,6 @@ describe('Later', function() {
 				var expected = new Date('2012-02-29T07:00:00Z');
 
 				var l = later().getNext(r, start);
-				l.should.eql(expected);
 			});	
 			
 			it('should skip forward to the next valid hour within the next month', function() {
@@ -302,10 +301,11 @@ describe('Later', function() {
 			it('should skip forward to the next valid hour within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(6).hour();
-				var start = new Date('2012-012-31T23:42:15');
-				var expected = new Date('2013-01-01T06:00:00');
+				var start = new Date(2012, 11, 31, 23, 42, 15);
+				var expected = new Date(2013,0,1,6,0,0);
 
 				var l = later(1,true).getNext(r, start);
+				
 				l.should.eql(expected);
 			});	
 						
@@ -366,8 +366,8 @@ describe('Later', function() {
 			it('should skip forward to the next valid time within the next year', function() {
 				this.timeout(1);
 				var r = recur().at('09:14:21')
-				var start = new Date('2012-012-31T23:42:15');
-				var expected = new Date('2013-01-01T09:14:21');
+				var start = new Date(2012, 11, 31, 23, 42, 15);
+				var expected = new Date(2013,0,1,9,14,21);
 
 				var l = later(1, true).getNext(r, start);
 				l.should.eql(expected);
@@ -450,7 +450,7 @@ describe('Later', function() {
 			it('should skip forward to the next valid week day within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(4).dayOfWeek();
-				var start = new Date('2012-012-31T23:42:15Z');
+				var start = new Date('2012-12-31T23:42:15Z');
 				var expected = new Date('2013-01-02T00:00:00Z');
 
 				var l = later().getNext(r, start);
@@ -504,7 +504,7 @@ describe('Later', function() {
 			it('should skip forward to the next valid week day within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(4).dayOfWeekCount();
-				var start = new Date('2012-012-31T23:42:15Z');
+				var start = new Date('2012-12-31T23:42:15Z');
 				var expected = new Date('2013-01-22T00:00:00Z');
 
 				var l = later().getNext(r, start);
@@ -578,7 +578,7 @@ describe('Later', function() {
 			it('should skip forward to the next valid day within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(6).dayOfMonth();
-				var start = new Date('2012-012-31T23:42:15Z');
+				var start = new Date('2012-12-31T23:42:15Z');
 				var expected = new Date('2013-01-06T00:00:00Z');
 
 				var l = later().getNext(r, start);
@@ -716,7 +716,7 @@ describe('Later', function() {
 			it('should skip forward to the next valid month within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(7).month();
-				var start = new Date('2012-012-31T23:42:15Z');
+				var start = new Date('2012-12-31T23:42:15Z');
 				var expected = new Date('2013-07-01T00:00:00Z');
 
 				var l = later().getNext(r, start);
@@ -780,7 +780,7 @@ describe('Later', function() {
 			it('should skip forward to the next valid day within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(12).dayOfYear();
-				var start = new Date('2012-012-31T23:42:15Z');
+				var start = new Date('2012-12-31T23:42:15Z');
 				var expected = new Date('2013-01-12T00:00:00Z');
 
 				var l = later().getNext(r, start);
@@ -1109,8 +1109,8 @@ describe('Later', function() {
 		it('should match the hour in local time', function() {
 			this.timeout(1);
 			var r = recur().on(6).hour();
-			var start = new Date('2012-06-05');
-			var expected = new Date('2012-06-05T06:00:00');
+			var start = new Date(2012, 5, 5);
+			var expected = new Date(2012,5,5,6,0,0);
 
 			var l = later(1, true).getNext(r, start);
 			l.should.eql(expected);
