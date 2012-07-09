@@ -1,6 +1,6 @@
 {
 	"name": "later",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "Determine later occurrences of recurring schedules",
 	"keywords": ["schedule", "occurrences", "recur", "cron"],
 	"author": "BunKat <bill@bunkat.com>",
@@ -26,7 +26,7 @@
 	"devDependencies":
 		{
 			"mocha": "*",
-			"should": "*",
+			"should": ">=0.6.3",
 			"jslint": "*",
 			"uglify-js": "*"	
 		}
