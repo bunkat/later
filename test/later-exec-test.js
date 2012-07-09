@@ -6,7 +6,27 @@ var should = require('should');
 
 describe('Later', function() {
 
+  // These are long running tests!
+
 	describe('exec', function() {
+	
+/*		it('should support long schedules', function(done) {
+			this.timeout(15000);
+
+			var count = 0;
+			var r = recur().after(30).dayOfYear();
+			var l = later();
+
+			var func = function() {
+				console.log(Date.now());
+				done();
+			};
+
+			l.exec(r, (new Date()), func);
+
+		});*/
+
+
 /*	
 		it('should call a function based on the schedule', function(done) {
 			this.timeout(15000);
