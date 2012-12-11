@@ -8,9 +8,9 @@ describe('Later', function() {
 
   // These are long running tests!
 
-	describe('exec', function() {
+	describe.skip('exec', function() {
 	
-/*		it('should support long schedules', function(done) {
+		it('should support long schedules', function(done) {
 			this.timeout(15000);
 
 			var count = 0;
@@ -18,16 +18,15 @@ describe('Later', function() {
 			var l = later();
 
 			var func = function() {
-				console.log(Date.now());
 				done();
 			};
 
 			l.exec(r, (new Date()), func);
 
-		});*/
+		});
 
 
-/*	
+	
 		it('should call a function based on the schedule', function(done) {
 			this.timeout(15000);
 
@@ -41,11 +40,11 @@ describe('Later', function() {
 					l.stopExec();
 					done();
 				}
-			}
+			};
 
 			l.exec(r, (new Date()), func);
 
-		});*/
+		});
 
 		it('should run for a long time', function(done) {
 			this.timeout(0);
@@ -53,23 +52,18 @@ describe('Later', function() {
 			var count = 0;
 			var r = text().parse("every 1 hour on the first min");
 			var l = later(60);
-
-			console.log(l.get(r, 10));
-
-/*			var func = function(arg) {
+			var func = function(arg) {
 				count++;
-				console.log(arg);
-				console.log(new Date());
 				if (count === 20) {
 					l.stopExec();
 					done();
 				}
 			};
 
-			l.exec(r, (new Date()), func, 'foo');*/
+			l.exec(r, (new Date()), func, 'foo');
 		});
 
-/*		it('should run for a long time', function(done) {
+		it('should run for a long time', function(done) {
 			this.timeout(0);
 
 			var count = 0;
@@ -78,15 +72,14 @@ describe('Later', function() {
 
 			var func = function() {
 				count++;
-				console.log(new Date());
 				if (count === 20) {
 					l.stopExec();
 					done();
 				}
-			}
+			};
 
 			l.exec(r, (new Date()), func);
-		});*/
+		});
 
 	});
 
