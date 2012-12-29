@@ -1099,7 +1099,15 @@ describe('Later', function() {
 			var l = later().isValid(r, start);
 			l.should.be.true;
 		});
-	
+
+		it('should ignore milliseconds of passed in date', function() {
+			this.timeout(1);
+			var r = recur().on(5).second();
+			var start = new Date('2012-02-28T00:00:05Z');
+			start.setMilliseconds(15);
+			var l = later().isValid(r, start);
+			l.should.be.true;
+		});	
 	});
 
 
