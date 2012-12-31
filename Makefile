@@ -4,17 +4,17 @@ TESTS = test/*.js
 REPORTER = dot
 
 build:
-		cat $(SOURCE) > later.min.js
-		cat lib/shims.js lib/later.js > later-core.min.js
-		cat lib/shims.js lib/later.js lib/recur.js > later-recur.min.js
-		cat lib/shims.js lib/later.js lib/cron.parser.js > later-cron.min.js
-		cat lib/shims.js lib/later.js lib/recur.js lib/en.parser.js > later-en.min.js
-		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite later.min.js
-		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite later-core.min.js
-		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite later-recur.min.js
-		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite later-cron.min.js
-		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite later-en.min.js
-			
+		cat $(SOURCE) > later.js
+		cat lib/shims.js lib/later.js > later-core.js
+		cat lib/shims.js lib/later.js lib/recur.js > later-recur.js
+		cat lib/shims.js lib/later.js lib/cron.parser.js > later-cron.js
+		cat lib/shims.js lib/later.js lib/recur.js lib/en.parser.js > later-en.js
+		./node_modules/.bin/uglifyjs later.js -o later.min.js
+		./node_modules/.bin/uglifyjs later-core.js -o later-core.min.js
+		./node_modules/.bin/uglifyjs later-recur.js -o later-recur.min.js
+		./node_modules/.bin/uglifyjs later-cron.js -o later-cron.min.js
+		./node_modules/.bin/uglifyjs later-en.js -o later-en.min.js
+		
 test:
 		@NODE_ENV=test ./node_modules/.bin/mocha \
 				--require should \
