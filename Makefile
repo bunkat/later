@@ -5,10 +5,10 @@ REPORTER = dot
 
 build:
 		cat $(SOURCE) > later.min.js
-		cat lib/later.js > later-core.min.js
-		cat lib/later.js lib/recur.js > later-recur.min.js
-		cat lib/later.js lib/cron.parser.js > later-cron.min.js
-		cat lib/later.js lib/recur.js lib/en.parser.js > later-en.min.js
+		cat lib/shims.js lib/later.js > later-core.min.js
+		cat lib/shims.js lib/later.js lib/recur.js > later-recur.min.js
+		cat lib/shims.js lib/later.js lib/cron.parser.js > later-cron.min.js
+		cat lib/shims.js lib/later.js lib/recur.js lib/en.parser.js > later-en.min.js
 		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite later.min.js
 		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite later-core.min.js
 		./node_modules/.bin/uglifyjs -nc --unsafe --overwrite later-recur.min.js
