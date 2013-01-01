@@ -353,7 +353,7 @@ if (!recur && (typeof require !== 'undefined')) {
         var NAMES = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, 
             aug: 8, sep: 9, oct: 10, nov: 11, dec: 12, sun: 1, mon: 2, tue: 3, 
             wed: 4, thu: 5, fri: 6, sat: 7, '1st': 1, fir: 1, '2nd': 2, sec: 2, 
-            '3rd': 3, thi: 3, '4th': 4, for: 4  
+            '3rd': 3, thi: 3, '4th': 4, 'for': 4
         };
 
         /**
