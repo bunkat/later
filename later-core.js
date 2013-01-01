@@ -29,6 +29,12 @@ if (!Array.prototype.indexOf) {
         }
         return -1;
     }
+}
+
+if(!String.prototype.trim) {
+  String.prototype.trim = function () {
+    return this.replace(/^\s+|\s+$/g,'');
+  };
 }/**
 * Later.js 0.0.1
 * (c) 2012 Bill, BunKat LLC.
