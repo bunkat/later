@@ -298,7 +298,7 @@ describe('EnParser', function() {
 			var p = parser().parse('at 05:00:00');
 			p.schedules[0].should.have.ownProperty('t');
 			p.schedules[0].t.should.eql(['05:00:00']);
-		});	
+		});
 
 		it('should parse multiple 24 hour time', function() {
 			var p = parser().parse('at 05:00 and 10:00');
