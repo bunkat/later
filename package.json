@@ -1,7 +1,7 @@
 {
 	"name": "later",
-	"version": "0.0.11",
-	"description": "Determine later occurrences of recurring schedules",
+	"version": "0.0.13",
+	"description": "Determine later (or previous) occurrences of recurring schedules",
 	"keywords": ["schedule", "occurrences", "recur", "cron"],
 	"author": "BunKat <bill@bunkat.com>",
 	"main": "./app",
