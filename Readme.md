@@ -9,13 +9,13 @@ The primary goal of _Later_ is to produce deterministic schedules. These are sch
 For example, a schedule such as `every 10 mins on Friday` is deterministic. A schedule such as `after 5 mins` is not deterministic. You would have to know the previous occurrence to figure out the next occurrence. While these types of schedules are supported, it is not the primary focus of _Later_. 
 
 Example uses of _Later_ schedules:
-    * Run a report on the last day of every month at 12 AM except in December
-    * Install patches on the 2nd Tuesday of every month at 4 AM
-    * Gather CPU metrics every 10 mins Mon - Fri and every 30 mins Sat - Sun
-    * Send out a scary e-mail at 13:13:13 every Friday the 13th
+* Run a report on the last day of every month at 12 AM except in December
+* Install patches on the 2nd Tuesday of every month at 4 AM
+* Gather CPU metrics every 10 mins Mon - Fri and every 30 mins Sat - Sun
+* Send out a scary e-mail at 13:13:13 every Friday the 13th
 
 Schedules that _Later_ supports but for which it is probably overkill:
-    * Run a task after 5 minutes from the start time 
+* Run a task after 5 minutes from the start time 
 
 ## Node Example
 
@@ -69,7 +69,13 @@ l.stopExec();
 
 ## Installation
 
+Using npm:
+
     $ npm install later
+
+Using bower:
+
+    $ bower install later
 
 ## Important: A note about underspecified schedules
 
