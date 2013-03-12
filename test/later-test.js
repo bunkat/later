@@ -405,6 +405,74 @@ describe('Later', function() {
 
 		});
 
+		describe('before times', function() {
+
+			it('should return null if no valid time is found', function() {
+				this.timeout(1);
+				var r = recur().beforeTime('08:00:00').on(1).month().on(2012).year();
+				var start = new Date('2012-02-29T12:00:05Z');
+				var expected = null;
+
+				var l = later().getNext(r, start);
+				should.not.exist(l);
+			});
+
+			it('should skip forward to the next valid time within the next day', function() {
+				this.timeout(1);
+				var r = recur().beforeTime('15:06:30');
+				var start = new Date('2012-02-28T18:07:15Z');
+				var expected = new Date('2012-02-29T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+			it('should skip forward to the next valid time within the next month', function() {
+				this.timeout(1);
+				var r = recur().beforeTime('12:12:12');
+				var start = new Date('2012-05-31T17:28:15Z');
+				var expected = new Date('2012-06-01T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+			it('should skip forward to the next valid time within the next year', function() {
+				this.timeout(1);
+				var r = recur().beforeTime('09:14:21');
+				var start = new Date(2012, 11, 31, 23, 42, 15);
+				var expected = new Date(2013,0,1,0,0,0);
+
+				var l = later(1, true).getNext(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+			it('should skip forward to the next valid time within the next day on a leap year', function() {
+				this.timeout(1);
+				var r = recur().beforeTime('22:15:00');
+				var start = new Date('2012-02-28T23:59:15Z');
+				var expected = new Date('2012-02-29T00:00:00Z');
+
+				var l = later().getNext(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+		});
+
+		describe('after times', function() {
+
+			it('should skip forward to the next valid time within the same day', function() {
+				this.timeout(1);
+				var r = recur().afterTime('15:06:30');
+				var start = new Date('2012-02-28T12:07:15Z');
+				var expected = new Date('2012-02-28T15:06:30Z');
+
+				var l = later().getNext(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+		});
+
 		describe('days of week', function() {
 
 			it('should return null if no valid week day is found', function() {
@@ -678,7 +746,6 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-										
 		});
 
 		describe('months', function() {
@@ -742,7 +809,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-										
+
 		});
 
 		describe('days of year', function() {
@@ -880,7 +947,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-										
+
 		});
 
 		describe('years', function() {
@@ -914,7 +981,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-										
+
 		});
 	});
 
@@ -1268,6 +1335,74 @@ describe('Later', function() {
 				var r = recur().at('22:15:00');
 				var start = new Date('2012-03-01T13:59:15Z');
 				var expected = new Date('2012-02-29T22:15:00Z');
+
+				var l = later().getPrevious(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+		});
+
+		describe('after times', function() {
+
+			it('should return null if no valid time is found', function() {
+				this.timeout(1);
+				var r = recur().afterTime('14:00:00').on(3).month().on(2012).year();
+				var start = new Date('2012-03-01T12:00:05Z');
+				var expected = null;
+
+				var l = later().getPrevious(r, start);
+				should.not.exist(l);
+			});
+
+			it('should skip back to the prev valid time within the prev day', function() {
+				this.timeout(1);
+				var r = recur().afterTime('15:06:30');
+				var start = new Date('2012-02-28T12:07:15Z');
+				var expected = new Date('2012-02-27T23:59:59Z');
+
+				var l = later().getPrevious(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+			it('should skip back to the prev valid time within the prev month', function() {
+				this.timeout(1);
+				var r = recur().afterTime('12:12:12');
+				var start = new Date('2012-06-01T06:28:15Z');
+				var expected = new Date('2012-05-31T23:59:59Z');
+
+				var l = later().getPrevious(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+			it('should skip back to the prev valid time within the prev year', function() {
+				this.timeout(1);
+				var r = recur().afterTime('09:14:21');
+				var start = new Date('2013-01-01T06:28:15Z');
+				var expected = new Date('2012-12-31T23:59:59Z');
+
+				var l = later(1).getPrevious(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+			it('should skip back to the prev valid time within the prev day on a leap year', function() {
+				this.timeout(1);
+				var r = recur().afterTime('22:15:00');
+				var start = new Date('2012-03-01T13:59:15Z');
+				var expected = new Date('2012-02-29T23:59:59Z');
+
+				var l = later().getPrevious(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+		});
+
+		describe('before times', function() {
+
+			it('should skip back to the prev valid time within the same day', function() {
+				this.timeout(1);
+				var r = recur().beforeTime('15:06:30');
+				var start = new Date('2012-02-28T18:07:15Z');
+				var expected = new Date('2012-02-28T15:06:29Z');
 
 				var l = later().getPrevious(r, start);
 				l.getTime().should.eql(expected.getTime());
@@ -1755,6 +1890,42 @@ describe('Later', function() {
 			l.should.be.true;
 		});
 
+		it('should return false if exact before time', function() {
+			this.timeout(1);
+			var r = recur().beforeTime('05:05:05');
+			var start = new Date('2012-02-28T05:05:05Z');
+
+			var l = later().isValid(r, start);
+			l.should.be.false;
+		});
+
+		it('should return true if before time is valid', function() {
+			this.timeout(1);
+			var r = recur().beforeTime('05:05:05');
+			var start = new Date('2012-02-28T05:05:04Z');
+
+			var l = later().isValid(r, start);
+			l.should.be.true;
+		});
+
+		it('should return true if exact after time', function() {
+			this.timeout(1);
+			var r = recur().afterTime('05:05:05');
+			var start = new Date('2012-02-28T05:05:05Z');
+
+			var l = later().isValid(r, start);
+			l.should.be.true;
+		});
+
+		it('should return true if after time is valid', function() {
+			this.timeout(1);
+			var r = recur().afterTime('05:05:05');
+			var start = new Date('2012-02-28T08:05:05Z');
+
+			var l = later().isValid(r, start);
+			l.should.be.true;
+		});
+
 		it('should return true if week day is valid', function() {
 			this.timeout(1);
 			var r = recur().on(2).dayOfWeek();
@@ -1790,7 +1961,7 @@ describe('Later', function() {
 			var l = later().isValid(r, start);
 			l.should.be.true;
 		});
-				
+
 		it('should return true if month is valid', function() {
 			this.timeout(1);
 			var r = recur().on(5).month();

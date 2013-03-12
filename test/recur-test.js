@@ -128,7 +128,7 @@ describe('Recur', function() {
 	});
 
 	describe('at', function() {
-		
+
 		it('should store a single time constraint', function() {
 			var r = recur().at('08:30:00');
 			r.schedules[0].t.should.eql(['08:30:00']);
@@ -141,8 +141,36 @@ describe('Recur', function() {
 
 	});
 
+	describe('before time', function() {
+
+		it('should store a single before time constraint', function() {
+			var r = recur().beforeTime('08:30:00');
+			r.schedules[0].tb.should.eql(['08:30:00']);
+		});
+
+		it('should store multiple before time constraints', function() {
+			var r = recur().beforeTime('08:30', '10:30:00');
+			r.schedules[0].tb.should.eql(['08:30:00', '10:30:00']);
+		});
+
+	});
+
+	describe('after time', function() {
+
+		it('should store a single after time constraint', function() {
+			var r = recur().afterTime('08:30:00');
+			r.schedules[0].ta.should.eql(['08:30:00']);
+		});
+
+		it('should store multiple after time constraints', function() {
+			var r = recur().afterTime('08:30', '10:30:00');
+			r.schedules[0].ta.should.eql(['08:30:00', '10:30:00']);
+		});
+
+	});
+
 	describe('starting on', function() {
-		
+
 		it('should offset the start of an every constraint', function() {
 			var r = recur().every(20).second().startingOn(8);
 			r.schedules[0].s.should.eql([8, 28, 48]);

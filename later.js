@@ -1079,22 +1079,51 @@ if (!recur && (typeof require !== 'undefined')) {
                     }
                 }
 
-                // check hour of day (zero based)
+                // check after time (24-hr)
                 h = getHour.call(next);
+                m = getMin.call(next);
+                s = getSec.call(next);
+                t = pad(h) +':'+ pad(m) +':'+ pad(s);
+                if (sched.ta) {
+                    if (t < sched.ta[0]) {
+                        if (reverse) {
+                            next = date(Y, M, D-1);
+                        }
+                        else {
+                            x = sched.ta[0].split(':');
+                            next = date(Y, M, D, x[0], x[1], x[2]);
+                        }
+                        continue;
+                    }
+                }
+
+                // check before time (24-hr)
+                if (sched.tb) {
+                    if (t >= sched.tb[0]) {
+                        if (reverse) {
+                            x = sched.tb[0].split(':');
+                            next = date(Y, M, D, x[0], x[1], x[2]-1);
+                        }
+                        else {
+                            next = date(Y, M, D+1);
+                        }
+                        continue;
+                    }
+                }
+
+                // check hour of day (zero based)
                 if (sched.h && (inc = range(h, sched.h, 24)) !== h) {
                     next = date(Y, M, D, inc);
                     continue;
                 }
 
                 // check minute of hour (zero based)
-                m = getMin.call(next);
                 if (sched.m && (inc = range(m, sched.m, 60)) !== m) {
                     next = date(Y, M, D, h, inc);
                     continue;
                 }
 
                 // check second of minute (zero based)
-                s = getSec.call(next);
                 if (sched.s && (inc = range(s, sched.s, 60)) !== s) {
                     next = date(Y, M, D, h, m, inc);
                     continue;
@@ -1102,7 +1131,6 @@ if (!recur && (typeof require !== 'undefined')) {
 
                 // check time of day (24-hr)
                 if (sched.t) {
-                    t = pad(h) +':'+ pad(m) +':'+ pad(s);
                     if ((inc = range(t, sched.t)) !== t) {
                         x = inc.split(':');
                         var dayInc = !reverse ? (t > inc ? 1 : 0) : (t < inc ? -1 : 0);
@@ -1371,14 +1399,13 @@ if (!recur && (typeof require !== 'undefined')) {
     *        .except().on(0, 1).month();
     */
     var Recur = function () {
-    
-        var schedules = [{}]
-          , exceptions = []
-          , cur = schedules[0]
-          , curArr = schedules
-          , curName
-          , values, every, after, applyMin, applyMax, i
-          , last;
+
+        var schedules = [{}],
+            exceptions = [],
+            cur = schedules[0],
+            curArr = schedules,
+            curName,
+            values, every, after, applyMin, applyMax, i, last;
 
         /**
         * Adds values to the specified constraint in the current schedule.
@@ -1396,7 +1423,7 @@ if (!recur && (typeof require !== 'undefined')) {
 
             curName = cur[name];
 
-            if (every) {                    
+            if (every) {
                 values = [];
                 for (i = min; i <= max; i += every) {
                     values.push(i);
@@ -1411,11 +1438,11 @@ if (!recur && (typeof require !== 'undefined')) {
             for (i = 0; i < length; i += 1) {
                 if (curName.indexOf(values[i]) < 0) {
                     curName.push(values[i]);
-                }   
+                }
             }
 
             // reset the built up state
-            values = every = after = applyMin = applyMax = 0;       
+            values = every = after = applyMin = applyMax = 0;
         };
 
         return {
@@ -1424,7 +1451,7 @@ if (!recur && (typeof require !== 'undefined')) {
             * Set of constraints that must be met for an occurrence to be valid.
             *
             * @api public
-            */          
+            */
             schedules: schedules,
 
             /**
@@ -1446,9 +1473,9 @@ if (!recur && (typeof require !== 'undefined')) {
             * @param {Int} args: One or more valid instances
             * @api public
             */
-            on: function () { 
+            on: function () {
                 values = arguments[0] instanceof Array ? arguments[0] : arguments;
-                return this; 
+                return this;
             },
 
             /**
@@ -1525,8 +1552,7 @@ if (!recur && (typeof require !== 'undefined')) {
             */
             at: function () {
                 values = arguments;
-                var i, length = values.length;
-                for (var i = 0; i < length; i++) {
+                for (var i = 0, len = values.length; i < len; i++) {
                     var split = values[i].split(':');
                     if (split.length < 3) {
                         values[i] += ':00';
@@ -1534,6 +1560,52 @@ if (!recur && (typeof require !== 'undefined')) {
                 }
 
                 add('t');
+                return this;
+            },
+
+            /**
+            * Specifies a specific time that valid occurrences must occur
+            * after. Time must be specified in hh:mm:ss format using 24 hour
+            * time. For example, to specify a schedule after 8:30 pm every day:
+            *
+            * recur().afterTime('20:30:00');
+            *
+            * @param {String} time: Time in hh:mm:ss 24-hour format
+            * @api public
+            */
+            afterTime: function () {
+                values = arguments;
+                for (var i = 0, len = values.length; i < len; i++) {
+                    var split = values[i].split(':');
+                    if (split.length < 3) {
+                        values[i] += ':00';
+                    }
+                }
+
+                add('ta');
+                return this;
+            },
+
+            /**
+            * Specifies a specific time that valid occurrences must occur
+            * before. Time must be specified in hh:mm:ss format using 24 hour
+            * time. For example, to specify a schedule before 8:30 pm every day:
+            *
+            * recur().beforeTime('20:30:00');
+            *
+            * @param {String} time: Time in hh:mm:ss 24-hour format
+            * @api public
+            */
+            beforeTime: function () {
+                values = arguments;
+                for (var i = 0, len = values.length; i < len; i++) {
+                    var split = values[i].split(':');
+                    if (split.length < 3) {
+                        values[i] += ':00';
+                    }
+                }
+
+                add('tb');
                 return this;
             },
 
