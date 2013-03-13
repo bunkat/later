@@ -1204,7 +1204,8 @@ if (!recur && (typeof require !== 'undefined')) {
             */
             isValid: function (recur, date) {
                 date.setMilliseconds(0);
-                return date.getTime() === this.getNext(recur, date).getTime();
+                var next = this.getNext(recur, date);
+                return next ? date.getTime() === next.getTime() : false;
             },
 
             /**
@@ -1241,8 +1242,8 @@ if (!recur && (typeof require !== 'undefined')) {
             * @api public
             */
             getNext: function (recur, startDate, endDate) {
-                var schedules = recur.schedules || [],
-                    exceptions = {schedules: recur.exceptions || []},
+                var schedules = recur ? recur.schedules || [] : [],
+                    exceptions = {schedules: recur ? recur.exceptions || [] : []},
                     start = startDate || new Date(),
                     date, tDate,
                     i = schedules.length;
@@ -1252,10 +1253,15 @@ if (!recur && (typeof require !== 'undefined')) {
                     return null;
                 }
 
-                while(i--) {
-                    tDate = getNextForSchedule(schedules[i], start, endDate);
-                    if (!date || (tDate < date)) {
-                        date = tDate;
+                if (i === 0) {  // no constraints, start time is fine
+                    date = start;
+                }
+                else {
+                    while(i--) {
+                        tDate = getNextForSchedule(schedules[i], start, endDate);
+                        if (!date || (tDate < date)) {
+                            date = tDate;
+                        }
                     }
                 }
 
@@ -1277,8 +1283,8 @@ if (!recur && (typeof require !== 'undefined')) {
             * @api public
             */
             getPrevious: function (recur, startDate, endDate) {
-                var schedules = recur.schedules || [],
-                    exceptions = {schedules: recur.exceptions || []},
+                var schedules = recur ? recur.schedules || [] : [],
+                    exceptions = {schedules: recur ? recur.exceptions || [] : []},
                     end = startDate || new Date(),
                     date, tDate,
                     i = schedules.length;
@@ -1288,10 +1294,15 @@ if (!recur && (typeof require !== 'undefined')) {
                     return null;
                 }
 
-                while(i--) {
-                    tDate = getNextForSchedule(schedules[i], end, endDate, true);
-                    if (!date || (tDate > date)) {
-                        date = tDate;
+                if (i === 0) {
+                    date = end; // no constraints, end date is fine
+                }
+                else {
+                    while(i--) {
+                        tDate = getNextForSchedule(schedules[i], end, endDate, true);
+                        if (!date || (tDate > date)) {
+                            date = tDate;
+                        }
                     }
                 }
 

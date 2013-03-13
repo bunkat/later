@@ -8,6 +8,60 @@ describe('Later', function() {
 
 	describe('getNext', function() {
 
+		describe('with no schedule', function() {
+
+			it('should return the start time if schedule is null', function() {
+				this.timeout(1);
+				var r = null;
+				var start = new Date('2012-02-28T00:00:05Z');
+				var expected = new Date('2012-02-28T00:00:05Z');
+
+				var l = later().getNext(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+			it('should return the start time if schedules does not exist', function() {
+				this.timeout(1);
+				var r = {};
+				var start = new Date('2012-02-28T00:00:05Z');
+				var expected = new Date('2012-02-28T00:00:05Z');
+
+				var l = later().getNext(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+			it('should return the start time if schedules is null', function() {
+				this.timeout(1);
+				var r = {schedules: null};
+				var start = new Date('2012-02-28T00:00:05Z');
+				var expected = new Date('2012-02-28T00:00:05Z');
+
+				var l = later().getNext(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+			it('should return the start time if schedules is empty', function() {
+				this.timeout(1);
+				var r = {schedules: []};
+				var start = new Date('2012-02-28T00:00:05Z');
+				var expected = new Date('2012-02-28T00:00:05Z');
+
+				var l = later().getNext(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+
+			it('should return the start time if schedule is empty', function() {
+				this.timeout(1);
+				var r = {schedules: [{}]};
+				var start = new Date('2012-02-28T00:00:05Z');
+				var expected = new Date('2012-02-28T00:00:05Z');
+
+				var l = later().getNext(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
+		});
+
+
 		describe('seconds', function() {
 
 			it('should return null if no valid second is found', function() {
@@ -1199,7 +1253,7 @@ describe('Later', function() {
 
 			it('should return null if no valid hour is found', function() {
 				this.timeout(1);
-				var r = recur().on(22).hour().on(5).month().on(2012).year;
+				var r = recur().on(22).hour().on(5).month().on(2012).year();
 				var start = new Date('2012-02-01T00:00:05Z');
 				var expected = null;
 
