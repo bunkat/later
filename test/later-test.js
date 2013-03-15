@@ -352,7 +352,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-						
+
 			it('should skip forward to the next valid hour within the next day', function() {
 				this.timeout(1);
 				var r = recur().on(7).hour();
@@ -361,7 +361,7 @@ describe('Later', function() {
 
 				var l = later().getNext(r, start);
 			});
-			
+
 			it('should skip forward to the next valid hour within the next month', function() {
 				this.timeout(1);
 				var r = recur().on(7).hour();
@@ -371,7 +371,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-			
+
 			it('should skip forward to the next valid hour within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(6).hour();
@@ -379,10 +379,10 @@ describe('Later', function() {
 				var expected = new Date(2013,0,1,6,0,0);
 
 				var l = later(1,true).getNext(r, start);
-				
+
 				l.getTime().should.eql(expected.getTime());
 			});
-						
+
 			it('should skip forward to the next valid hour within the next day on a leap year', function() {
 				this.timeout(1);
 				var r = recur().on(22).hour();
@@ -548,7 +548,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-									
+
 			it('should skip forward to the next valid week day within the same week', function() {
 				this.timeout(1);
 				var r = recur().on(4).dayOfWeek();
@@ -578,7 +578,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-						
+
 			it('should skip forward to the next valid week day within the next month', function() {
 				this.timeout(1);
 				var r = recur().on(6).dayOfWeek();
@@ -588,7 +588,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-			
+
 			it('should skip forward to the next valid week day within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(4).dayOfWeek();
@@ -612,7 +612,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				should.not.exist(l);
 			});
-						
+
 			it('should skip forward to the next valid day instance within the same month', function() {
 				this.timeout(1);
 				var r = recur().on(3).dayOfWeekCount();
@@ -676,7 +676,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-									
+
 			it('should skip forward to the next valid day within the same month', function() {
 				this.timeout(1);
 				var r = recur().on(14).dayOfMonth();
@@ -706,7 +706,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-						
+
 			it('should skip forward to the next valid day within the next month', function() {
 				this.timeout(1);
 				var r = recur().on(25).dayOfMonth();
@@ -716,7 +716,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-			
+
 			it('should skip forward to the next valid day within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(6).dayOfMonth();
@@ -750,7 +750,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-					
+
 			it('should skip forward to the next valid week within the same month', function() {
 				this.timeout(1);
 				var r = recur().on(2).weekOfMonth();
@@ -780,7 +780,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-						
+
 			it('should skip forward to the next valid week within the next month', function() {
 				this.timeout(1);
 				var r = recur().on(2).weekOfMonth();
@@ -790,7 +790,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-			
+
 			it('should skip forward to the next valid week within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(2).weekOfMonth();
@@ -823,7 +823,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-									
+
 			it('should skip forward to the next valid month within the same year', function() {
 				this.timeout(1);
 				var r = recur().on(11).month();
@@ -853,7 +853,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-			
+
 			it('should skip forward to the next valid month within the next year', function() {
 				this.timeout(1);
 				var r = recur().on(7).month();
@@ -887,7 +887,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-									
+
 			it('should skip forward to the next valid day within the same year', function() {
 				this.timeout(1);
 				var r = recur().on(65).dayOfYear();
@@ -951,7 +951,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-									
+
 			it('should skip forward to the next valid week within the same year', function() {
 				this.timeout(1);
 				var r = recur().on(3).weekOfYear();
@@ -981,7 +981,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-			
+
 			it('should skip forward over a 52 week year to next year', function() {
 				this.timeout(1);
 				var r = recur().on(4).weekOfYear();
@@ -1025,7 +1025,7 @@ describe('Later', function() {
 				var l = later().getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
-						
+
 			it('should skip forward to the next valid year', function() {
 				this.timeout(1);
 				var r = recur().on(2017).year();
@@ -2035,7 +2035,7 @@ describe('Later', function() {
 		});
 
 		describe('should return true if week of year is valid', function() {
-			
+
 			it('test 1', function() {
 				this.timeout(1);
 				var r = recur().on(53).weekOfYear();
@@ -2152,12 +2152,12 @@ describe('Later', function() {
 			start.setMilliseconds(15);
 			var l = later().isValid(r, start);
 			l.should.be.true;
-		});	
+		});
 	});
 
 
 	describe('local time', function() {
-		
+
 		it('should match the hour in local time', function() {
 			this.timeout(1);
 			var r = recur().on(6).hour();
@@ -2171,7 +2171,7 @@ describe('Later', function() {
 	});
 
 	describe('composite afters', function() {
-		
+
 		it('should add composite after constraints together', function() {
 			this.timeout(1);
 			var r = recur().after(2).month().after(3).dayOfMonth();
@@ -2186,7 +2186,30 @@ describe('Later', function() {
 
 
 	describe('get', function() {
-	
+
+		describe('with after constraint', function() {
+
+			it('should find the next 5 times at 5 minute intervals', function() {
+				this.timeout(1);
+				var r = recur().after(5).minute();
+				var start = new Date('2013-03-15T09:39:34Z');
+				var expected = [
+					new Date('2013-03-15T09:44:34Z'),
+					new Date('2013-03-15T09:49:34Z'),
+					new Date('2013-03-15T09:54:34Z'),
+					new Date('2013-03-15T09:59:34Z'),
+					new Date('2013-03-15T10:04:34Z')
+				];
+
+				var l = later(0).get(r, 5, start);
+				for (var i = 0, len = l.length; i < len; i++) {
+					l[i].getTime().should.eql(expected[i].getTime());
+				}
+			});
+
+		});
+
+
 		describe('interesting schedules using cron', function() {
 
 			it('should find the next 5 every last day of month at 10am and 10pm', function() {
@@ -2200,7 +2223,7 @@ describe('Later', function() {
 					new Date('2012-02-29T22:00:00Z'),
 					new Date('2012-03-31T10:00:00Z')
 				];
-				
+
 				var l = later().get(r, 5, start);
 				for (var i = 0, len = l.length; i < len; i++) {
 					l[i].getTime().should.eql(expected[i].getTime());
@@ -2219,7 +2242,7 @@ describe('Later', function() {
 					new Date('2012-02-29T22:00:00Z'),
 					new Date('2012-03-31T10:00:00Z')
 				].reverse();
-				
+
 				var l = later().get(r, 5, start, null, true);
 				for (var i = 0, len = l.length; i < len; i++) {
 					l[i].getTime().should.eql(expected[i].getTime());
@@ -2385,7 +2408,7 @@ describe('Later', function() {
 				}
 			});
 		});
-	
+
 		describe('interesting schedules using text', function() {
 
 			it('should find the next 5 every last day of month at 10am and 10pm', function() {
@@ -2399,7 +2422,7 @@ describe('Later', function() {
 					new Date('2012-02-29T22:00:00Z'),
 					new Date('2012-03-31T10:00:00Z')
 				];
-				
+
 				var l = later().get(r, 5, start);
 				for (var i = 0, len = l.length; i < len; i++) {
 					l[i].getTime().should.eql(expected[i].getTime());
@@ -2489,9 +2512,9 @@ describe('Later', function() {
 				}
 			});
 		});
-			
+
 		describe('interesting schedules using recur', function() {
-			
+
 			it('should find the next 5 Friday the 13ths', function() {
 				this.timeout(1);
 				var r = recur().on(6).dayOfWeek().on(13).dayOfMonth().at('00:00:00');

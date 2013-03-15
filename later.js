@@ -734,9 +734,9 @@ if (!recur && (typeof require !== 'undefined')) {
 
     /**
     * Calculates the next occurrence (or occcurrences) of a given schedule.
-    * Schedules are simply a set of constraints that must be met for a 
+    * Schedules are simply a set of constraints that must be met for a
     * particular date to be valid. Schedules can be generated using Recur or
-    * can be created directly.  
+    * can be created directly.
     *
     * Schedules have the following form:
     *
@@ -758,15 +758,15 @@ if (!recur && (typeof require !== 'undefined')) {
     *       {
     *           constraintId: [valid values],
     *           constraintId: [valid values],
-    *           ...         
+    *           ...
     *       },
     *       {
     *           constraintId: [valid values],
     *           constraintId: [valid values],
-    *           ...         
+    *           ...
     *       },
     *       ...
-    *   ]   
+    *   ]
     * }
     *
     * See Recur.js for the available constraints and their value ranges.  May
@@ -775,7 +775,7 @@ if (!recur && (typeof require !== 'undefined')) {
     */
 
     /**
-    * Initializes the Later object. 
+    * Initializes the Later object.
     *
     * @param {Int} resolution: Minimum number of seconds between occurrences
     * @param {Bool} useLocalTime: True if local time zone should be used
@@ -809,15 +809,15 @@ if (!recur && (typeof require !== 'undefined')) {
             getSec = dateProto[get + 'Seconds'];
 
         // minimum time between valid occurrences in seconds
-        resolution = resolution || 1;
+        resolution = resolution === undefined ? 1 : resolution;
 
         /**
         * Finds the next valid value which is either the next largest valid
         * value or the minimum valid value if no larger value exists. To
         * simplify some calculations, the min value is then added to a specified
-        * offset.  
-        * 
-        * For example, if the current minute is 5 and the next valid 
+        * offset.
+        *
+        * For example, if the current minute is 5 and the next valid
         * value is 1, the offset will be set to 60 (max number of minutes) and
         * nextInRange will return 61. This is the number of minutes that must
         * be added to the current hour to get to the next valid minute.
@@ -845,9 +845,9 @@ if (!recur && (typeof require !== 'undefined')) {
         * Finds the previous valid value which is either the next smallest valid
         * value or the maximum valid value if no smaller value exists. To
         * simplify some calculations, the min value is then substracted to a specified
-        * offset.  
-        * 
-        * For example, if the current minute is 5 and the next valid 
+        * offset.
+        *
+        * For example, if the current minute is 5 and the next valid
         * value is 7, the offset will be set to 60 (max number of minutes) and
         * prevInRange will return -67. This is the number of minutes that must
         * be added to the current hour to get to the next valid minute.
@@ -873,7 +873,7 @@ if (!recur && (typeof require !== 'undefined')) {
 
         /**
         * Builds and returns a new Date using the specified values.  Date
-        * returned is either using Local time or UTC based on isLocal. 
+        * returned is either using Local time or UTC based on isLocal.
         *
         * @param {Int} yr: Four digit year
         * @param {Int} mt: Month between 0 and 11, defaults to 0
@@ -895,7 +895,7 @@ if (!recur && (typeof require !== 'undefined')) {
 
         /**
         * Builds and returns a new Date using the specified values.  Date
-        * returned is either using Local time or UTC based on isLocal. 
+        * returned is either using Local time or UTC based on isLocal.
         *
         * @param {Int} yr: Four digit year
         * @param {Int} mt: Month between 0 and 11, defaults to 11
@@ -925,8 +925,8 @@ if (!recur && (typeof require !== 'undefined')) {
         };
 
         /**
-        * Calculates the next valid occurrence of a particular schedule that 
-        * occurs on or after the specified start time. 
+        * Calculates the next valid occurrence of a particular schedule that
+        * occurs on or after the specified start time.
         *
         * @param {object} schedule: Valid schedule object containing constraints
         * @param {Date} start: The first possible valid occurrence
@@ -951,8 +951,8 @@ if (!recur && (typeof require !== 'undefined')) {
             next = reverse ? start : after(start, sched);
 
             // It's not pretty, but just keep looping through all of the
-            // constraints until they have all been met (or no valid 
-            // occurrence exists). All calculations are done just in time and 
+            // constraints until they have all been met (or no valid
+            // occurrence exists). All calculations are done just in time and
             // and only once to prevent extra work from being done each loop.
             while (next && maxLoopCount--) {
 
@@ -1148,7 +1148,7 @@ if (!recur && (typeof require !== 'undefined')) {
 
         /**
         * Increments a date by a given amount of time.  Date
-        * returned is either using Local time or UTC based on isLocal. 
+        * returned is either using Local time or UTC based on isLocal.
         *
         * @param {Int} yr: Number of years to increment by
         * @param {Int} mt: Number of months to increment by
@@ -1171,7 +1171,7 @@ if (!recur && (typeof require !== 'undefined')) {
         };
 
         /**
-        * Returns the value of an after constraint or 0 if not set. 
+        * Returns the value of an after constraint or 0 if not set.
         *
         * @param {Array} constraint: After constrant to check
         */
@@ -1196,7 +1196,7 @@ if (!recur && (typeof require !== 'undefined')) {
 
             /**
             * Returns true if the specified date meets all of the constraints
-            * defined within the specified schedule. 
+            * defined within the specified schedule.
             *
             * @param {Recur} recur: Set of schedule and exception constraints
             * @param {Date} date: The date to validate against
@@ -1209,7 +1209,7 @@ if (!recur && (typeof require !== 'undefined')) {
             },
 
             /**
-            * Returns the next one or more valid occurrences of a schedule. 
+            * Returns the next one or more valid occurrences of a schedule.
             *
             * @param {Recur} recur: Set of schedule and exception constraints
             * @param {Int} count: The number of occurrences to return
@@ -1234,7 +1234,7 @@ if (!recur && (typeof require !== 'undefined')) {
             },
 
             /**
-            * Returns the next valid occurrence of a schedule. 
+            * Returns the next valid occurrence of a schedule.
             *
             * @param {Recur} recur: Set of schedule and exception constraints
             * @param {Date} startDate: The initial date to start looking from
@@ -1275,7 +1275,7 @@ if (!recur && (typeof require !== 'undefined')) {
 
             /**
             * Returns the previous valid occurrence of a schedule based on the
-            * provided endDate. 
+            * provided endDate.
             *
             * @param {Recur} recur: Set of schedule and exception constraints
             * @param {Date} endDate: The date to start the search from
@@ -1315,7 +1315,7 @@ if (!recur && (typeof require !== 'undefined')) {
             },
 
             /**
-            * Executes the provided callback on the provided recurrence 
+            * Executes the provided callback on the provided recurrence
             * schedule. Returns true if the timer was started.
             *
             * @param {Recur} recur: Set of schedule and exception constraints
@@ -1331,7 +1331,7 @@ if (!recur && (typeof require !== 'undefined')) {
                 if (next) {
                     next = next.getTime() - (new Date()).getTime();
 
-                    // reschedule the exec if the delay is greater than 2^31-1 
+                    // reschedule the exec if the delay is greater than 2^31-1
                     // otherwise setTimeout will be called immediately
                     if (next > 2147483647) {
                         exec = setTimeout(this.exec, 2147483647, recur, startDate, callback, arg);

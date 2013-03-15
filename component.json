@@ -1,6 +1,6 @@
 {
   "name": "later",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "main": ["./later.min.js"],
   "ignore": [
     "examples/",
@@ -11,6 +11,6 @@
       "mocha": "*",
       "should": ">=0.6.3",
       "jslint": "*",
-      "uglify-js": "*"  
+      "uglify-js": "*"
   }
 }

@@ -9,13 +9,13 @@ describe('EnParser', function() {
 			var p = parser().parse('every 15 s');
 			p.schedules[0].should.have.ownProperty('s');
 			p.schedules[0].s.should.eql([0,15,30,45]);
-		});	
+		});
 
 		it('should parse every minute restriction', function() {
 			var p = parser().parse('every 15 minutes');
 			p.schedules[0].should.have.ownProperty('m');
 			p.schedules[0].m.should.eql([0,15,30,45]);
-		});		
+		});
 
 		it('should parse every minute restriction starting on 4', function() {
 			var p = parser().parse('every 15 minutes starting on the 4th minute');
@@ -27,13 +27,13 @@ describe('EnParser', function() {
 			var p = parser().parse('every 5 hours');
 			p.schedules[0].should.have.ownProperty('h');
 			p.schedules[0].h.should.eql([0,5,10,15,20]);
-		});	
+		});
 
 		it('should parse every other hour between 5 and 10', function() {
 			var p = parser().parse('every 2 hours between the 5th and 10th hour');
 			p.schedules[0].should.have.ownProperty('h');
 			p.schedules[0].h.should.eql([5,7,9]);
-		});	
+		});
 
 		it('should parse every day of week restriction', function() {
 			var p = parser().parse('every 2nd day of the week');
@@ -57,13 +57,13 @@ describe('EnParser', function() {
 			var p = parser().parse('every 5 days of the month');
 			p.schedules[0].should.have.ownProperty('D');
 			p.schedules[0].D.should.eql([1,6,11,16,21,26,31]);
-		});	
+		});
 
 		it('should parse every week of month restriction', function() {
 			var p = parser().parse('every 2 weeks of the month');
 			p.schedules[0].should.have.ownProperty('wm');
 			p.schedules[0].wm.should.eql([1,3,5]);
-		});	
+		});
 
 		it('should parse every month restriction', function() {
 			var p = parser().parse('every 5 month');
@@ -92,19 +92,19 @@ describe('EnParser', function() {
 			var p = parser().parse('after 15 s');
 			p.schedules[0].should.have.ownProperty('as');
 			p.schedules[0].as.should.eql([15]);
-		});	
+		});
 
 		it('should parse after minute restriction', function() {
 			var p = parser().parse('after 15 minutes');
 			p.schedules[0].should.have.ownProperty('am');
 			p.schedules[0].am.should.eql([15]);
-		});		
+		});
 
 		it('should parse after hour restriction', function() {
 			var p = parser().parse('after 5 hours');
 			p.schedules[0].should.have.ownProperty('ah');
 			p.schedules[0].ah.should.eql([5]);
-		});	
+		});
 
 		it('should parse after day of week restriction', function() {
 			var p = parser().parse('after 2nd day of the week');
@@ -116,13 +116,13 @@ describe('EnParser', function() {
 			var p = parser().parse('after 5 days of the month');
 			p.schedules[0].should.have.ownProperty('aD');
 			p.schedules[0].aD.should.eql([5]);
-		});	
+		});
 
 		it('should parse after day restriction', function() {
 			var p = parser().parse('after 5 days');
 			p.schedules[0].should.have.ownProperty('aD');
 			p.schedules[0].aD.should.eql([5]);
-		});	
+		});
 
 		it('should parse after day of month restriction', function() {
 			var p = parser().parse('after 5 days of the year');
@@ -134,13 +134,13 @@ describe('EnParser', function() {
 			var p = parser().parse('after 2 weeks');
 			p.schedules[0].should.have.ownProperty('awy');
 			p.schedules[0].awy.should.eql([2]);
-		});	
+		});
 
 		it('should parse after week of month restriction', function() {
 			var p = parser().parse('after 2 weeks of the month');
 			p.schedules[0].should.have.ownProperty('awm');
 			p.schedules[0].awm.should.eql([2]);
-		});	
+		});
 
 		it('should parse after month restriction', function() {
 			var p = parser().parse('after 5 month');
@@ -175,55 +175,55 @@ describe('EnParser', function() {
 			var p = parser().parse('on the 15 s');
 			p.schedules[0].should.have.ownProperty('s');
 			p.schedules[0].s.should.eql([15]);
-		});	
+		});
 
 		it('should parse on second restriction using rank', function() {
 			var p = parser().parse('on the 15th s');
 			p.schedules[0].should.have.ownProperty('s');
 			p.schedules[0].s.should.eql([15]);
-		});	
+		});
 
 		it('should parse on second restriction using range', function() {
 			var p = parser().parse('on the 15th-20th s');
 			p.schedules[0].should.have.ownProperty('s');
 			p.schedules[0].s.should.eql([15,16,17,18,19,20]);
-		});	
+		});
 
 		it('should parse on minute restriction', function() {
 			var p = parser().parse('on the 15 minute');
 			p.schedules[0].should.have.ownProperty('m');
 			p.schedules[0].m.should.eql([15]);
-		});	
-		
+		});
+
 		it('should parse on multiple minute restriction', function() {
 			var p = parser().parse('on the 15,18,20 minute');
 			p.schedules[0].should.have.ownProperty('m');
 			p.schedules[0].m.should.eql([15,18,20]);
-		});	
+		});
 
 		it('should parse on multiple minute restriction with range', function() {
 			var p = parser().parse('on the 15,18,20-23 minute');
 			p.schedules[0].should.have.ownProperty('m');
 			p.schedules[0].m.should.eql([15,18,20,21,22,23]);
-		});	
+		});
 
 		it('should parse on hour restriction', function() {
 			var p = parser().parse('on the 5 hour');
 			p.schedules[0].should.have.ownProperty('h');
 			p.schedules[0].h.should.eql([5]);
-		});	
+		});
 
 		it('should parse on the first hour restriction', function() {
 			var p = parser().parse('on the first hour');
 			p.schedules[0].should.have.ownProperty('h');
 			p.schedules[0].h.should.eql([0]);
-		});	
+		});
 
 		it('should parse on day of week restriction', function() {
 			var p = parser().parse('on the 5th day of the week');
 			p.schedules[0].should.have.ownProperty('d');
 			p.schedules[0].d.should.eql([5]);
-		});	
+		});
 
 		it('should parse on last day of week restriction', function() {
 			var p = parser().parse('on the last day of the week');
@@ -235,7 +235,7 @@ describe('EnParser', function() {
 			var p = parser().parse('on the 5th day of the year');
 			p.schedules[0].should.have.ownProperty('dy');
 			p.schedules[0].dy.should.eql([5]);
-		});	
+		});
 
 		it('should parse on day of week instance', function() {
 			var p = parser().parse('on the 3rd day instance');
@@ -247,7 +247,7 @@ describe('EnParser', function() {
 			var p = parser().parse('on the 5th day of the month');
 			p.schedules[0].should.have.ownProperty('D');
 			p.schedules[0].D.should.eql([5]);
-		});	
+		});
 
 		it('should parse on week of month restriction', function() {
 			var p = parser().parse('on the 5 week of the month');
@@ -286,7 +286,7 @@ describe('EnParser', function() {
 			var p = parser().parse('at 5:00');
 			p.schedules[0].should.have.ownProperty('t');
 			p.schedules[0].t.should.eql(['05:00:00']);
-		});	
+		});
 
 		it('should parse multiple 24 hour time without leading zero', function() {
 			var p = parser().parse('at 5:00,10:00');
@@ -311,12 +311,12 @@ describe('EnParser', function() {
 			p.schedules[0].should.have.ownProperty('t');
 			p.schedules[0].t.should.eql(['05:00:00']);
 		});
-		
+
 		it('should parse 12 hour time in the pm', function() {
 			var p = parser().parse('at 5:00 pm');
 			p.schedules[0].should.have.ownProperty('t');
 			p.schedules[0].t.should.eql(['17:00:00']);
-		});		
+		});
 	});
 
 	describe('on', function() {
@@ -324,12 +324,12 @@ describe('EnParser', function() {
 		it('should parse day names', function() {
 			var p = parser().parse('on tues');
 			p.schedules[0].d.should.eql([3]);
-		});	
+		});
 
 		it('should parse day names with capitals', function() {
 			var p = parser().parse('on Fri');
 			p.schedules[0].d.should.eql([6]);
-		});	
+		});
 
 		it('should parse multiple day names', function() {
 			var p = parser().parse('on tues,wed');
@@ -340,7 +340,7 @@ describe('EnParser', function() {
 			var p = parser().parse('on tues,thur-sat');
 			p.schedules[0].d.should.eql([3,5,6,7]);
 		});
-	
+
 	});
 
 	describe('of', function() {
@@ -348,7 +348,7 @@ describe('EnParser', function() {
 		it('should parse month names', function() {
 			var p = parser().parse('of may');
 			p.schedules[0].M.should.eql([5]);
-		});	
+		});
 
 		it('should parse multiple month names', function() {
 			var p = parser().parse('of may,dec');
@@ -359,7 +359,7 @@ describe('EnParser', function() {
 			var p = parser().parse('of may-dec');
 			p.schedules[0].M.should.eql([5,6,7,8,9,10,11,12]);
 		});
-	
+
 	});
 
 	describe('in', function() {
@@ -367,7 +367,7 @@ describe('EnParser', function() {
 		it('should parse years', function() {
 			var p = parser().parse('in 2012');
 			p.schedules[0].Y.should.eql([2012]);
-		});	
+		});
 
 		it('should parse multiple years', function() {
 			var p = parser().parse('in 2014,2015');
@@ -378,7 +378,7 @@ describe('EnParser', function() {
 			var p = parser().parse('in 2012,2014-2016');
 			p.schedules[0].Y.should.eql([2012,2014,2015,2016]);
 		});
-	
+
 	});
 
 	describe('also', function() {
@@ -387,8 +387,8 @@ describe('EnParser', function() {
 			var p = parser().parse('at 5:00 also at 10:00');
 			p.schedules[0].t.should.eql(['05:00:00']);
 			p.schedules[1].t.should.eql(['10:00:00']);
-		});	
-	
+		});
+
 	});
 
 	describe('except', function() {
@@ -397,7 +397,7 @@ describe('EnParser', function() {
 			var p = parser().parse('at 5:00 except at 10:00');
 			p.schedules[0].t.should.eql(['05:00:00']);
 			p.exceptions[0].t.should.eql(['10:00:00']);
-		});	
-	
+		});
+
 	});
 });
