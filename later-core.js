@@ -36,7 +36,7 @@ if(!String.prototype.trim) {
     return this.replace(/^\s+|\s+$/g,'');
   };
 }/**
-* Later.js 0.0.1
+* Later.js 0.0.17
 * (c) 2012 Bill, BunKat LLC.
 * Later is freely distributable under the MIT license.
 * For all details and documentation:
@@ -239,6 +239,180 @@ if(!String.prototype.trim) {
         };
 
         /**
+        * Given a valid start time, finds the next schedule that is invalid.
+        * Useful for finding the end of a valid time range.
+        *
+        * @param {object} schedule: Valid schedule object containing constraints
+        * @param {Date} start: The first possible valid occurrence
+        * @param {Date} end: The last possible valid occurrence
+        * @param {boolean} reverse: True if we are looking for previous occurrences
+        */
+        var getNextInvalidSchedule = function(sched, start, reverse) {
+            var Y, M, D, d, h, m, s,
+                oJan1, oMonthStart, oWeekStart, oWeekStartY, oMonthEnd,
+                oDec31,
+                t, dy, wy, wm, dc,
+                daysInYear, daysInMonth, firstDayOfMonth,
+                weekStart, weeksInYear, weeksInMonth, x;
+
+            // helper functions based on which direction we are going in
+            var range = reverse ? prevInRange : nextInRange,
+                date = reverse ? prevDate : nextDate;
+
+            // calculate the earliest date that violates the schedule.
+            // Note: This search isn't exact, date returned may still be valid,
+            // but is pretty fast since most of the time the next invalid time
+            // will be one increment away from current time
+
+            Y = getYear.call(start);
+            M = getMonth.call(start);
+            D = getDate.call(start);
+            h = getHour.call(start);
+            m = getMin.call(start);
+            s = getSec.call(start);
+            t = pad(h) +':'+ pad(m) +':'+ pad(s);
+
+            // check time of day (24-hr)
+            if (sched.t && range(t, sched.t) === t) {
+                return reverse ?
+                    (date(Y, M, D, h, m, s-1)) :
+                    (date(Y, M, D, h, m, s+1));
+            }
+
+            // check second of minute (zero based)
+            if (sched.s && range(s, sched.s, 60) === s) {
+                return reverse ?
+                    (date(Y, M, D, h, m, s-1)) :
+                    (date(Y, M, D, h, m, s+1));
+            }
+
+            // check minute of hour (zero based)
+            if (sched.m && range(m, sched.m, 60) === m) {
+                return reverse ?
+                    (date(Y, M, D, h, m-1)) :
+                    (date(Y, M, D, h, m+1));
+            }
+
+            // check hour of day (zero based)
+            if (sched.h && range(h, sched.h, 24) === h) {
+                return reverse ?
+                    (date(Y, M, D, h-1)) :
+                    (date(Y, M, D, h+1));
+            }
+
+            // check before time (24-hr)
+            if (sched.tb) {
+                if (t < sched.tb[0]) {
+                    x = sched.tb[0].split(':');
+                    if (reverse) {
+                        return(date(Y, M, D-1, x[0], x[1], x[2]-1));
+                    }
+                    else {
+                        return(date(Y, M, D, x[0], x[1], x[2]));
+                    }
+                }
+            }
+
+            // check after time (24-hr)
+            if (sched.ta) {
+                if (t >= sched.ta[0]) {
+                    if (reverse) {
+                        x = sched.ta[0].split(':');
+                        return(date(Y, M, D, x[0], x[1], x[2]-1));
+                    }
+                    else {
+                        return(date(Y, M, D+1));
+                    }
+                }
+            }
+
+            // check day of week count (one based, 0 for last instance)
+            if (sched.dc) {
+                dc = floor((D - 1) / 7) + 1;
+                if (range(dc, sched.dc, 0) === dc) {
+                    return reverse ?
+                        (date(Y, M, D-1)) :
+                        (date(Y, M, D+1));
+                }
+            }
+
+            // check day of week (zero based)
+            d = getDay.call(start);
+            if (sched.d && range(d+1, sched.d, 7) === d+1) {
+                return reverse ?
+                    (date(Y, M, D-1)) :
+                    (date(Y, M, D+1));
+            }
+
+            // check week of month (one based, 0 for last week of month)
+            if (sched.wm) {
+                firstDayOfMonth = getDay.call(nextDate(Y, M, 1));
+                wm = floor((((D + firstDayOfMonth - 1)/7))+1);
+                weeksInMonth = floor((((daysInMonth + firstDayOfMonth - 1)/7))+1);
+                if ((range(wm, sched.wm, weeksInMonth) || weeksInMonth) === wm) {
+                    // not optimal at all...
+                    return reverse ?
+                        (date(Y, M, D-1)) :
+                        (date(Y, M, D+1));
+                }
+            }
+
+            // check date of month (one based)
+            oMonthEnd = nextDate(Y, M + 1, 0);
+            daysInMonth = getDate.call(oMonthEnd);
+            if (sched.D && (range(D, sched.D, daysInMonth) || daysInMonth) === D) {
+                return reverse ?
+                    (date(Y, M, D-1)) :
+                    (date(Y, M, D+1));
+            }
+
+            // check week of year (one based, ISO week)
+            oJan1 = nextDate(Y, 0, 1);
+            oDec31 = nextDate(Y + 1, 0, 0);
+            if (sched.wy) {
+                oWeekStart = date(Y, M, D + 4 - (d || 7));
+                oWeekStartY = date(getYear.call(oWeekStart),0,1);
+                weeksInYear = getDay.call(oJan1) === 4 ||
+                    getDay.call(oDec31) === 4 ? 53 : 52;
+
+                wy = ceil((((oWeekStart.getTime()-oWeekStartY.getTime())/DAY)+1)/7);
+                if ((range(wy, sched.wy, weeksInYear) || weeksInYear) === wy) {
+                    return reverse ?
+                        (date(Y, M, D-1)) :
+                        (date(Y, M, D+1));
+                }
+            }
+
+            // check month (one based)
+            if (sched.M && range(M+1, sched.M, 12) === M+1) {
+                return reverse ?
+                    (date(Y, M-1)) :
+                    (date(Y, M+1));
+            }
+
+            // check day of year (one based)
+            if (sched.dy) {
+                dy = ceil((start.getTime() - oJan1.getTime() + 1)/DAY);
+                daysInYear = ceil((oDec31.getTime() - oJan1.getTime() + 1)/DAY);
+
+                if ((range(dy, sched.dy, daysInYear) || daysInYear) === dy) {
+                    return reverse ?
+                        (date(Y, M-1)) :
+                        (date(Y, M+1));
+                }
+            }
+
+            // check year
+            if (sched.Y && range(Y, sched.Y, 0) === Y ) {
+                return reverse ?
+                    (date(Y-1)) :
+                    (date(Y+1));
+            }
+
+            return start;
+        };
+
+        /**
         * Calculates the next valid occurrence of a particular schedule that
         * occurs on or after the specified start time.
         *
@@ -279,17 +453,21 @@ if(!String.prototype.trim) {
 
                 // check year
                 Y = getYear.call(next);
+                M = getMonth.call(next);
+                D = getDate.call(next);
                 if (sched.Y && (inc = range(Y, sched.Y, 0)) !== Y ) {
                     next = (!reverse && inc > Y) || (reverse && inc < Y) ? date(inc) : null;
                     continue;
                 }
 
                 // check day of year (one based)
-                oJan1 = nextDate(Y, 0, 1);
+                oJan1 = nextDate(Y, 0, 1, 12, 0, 0);
+                var cDate = nextDate(Y, M, D, 12, 0, 0);
                 oDec31 = nextDate(Y + 1, 0, 0);
                 if (sched.dy) {
-                    dy = ceil((next.getTime() - oJan1.getTime() + 1)/DAY);
-                    daysInYear = ceil((oDec31.getTime() - oJan1.getTime() + 1)/DAY);
+
+                    dy = ceil((cDate.getTime() - oJan1.getTime())/DAY) + 1;
+                    daysInYear = ceil((oDec31.getTime() - oJan1.getTime())/DAY) + 1;
 
                     if (((inc = range(dy, sched.dy, daysInYear)) || daysInYear) !== dy) {
                         next = date(Y, 0, inc);
@@ -298,14 +476,12 @@ if(!String.prototype.trim) {
                 }
 
                 // check month (one based)
-                M = getMonth.call(next);
                 if (sched.M && (inc = range(M+1, sched.M, 12)) !== M+1) {
                     next = date(Y, inc-1);
                     continue;
                 }
 
                 // check week of year (one based, ISO week)
-                D = getDate.call(next);
                 d = getDay.call(next);
                 if (sched.wy) {
                     oWeekStart = date(Y, M, D + 4 - (d || 7));
@@ -585,6 +761,59 @@ if(!String.prototype.trim) {
                 }
 
                 return date;
+            },
+
+            /**
+            * Returns the next invalid occurrence of a schedule. Useful for
+            * quickly calculating the end of a valid time period.
+            *
+            * @param {Recur} recur: Set of schedule and exception constraints
+            * @param {Date} startDate: The initial date to start looking frome
+            * @api public
+            */
+            getNextInvalid: function (recur, startDate) {
+                var schedules = recur ? recur.schedules || [] : [],
+                    exceptions = recur ? recur.exceptions || [] : [],
+                    date = startDate,
+                    tDate, nextExcep,
+                    done = false;
+
+                // loop through all of the schedules until a date is found
+                // that is invalid for all of them
+                while(!done) {
+                    done = true;
+
+                    // calculate the next schedule exception
+                    // we'll be looking for an invalid date that occurs before
+                    // this, return if we are already at the next exception
+                    if (exceptions.length) {
+                        nextExcep = this.getNext({schedules: exceptions}, date);
+                        if(nextExcep.getTime() === date.getTime()) {
+                            return date;
+                        }
+                    }
+
+                    // look for the next invalid schedule
+                    if (schedules.length) {
+                        for(var i = 0, len = schedules.length; i < len; i++) {
+                            tDate = getNextInvalidSchedule(schedules[i], date);
+                            if (tDate && tDate.getTime() > date.getTime()) {
+                                date = new Date(Math.min(
+                                    tDate.getTime(),
+                                    (nextExcep || new Date(2050,1,1)).getTime()
+                                ));
+                                done = false;
+                            }
+                        }
+                    }
+                    // if no schedules, just return first exception date if any
+                    else {
+                        return nextExcep;
+                    }
+                }
+
+                // if the date is the start date, no next invalid was found
+                return date.getTime() === startDate.getTime() ? null : date;
             },
 
             /**

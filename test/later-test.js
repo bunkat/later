@@ -928,17 +928,23 @@ describe('Later', function() {
 				l.getTime().should.eql(expected.getTime());
 			});
 
-			it.only('should skip forward to the next valid day within the next year using local time', function() {
+			it('should skip forward to the next valid day within the next year using local time', function() {
 				this.timeout(1);
 				var r = recur().on(69).dayOfYear().at('11:00:00');
 				var start = new Date(2013, 2, 21, 1, 2, 3);
-				var expected = new Date(2014, 2, 9, 11, 0, 0);
+				var expected = new Date(2014, 2, 10, 11, 0, 0);
 
 				var l = later(60, true).getNext(r, start);
+				l.getTime().should.eql(expected.getTime());
+			});
 
-				console.log(expected);
-				console.log(l);
+			it('should skip forward to the next valid day within the next year using local time 2', function() {
+				this.timeout(1);
+				var r = recur().on(170).dayOfYear().at('11:00:00');
+				var start = new Date(2013, 8, 21, 1, 2, 3);
+				var expected = new Date(2014, 5, 19, 11, 0, 0);
 
+				var l = later(60, true).getNext(r, start);
 				l.getTime().should.eql(expected.getTime());
 			});
 

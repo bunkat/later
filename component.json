@@ -1,6 +1,6 @@
 {
   "name": "later",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "main": ["./later.min.js"],
   "ignore": [
     "examples/",
