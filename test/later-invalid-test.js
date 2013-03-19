@@ -22,7 +22,7 @@ describe('Later getNextInvalid', function() {
 
     describe('with schedule and exceptions', function() {
 
-      it('should return undefined if schedule is null', function() {
+      it('should return next invalid time', function() {
         this.timeout(1);
         var r = recur()
                   .afterTime('09:00').beforeTime('21:00')

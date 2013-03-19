@@ -2492,16 +2492,16 @@ describe('Later', function() {
 				str += 'also on the 16th day of the month on tue-fri';
 
 				var r = text().parse(str);
-				var start = new Date('2012-01-01T00:00:00Z');
+				var start = new Date(2012, 0, 1);
 				var expected = [
-					new Date('2012-01-16T05:00:00Z'),
-					new Date('2012-02-15T05:00:00Z'),
-					new Date('2012-03-15T05:00:00Z'),
-					new Date('2012-04-16T05:00:00Z'),
-					new Date('2012-05-15T05:00:00Z')
+					new Date(2012, 0, 16, 5),
+					new Date(2012, 1, 15, 5),
+					new Date(2012, 2, 15, 5),
+					new Date(2012, 3, 16, 5),
+					new Date(2012, 4, 15, 5)
 				];
 
-				var l = later().get(r, 5, start);
+				var l = later(60, true).get(r, 5, start);
 				for (var i = 0, len = l.length; i < len; i++) {
 					l[i].getTime().should.eql(expected[i].getTime());
 				}
