@@ -960,30 +960,22 @@ if (!recur && (typeof require !== 'undefined')) {
 
             // check time of day (24-hr)
             if (sched.t && range(t, sched.t) === t) {
-                return reverse ?
-                    (date(Y, M, D, h, m, s-1)) :
-                    (date(Y, M, D, h, m, s+1));
+                return reverse ? (date(Y, M, D, h, m, s-1)) : (date(Y, M, D, h, m, s+1));
             }
 
             // check second of minute (zero based)
             if (sched.s && range(s, sched.s, 60) === s) {
-                return reverse ?
-                    (date(Y, M, D, h, m, s-1)) :
-                    (date(Y, M, D, h, m, s+1));
+                return reverse ? (date(Y, M, D, h, m, s-1)) : (date(Y, M, D, h, m, s+1));
             }
 
             // check minute of hour (zero based)
             if (sched.m && range(m, sched.m, 60) === m) {
-                return reverse ?
-                    (date(Y, M, D, h, m-1)) :
-                    (date(Y, M, D, h, m+1));
+                return reverse ? (date(Y, M, D, h, m-1)) : (date(Y, M, D, h, m+1));
             }
 
             // check hour of day (zero based)
             if (sched.h && range(h, sched.h, 24) === h) {
-                return reverse ?
-                    (date(Y, M, D, h-1)) :
-                    (date(Y, M, D, h+1));
+                return reverse ? (date(Y, M, D, h-1)) : (date(Y, M, D, h+1));
             }
 
             // check before time (24-hr)
@@ -1016,18 +1008,14 @@ if (!recur && (typeof require !== 'undefined')) {
             if (sched.dc) {
                 dc = floor((D - 1) / 7) + 1;
                 if (range(dc, sched.dc, 0) === dc) {
-                    return reverse ?
-                        (date(Y, M, D-1)) :
-                        (date(Y, M, D+1));
+                    return reverse ? (date(Y, M, D-1)) : (date(Y, M, D+1));
                 }
             }
 
             // check day of week (zero based)
             d = getDay.call(start);
             if (sched.d && range(d+1, sched.d, 7) === d+1) {
-                return reverse ?
-                    (date(Y, M, D-1)) :
-                    (date(Y, M, D+1));
+                return reverse ? (date(Y, M, D-1)) : (date(Y, M, D+1));
             }
 
             // check week of month (one based, 0 for last week of month)
@@ -1037,9 +1025,7 @@ if (!recur && (typeof require !== 'undefined')) {
                 weeksInMonth = floor((((daysInMonth + firstDayOfMonth - 1)/7))+1);
                 if ((range(wm, sched.wm, weeksInMonth) || weeksInMonth) === wm) {
                     // not optimal at all...
-                    return reverse ?
-                        (date(Y, M, D-1)) :
-                        (date(Y, M, D+1));
+                    return reverse ? (date(Y, M, D-1)) : (date(Y, M, D+1));
                 }
             }
 
@@ -1047,14 +1033,12 @@ if (!recur && (typeof require !== 'undefined')) {
             oMonthEnd = nextDate(Y, M + 1, 0);
             daysInMonth = getDate.call(oMonthEnd);
             if (sched.D && (range(D, sched.D, daysInMonth) || daysInMonth) === D) {
-                return reverse ?
-                    (date(Y, M, D-1)) :
-                    (date(Y, M, D+1));
+                return reverse ? (date(Y, M, D-1)) : (date(Y, M, D+1));
             }
 
             // check week of year (one based, ISO week)
-            oJan1 = nextDate(Y, 0, 1);
-            oDec31 = nextDate(Y + 1, 0, 0);
+            oJan1 = nextDate(Y, 0, 1, 12);
+            oDec31 = nextDate(Y + 1, 0, 0, 12);
             if (sched.wy) {
                 oWeekStart = date(Y, M, D + 4 - (d || 7));
                 oWeekStartY = date(getYear.call(oWeekStart),0,1);
@@ -1063,36 +1047,28 @@ if (!recur && (typeof require !== 'undefined')) {
 
                 wy = ceil((((oWeekStart.getTime()-oWeekStartY.getTime())/DAY)+1)/7);
                 if ((range(wy, sched.wy, weeksInYear) || weeksInYear) === wy) {
-                    return reverse ?
-                        (date(Y, M, D-1)) :
-                        (date(Y, M, D+1));
+                    return reverse ? (date(Y, M, D-1)) : (date(Y, M, D+1));
                 }
             }
 
             // check month (one based)
             if (sched.M && range(M+1, sched.M, 12) === M+1) {
-                return reverse ?
-                    (date(Y, M-1)) :
-                    (date(Y, M+1));
+                return reverse ? (date(Y, M-1)) : (date(Y, M+1));
             }
 
             // check day of year (one based)
             if (sched.dy) {
-                dy = ceil((start.getTime() - oJan1.getTime() + 1)/DAY);
-                daysInYear = ceil((oDec31.getTime() - oJan1.getTime() + 1)/DAY);
+                dy = ceil((start.getTime() - oJan1.getTime())/DAY) + 1;
+                daysInYear = ceil((oDec31.getTime() - oJan1.getTime())/DAY) + 1;
 
                 if ((range(dy, sched.dy, daysInYear) || daysInYear) === dy) {
-                    return reverse ?
-                        (date(Y, M-1)) :
-                        (date(Y, M+1));
+                    return reverse ? (date(Y, M-1)) : (date(Y, M+1));
                 }
             }
 
             // check year
             if (sched.Y && range(Y, sched.Y, 0) === Y ) {
-                return reverse ?
-                    (date(Y-1)) :
-                    (date(Y+1));
+                return reverse ? (date(Y-1)) : (date(Y+1));
             }
 
             return start;
@@ -1170,8 +1146,8 @@ if (!recur && (typeof require !== 'undefined')) {
                 // check week of year (one based, ISO week)
                 d = getDay.call(next);
                 if (sched.wy) {
-                    oWeekStart = date(Y, M, D + 4 - (d || 7));
-                    oWeekStartY = date(getYear.call(oWeekStart),0,1);
+                    oWeekStart = date(Y, M, D + 4 - (d || 7), 12);
+                    oWeekStartY = date(getYear.call(oWeekStart),0,1, 12);
                     weeksInYear = getDay.call(oJan1) === 4 ||
                         getDay.call(oDec31) === 4 ? 53 : 52;
 
@@ -1189,7 +1165,7 @@ if (!recur && (typeof require !== 'undefined')) {
                 }
 
                 // check date of month (one based)
-                oMonthEnd = nextDate(Y, M + 1, 0);
+                oMonthEnd = nextDate(Y, M + 1, 0, 12);
                 daysInMonth = getDate.call(oMonthEnd);
                 if (sched.D && ((inc = range(D, sched.D, daysInMonth)) || daysInMonth) !== D) {
                     // if we are going backwards, just jump to the last day in
@@ -1419,31 +1395,41 @@ if (!recur && (typeof require !== 'undefined')) {
             */
             getNext: function (recur, startDate, endDate) {
                 var schedules = recur ? recur.schedules || [] : [],
-                    exceptions = {schedules: recur ? recur.exceptions || [] : []},
+                    exceptions = recur ? recur.exceptions || [] : [],
+                    schedLen = schedules.length,
+                    exceptLen = exceptions.length,
                     start = startDate || new Date(),
-                    date, tDate,
-                    i = schedules.length;
+                    date;
 
-                // return null if we're past the specified end date
-                if (endDate && startDate.getTime() > endDate.getTime()) {
-                    return null;
-                }
+                while(start) {
+                    var tDate;
 
-                if (i === 0) {  // no constraints, start time is fine
-                    date = start;
-                }
-                else {
-                    while(i--) {
-                        tDate = getNextForSchedule(schedules[i], start, endDate);
-                        if (!date || (tDate < date)) {
-                            date = tDate;
+                    if(endDate && start.getTime() > endDate.getTime()) {
+                        date = undefined;
+                        break;
+                    }
+
+                    if(schedLen) {
+                        for(var i = 0; i < schedLen; i++) {
+                            tDate = getNextForSchedule(schedules[i], start, endDate);
+                            if (tDate && (!date || (tDate.getTime() < date.getTime()))) {
+                                date = tDate;
+                            }
                         }
                     }
-                }
+                    else {
+                        date = start;
+                    }
+                    start = null;
 
-                if (date && exceptions.schedules.length > 0 &&
-                        this.isValid(exceptions, date)) {
-                    date = this.getNext(recur, tick(date), endDate);
+                    if (date && exceptLen) {
+                        tDate = this.getNextInvalid({schedules: exceptions}, date);
+                        if(tDate.getTime() !== date.getTime()) {
+                            start = tDate;
+                            date = undefined;
+                        }
+                    }
+
                 }
 
                 return date;
@@ -1460,46 +1446,41 @@ if (!recur && (typeof require !== 'undefined')) {
             getNextInvalid: function (recur, startDate) {
                 var schedules = recur ? recur.schedules || [] : [],
                     exceptions = recur ? recur.exceptions || [] : [],
-                    date = startDate,
-                    tDate, nextExcep,
-                    done = false;
+                    schedLen = schedules.length,
+                    exceptLen = exceptions.length,
+                    start = startDate || new Date();
 
-                // loop through all of the schedules until a date is found
-                // that is invalid for all of them
-                while(!done) {
-                    done = true;
+                while(start && this.isValid(recur, start)) {
+                    var nextExcep, nextInvalid;
 
-                    // calculate the next schedule exception
-                    // we'll be looking for an invalid date that occurs before
-                    // this, return if we are already at the next exception
-                    if (exceptions.length) {
-                        nextExcep = this.getNext({schedules: exceptions}, date);
-                        if(nextExcep.getTime() === date.getTime()) {
-                            return date;
+                    // get the next invalid schedule if there is one
+                    for(var i = 0; i < schedLen; i++) {
+                        var tDate = getNextInvalidSchedule(schedules[i], start);
+                        if (tDate && (!nextInvalid || (tDate.getTime() > nextInvalid.getTime()))) {
+                            nextInvalid = tDate;
                         }
                     }
 
-                    // look for the next invalid schedule
-                    if (schedules.length) {
-                        for(var i = 0, len = schedules.length; i < len; i++) {
-                            tDate = getNextInvalidSchedule(schedules[i], date);
-                            if (tDate && tDate.getTime() > date.getTime()) {
-                                date = new Date(Math.min(
-                                    tDate.getTime(),
-                                    (nextExcep || new Date(2050,1,1)).getTime()
-                                ));
-                                done = false;
-                            }
-                        }
+                    // get the next occurrence of any of the exceptions
+                    if(exceptLen) {
+                        nextExcep = this.getNext({schedules: exceptions}, start);
                     }
-                    // if no schedules, just return first exception date if any
+
+                    // if we didn't find any next occurrences, there is no next
+                    // invalid (this schedule is always valid until the end
+                    // of time)
+                    if(!nextInvalid && !nextExcep) {
+                        start = undefined;
+                    }
                     else {
-                        return nextExcep;
+                        start = new Date(nextInvalid && nextExcep ?
+                            Math.min(nextInvalid.getTime(), nextExcep.getTime()) :
+                            nextExcep || nextInvalid);
                     }
                 }
 
                 // if the date is the start date, no next invalid was found
-                return date.getTime() === startDate.getTime() ? null : date;
+                return start;
             },
 
             /**
