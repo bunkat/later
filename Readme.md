@@ -535,7 +535,7 @@ Do this:
 ```js
 var s1 = cronParser().parse('* */5 * * * *');  
 var every5 = later();  
-ever5.exec(s1, new Date(), cb);    
+every5.exec(s1, new Date(), cb);    
 
 var s2 = cronParser().parse('* */6 * * * *');
 var every6 = later();
