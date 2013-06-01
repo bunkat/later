@@ -1,16 +1,5 @@
 {
   "name": "later",
-  "version": "0.0.19",
-  "main": ["./later.min.js"],
-  "ignore": [
-    "examples/",
-    "node_modules/",
-    "test/"
-  ],
-  "devDependencies": {
-      "mocha": "*",
-      "should": ">=0.6.3",
-      "jslint": "*",
-      "uglify-js": "*"
-  }
+  "version": "0.1.0",
+  "main": "./later.js"
 }

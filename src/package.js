@@ -1,17 +1,14 @@
-{
+var later = require("../index");
+
+console.log(JSON.stringify({
   "name": "later",
-  "version": "0.1.0",
+  "version": later.version,
   "description": "Determine later (or previous) occurrences of recurring schedules",
-  "keywords": [
-    "schedule",
-    "occurrences",
-    "recur",
-    "cron"
-  ],
+  "keywords": ["schedule", "occurrences", "recur", "cron"],
   "author": "BunKat <bill@bunkat.com>",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/bunkat/later.git"
+  "repository" : {
+    "type" : "git",
+    "url" : "git://github.com/bunkat/later.git"
   },
   "main": "index.js",
   "browserify": "index-browserify.js",
@@ -31,4 +28,4 @@
   "scripts": {
     "test": "node_modules/.bin/vows; echo"
   }
-}
+}, null, 2));

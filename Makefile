@@ -1,28 +1,38 @@
+REPORTER ?= dot
+TESTS ?= test/date/*-test.js
 
-SOURCE = lib/*.js
-TESTS = test/*.js
-REPORTER = dot
+all: \
+	later.js \
+	later.min.js \
+	component.json \
+	package.json
 
-build:
-		cat $(SOURCE) > later.js
-		cat lib/shims.js lib/later.js > later-core.js
-		cat lib/shims.js lib/later.js lib/recur.js > later-recur.js
-		cat lib/shims.js lib/later.js lib/cron.parser.js > later-cron.js
-		cat lib/shims.js lib/later.js lib/recur.js lib/en.parser.js > later-en.js
-		./node_modules/.bin/uglifyjs later.js -o later.min.js
-		./node_modules/.bin/uglifyjs later-core.js -o later-core.min.js
-		./node_modules/.bin/uglifyjs later-recur.js -o later-recur.min.js
-		./node_modules/.bin/uglifyjs later-cron.js -o later-cron.min.js
-		./node_modules/.bin/uglifyjs later-en.js -o later-en.min.js
-		
-test:
-		@NODE_ENV=test ./node_modules/.bin/mocha \
-				--require should \
-				--reporter $(REPORTER) \
-				$(TESTS)
+.PHONY: clean all test
 
-lint:
-		find lib/. -name "*.js" -print0 | xargs -0 ./node_modules/.bin/jslint \
-				--white --vars --plusplus --continue
+test: later.js
+	@NODE_ENV=test ./node_modules/.bin/mocha --reporter $(REPORTER) $(TESTS)
 
-.PHONY:	build test lint 
+benchmark: all
+	@node test/benchmark.js
+
+later.js: $(shell node_modules/.bin/smash --list src/later.js)
+	@rm -f $@
+	node_modules/.bin/smash src/later.js | node_modules/.bin/uglifyjs - -b indent-level=2 -o $@
+	@chmod a-w $@
+
+later.min.js: later.js
+	@rm -f $@
+	node_modules/.bin/uglifyjs $< -c -m -o $@
+
+component.json: src/component.js later.js
+	@rm -f $@
+	node src/component.js > $@
+	@chmod a-w $@
+
+package.json: src/package.js later.js
+	@rm -f $@
+	node src/package.js > $@
+	@chmod a-w $@
+
+clean:
+	rm -f later*.js package.json component.json
