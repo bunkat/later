@@ -21,7 +21,10 @@ later.dayOfWeekCount = later.dc = {
   },
 
   /**
-  * The minimum and maximum valid day of week count values.
+  * The minimum and maximum valid day values of the month specified.
+  * Zero to specify the last day of week count of the month.
+  *
+  * @param {Date} d: The date indicating the month to find the extent of
   */
   extent: function(d) {
     return d.dcExtent || (d.dcExtent = [1, Math.ceil(later.D.extent(d)[1] /7)]);
@@ -52,7 +55,7 @@ later.dayOfWeekCount = later.dc = {
       later.date.prev(
         later.Y.val(d),
         later.M.val(d),
-        Math.min(later.dc.value(d) * 7), later.D.extent(d)[1]));
+        Math.min(later.dc.val(d) * 7, later.D.extent(d)[1])));
   },
 
   /**
@@ -62,7 +65,16 @@ later.dayOfWeekCount = later.dc = {
   * @param {int} val: The desired value
   */
   next: function(d, val) {
-    return later.D.next(d, 1 + (7 * (val - 1)));
+    var month = later.date.nextRollover(d, val, later.dc, later.M),
+        dcExtent = later.dc.extent(month);
+
+    val = val > dcExtent[1] ? dcExtent[0] : val || dcExtent[1];
+
+    return later.date.next(
+      later.Y.val(month),
+      later.M.val(month),
+      1 + (7 * (val - 1))
+    );
   },
 
   /**
@@ -72,7 +84,16 @@ later.dayOfWeekCount = later.dc = {
   * @param {int} val: The desired value
   */
   prev: function(d, val) {
-    return later.D.prev(d, 7 + (7 * (val - 1)));
+    var month = later.date.prevRollover(d, val, later.dc, later.M),
+        dcExtent = later.dc.extent(month);
+
+    val = val > dcExtent[1] ? dcExtent[1] : val || dcExtent[1];
+
+    return later.dc.end(later.date.prev(
+      later.Y.val(month),
+      later.M.val(month),
+      1 + (7 * (val - 1))
+    ));
   }
 
 };

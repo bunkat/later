@@ -21,7 +21,7 @@ later.weekOfYear = later.wy = {
 
     // move to the Thursday in the target week and find Thurs of target year
     var wThur = later.dw.next(later.wy.start(d), 5),
-        YThur = later.dw.next(later.Y.prev(d, later.Y.value(wThur)-1), 5);
+        YThur = later.dw.next(later.Y.prev(d, later.Y.val(wThur)-1), 5);
 
     // caculate the difference between the two dates in weeks
     return (d.wy = 1 + Math.ceil((wThur.getTime() - YThur.getTime()) / later.WEEK));
@@ -74,7 +74,12 @@ later.weekOfYear = later.wy = {
   next: function(d, val) {
     var wyStart = later.wy.start(d),
         wy = later.wy.val(d),
-        diff = val > wy ? val - wy : later.wy.extent(d)[1] - wy + val;
+        year = (val && val <= wy) || (!val && wy == later.wy.extent(d)[1]) ?
+          later.Y.next(d, later.Y.val(d)+1) :
+          later.Y.start(d);
+
+    val = Math.min(val || later.wy.extent(year)[1], later.wy.extent(year)[1]);
+    var diff = val > wy ? val - wy : later.wy.extent(d)[1] - wy + val;
 
     return later.date.next(
         later.Y.val(wyStart),
@@ -92,8 +97,10 @@ later.weekOfYear = later.wy = {
   prev: function(d, val) {
     var wyEnd = later.wy.end(d),
         YPrev = later.Y.prev(wyEnd, later.Y.val(wyEnd)-1),
-        wy = later.wy.val(d),
-        diff = val < wy ? wy - val : wy + (later.wy.extent(YPrev)[1] - val);
+        wy = later.wy.val(d);
+
+    val = Math.min(val || later.wy.extent(YPrev)[1], later.wy.extent(YPrev)[1]);
+    var diff = val < wy ? wy - val : wy + (later.wy.extent(YPrev)[1] - val);
 
     return later.date.prev(
         later.Y.val(wyEnd),

@@ -17,7 +17,7 @@ later.weekOfMonth = later.wm = {
   *
   * @param {Date} d: The date to calculate the value of
   */
-  value: function(d) {
+  val: function(d) {
     return d.wm || (d.wm =
       (later.D.val(d) +
       (later.dw.val(later.M.start(d)) - 1) + (7 - later.dw.val(d))) / 7);
@@ -25,6 +25,7 @@ later.weekOfMonth = later.wm = {
 
   /**
   * The minimum and maximum valid week of month values for the month indicated.
+  * Zero indicates the last week in the month.
   *
   * @param {Date} d: The date indicating the month to find values for
   */
@@ -59,35 +60,43 @@ later.weekOfMonth = later.wm = {
   },
 
   /**
-  * Returns the start of the next instance of the week value indicated.
+  * Returns the start of the next instance of the week value indicated. Returns
+  * the first day of the next month if val is greater than the number of
+  * days in the following month.
   *
   * @param {Date} d: The starting date
   * @param {int} val: The desired value
   */
   next: function(d, val) {
-    var month = val > later.dw.val(d) ?
-          later.M.start(d) : later.M.next(d, later.M.val(d)+1);
+    var month = later.date.nextRollover(d, val, later.wm, later.M),
+        wmExtent = later.wm.extent(month);
+
+    val = val > wmExtent[1] ? wmExtent[0] : val || wmExtent[1];
 
     // jump to the Sunday of the desired week, set to 1st of month for week 1
     return later.date.next(
-        later.Y.val(d),
+        later.Y.val(month),
         later.M.val(month),
         Math.max(1, (val-1) * 7 - (later.dw.val(month)-2)));
   },
 
   /**
-  * Returns the end of the previous instance of the week value indicated.
+  * Returns the end of the previous instance of the week value indicated. Returns
+  * the last day of the previous month if val is greater than the number of
+  * days in the previous month.
   *
   * @param {Date} d: The starting date
   * @param {int} val: The desired value
   */
   prev: function(d, val) {
-    var month = val < later.dw.val(d) ? later.M.start(d) :
-          later.M.start(later.M.prev(d, later.M.value(d)-1));
+    var month = later.date.prevRollover(d, val, later.wm, later.M),
+        wmExtent = later.wm.extent(month);
+
+    val = val > wmExtent[1] ? wmExtent[1] : val || wmExtent[1];
 
     // jump to the end of Saturday of the desired week
-    return later.dw.end(later.date.next(
-        later.Y.val(d),
+    return later.wm.end(later.date.next(
+        later.Y.val(month),
         later.M.val(month),
         Math.max(1, (val-1) * 7 - (later.dw.val(month)-2))));
   }

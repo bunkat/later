@@ -1,5 +1,5 @@
-REPORTER ?= dot
-TESTS ?= test/date/*-test.js
+REPORTER ?= min
+TESTS ?= test/constraint/*-test.js
 
 all: \
 	later.js \

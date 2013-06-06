@@ -59,7 +59,7 @@ later.time = later.t = {
     return later.date.next(
       later.Y.val(d),
       later.M.val(d),
-      later.D.val(d) + (val < later.t.val(d) ? 1 : 0),
+      later.D.val(d) + (val <= later.t.val(d) ? 1 : 0),
       x[0],
       x[1],
       x[2]);
@@ -77,7 +77,7 @@ later.time = later.t = {
     return later.date.next(
       later.Y.val(d),
       later.M.val(d),
-      later.D.val(d) + (val > later.t.val(d) ? -1 : 0),
+      later.D.val(d) + (val >= later.t.val(d) ? -1 : 0),
       x[0],
       x[1],
       x[2]);

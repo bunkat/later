@@ -53,11 +53,25 @@ later.hour = later.h = {
   * @param {int} val: The desired value
   */
   next: function(d, val) {
-    return later.date.next(
+    val = val > 23 ? 0 : val;
+
+    var next = later.date.next(
       later.Y.val(d),
       later.M.val(d),
-      later.D.val(d) + (val < later.h.val(d) ? 1 : 0),
+      later.D.val(d) + (val <= later.h.val(d) ? 1 : 0),
       val);
+
+    // correct for passing over a daylight savings boundry
+    if(!later.option.UTC && next.getTime() < d.getTime()) {
+      next = later.date.next(
+        later.Y.val(next),
+        later.M.val(next),
+        later.D.val(next),
+        val + 1);
+    }
+
+    return next;
+
   },
 
   /**
@@ -67,10 +81,12 @@ later.hour = later.h = {
   * @param {int} val: The desired value
   */
   prev: function(d, val) {
+    val = val > 23 ? 23 : val;
+
     return later.date.prev(
       later.Y.val(d),
       later.M.val(d),
-      later.D.val(d) + (val > later.h.val(d) ? -1 : 0),
+      later.D.val(d) + (val >= later.h.val(d) ? -1 : 0),
       val);
   }
 

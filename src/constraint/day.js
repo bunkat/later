@@ -21,11 +21,13 @@ later.day = later.D = {
 
   /**
   * The minimum and maximum valid day values of the month specified.
+  * Zero to specify the last day of the month.
   *
   * @param {Date} d: The date indicating the month to find the extent of
   */
   extent: function(d) {
-    return d.DExtent || (d.DExtent = [1, later.D.val(later.M.end(d))]);
+    return d.DExtent || (d.DExtent = [1, later.D.val(
+      new Date(later.Y.val(d), later.M.val(d), 0))]);
   },
 
   /**
@@ -51,34 +53,42 @@ later.day = later.D = {
   /**
   * Returns the start of the next instance of the day value indicated. Returns
   * the first day of the next month if val is greater than the number of
-  * days in the month.
+  * days in the following month.
   *
   * @param {Date} d: The starting date
   * @param {int} val: The desired value
   */
   next: function(d, val) {
+    var month = later.date.nextRollover(d, val, later.D, later.M),
+        DExtent = later.D.extent(month);
+
+    val = val > DExtent[1] ? DExtent[0] : val || DExtent[1];
+
     return later.date.next(
-      later.Y.val(d),
-      later.M.val(d) + (val < later.D.val(d) ? 1 : 0),
-      val > later.D.val(d) ? Math.min(val, later.D.extent(d)[1] + 1) :
-      Math.min(val, later.D.extent(later.M.next(d, later.M.val(d)+1))[1] + 1)
+      later.Y.val(month),
+      later.M.val(month),
+      val
     );
   },
 
   /**
   * Returns the end of the previous instance of the day value indicated. Returns
   * the last day in the previous month if val is greater than the number of days
-  * in the month.
+  * in the previous month.
   *
   * @param {Date} d: The starting date
   * @param {int} val: The desired value
   */
   prev: function(d, val) {
-    return later.date.next(
-      later.Y.val(d),
-      later.M.val(d) - (val > later.D.val(d) ? 1 : 0),
-      val < later.D.val(d) ? val :
-      Math.min(val, later.D.extent(later.M.prev(d, later.M.val(d)-1))[1])
+    var month = later.date.prevRollover(d, val, later.D, later.M),
+        DExtent = later.D.extent(month);
+
+    val = val > DExtent[1] ? DExtent[1] : val || DExtent[1];
+
+    return later.date.prev(
+      later.Y.val(month),
+      later.M.val(month),
+      val
     );
   }
 

@@ -52,10 +52,14 @@ later.dayOfWeek = later.dw = {
   * @param {int} val: The desired value
   */
   next: function(d, val) {
+    var dwExtent = later.dw.extent();
+
+    val = val > dwExtent[1] ? dwExtent[0] : val || dwExtent[1];
+
     return later.date.next(
       later.Y.val(d),
       later.M.val(d),
-      later.D.val(d) + (val - later.dw.val(d)) + (val < later.dw.val(d) ? 7 : 0));
+      later.D.val(d) + (val - later.dw.val(d)) + (val <= later.dw.val(d) ? 7 : 0));
   },
 
   /**
@@ -65,9 +69,13 @@ later.dayOfWeek = later.dw = {
   * @param {int} val: The desired value
   */
   prev: function(d, val) {
+    var dwExtent = later.dw.extent();
+
+    val = val > dwExtent[1] ? dwExtent[1] : val || dwExtent[1];
+
     return later.date.prev(
       later.Y.val(d),
       later.M.val(d),
-      later.D.val(d) + (val - later.dw.val(d)) + (val > later.dw.val(d) ? -7 : 0));
+      later.D.val(d) + (val - later.dw.val(d)) + (val >= later.dw.val(d) ? -7 : 0));
   }
 };

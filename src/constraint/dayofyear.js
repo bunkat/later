@@ -22,12 +22,13 @@ later.dayOfYear = later.dy = {
 
   /**
   * The minimum and maximum valid day of year values of the month specified.
+  * Zero indicates the last day of the year.
   *
   * @param {Date} d: The date indicating the month to find the extent of
   */
   extent: function(d) {
     return (d.dyExtent =
-      [1, later.M.val(later.date.next(later.Y.val(d), 1, 29)) === 1 ? 366 : 365]);
+      [1, later.M.val(later.date.next(later.Y.val(d), 2, 29)) === 2 ? 366 : 365]);
   },
 
   /**
@@ -45,7 +46,7 @@ later.dayOfYear = later.dy = {
   * @param {Date} d: The specified date
   */
   end: function(d) {
-    return later.D.end(d, cache);
+    return later.D.end(d);
   },
 
   /**
@@ -55,11 +56,17 @@ later.dayOfYear = later.dy = {
   * @param {int} val: The desired value
   */
   next: function(d, val) {
+    var year = later.date.nextRollover(d, val, later.dy, later.Y),
+        dyExtent = later.dy.extent(year);
+
+    val = val > dyExtent[1] ? dyExtent[0] : val || dyExtent[1];
+
     return later.date.next(
-      later.Y.val(d) + (val < later.dy.val(d) ? 1 : 0),
-      later.M.extent()[0],
+      later.Y.val(year),
+      later.M.val(year),
       val
     );
+
   },
 
   /**
@@ -69,9 +76,14 @@ later.dayOfYear = later.dy = {
   * @param {int} val: The desired value
   */
   prev: function(d, val) {
+    var year = later.date.prevRollover(d, val, later.dy, later.Y),
+        dyExtent = later.dy.extent(year);
+
+    val = val > dyExtent[1] ? dyExtent[1] : val || dyExtent[1];
+
     return later.date.prev(
-      later.Y.val(d) + (val > later.dy.val(d) ? -1 : 0),
-      later.M.extent()[0],
+      later.Y.val(year),
+      later.M.val(year),
       val
     );
   }

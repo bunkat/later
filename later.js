@@ -39,337 +39,303 @@ later = function() {
       return this.replace(/^\s+|\s+$/g, "");
     };
   }
-  later.constraint = {
-    priority: [ "Y" ]
+  later.day = later.D = {
+    val: function(d) {
+      return d.D || (d.D = later.option.UTC ? d.getUTCDate() : d.getDate());
+    },
+    extent: function(d) {
+      return d.DExtent || (d.DExtent = [ 1, later.D.val(new Date(later.Y.val(d), later.M.val(d), 0)) ]);
+    },
+    start: function(d) {
+      return d.DStart || (d.DStart = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d)));
+    },
+    end: function(d) {
+      return d.DEnd || (d.DEnd = later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d)));
+    },
+    next: function(d, val) {
+      var month = later.date.nextRollover(d, val, later.D, later.M), DExtent = later.D.extent(month);
+      val = val > DExtent[1] ? DExtent[0] : val || DExtent[1];
+      return later.date.next(later.Y.val(month), later.M.val(month), val);
+    },
+    prev: function(d, val) {
+      var month = later.date.prevRollover(d, val, later.D, later.M), DExtent = later.D.extent(month);
+      val = val > DExtent[1] ? DExtent[1] : val || DExtent[1];
+      return later.date.prev(later.Y.val(month), later.M.val(month), val);
+    }
   };
-  later.constraint.h = function(values) {
-    var inc, Y, M, D, h, range, date;
-    function init(d, cache, reverse) {
-      var UTC = later.option.UTC;
-      Y = cache.Y || (cache.Y = UTC ? d.getUTCFullYear() : d.getFullYear()), M = cache.M || (cache.M = UTC ? d.getUTCMonth() : d.getMonth()), 
-      D = cache.D || (cache.D = UTC ? d.getUTCDate() : d.getDate()), h = cache.h || (cache.h = UTC ? d.getUTCHours() : d.getHours()), 
-      range = reverse ? later.range.prev : later.range.next;
-      date = reverse ? later.date.prev : later.date.next;
+  later.dayOfWeekCount = later.dc = {
+    val: function(d) {
+      return d.dc || (d.dc = Math.floor((later.D.val(d) - 1) / 7) + 1);
+    },
+    extent: function(d) {
+      return d.dcExtent || (d.dcExtent = [ 1, Math.ceil(later.D.extent(d)[1] / 7) ]);
+    },
+    start: function(d) {
+      return d.dcStart || (d.dcStart = later.date.next(later.Y.val(d), later.M.val(d), Math.max(1, (later.dc.val(d) - 1) * 7 + 1 || 1)));
+    },
+    end: function(d) {
+      return d.dcEnd || (d.dcEnd = later.date.prev(later.Y.val(d), later.M.val(d), Math.min(later.dc.val(d) * 7, later.D.extent(d)[1])));
+    },
+    next: function(d, val) {
+      var month = later.date.nextRollover(d, val, later.dc, later.M), dcExtent = later.dc.extent(month);
+      val = val > dcExtent[1] ? dcExtent[0] : val || dcExtent[1];
+      return later.date.next(later.Y.val(month), later.M.val(month), 1 + 7 * (val - 1));
+    },
+    prev: function(d, val) {
+      var month = later.date.prevRollover(d, val, later.dc, later.M), dcExtent = later.dc.extent(month);
+      val = val > dcExtent[1] ? dcExtent[1] : val || dcExtent[1];
+      return later.dc.end(later.date.prev(later.Y.val(month), later.M.val(month), 1 + 7 * (val - 1)));
     }
-    return {
-      value: function(curDate) {
-        init(curDate, {});
-        return h;
-      },
-      isInvalid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if ((inc = range(h, values, 24)) !== h) {
-          return date(Y, M, D, inc);
-        }
-        return false;
-      },
-      isValid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if ((inc = later.range.invalid(h, values, 0, 23, 24, false, reverse)) !== false) {
-          return inc === undefined ? undefined : date(Y, M, D, inc);
-        }
-        return false;
-      }
-    };
   };
-  later.constraint.m = function(values) {
-    var inc, Y, M, D, h, m, range, date;
-    function init(d, cache, reverse) {
-      var UTC = later.option.UTC;
-      Y = cache.Y || (cache.Y = UTC ? d.getUTCFullYear() : d.getFullYear()), M = cache.M || (cache.M = UTC ? d.getUTCMonth() : d.getMonth()), 
-      D = cache.D || (cache.D = UTC ? d.getUTCDate() : d.getDate()), h = cache.h || (cache.h = UTC ? d.getUTCHours() : d.getHours()), 
-      m = cache.m || (cache.m = UTC ? d.getUTCMinutes() : d.getMinutes()), range = reverse ? later.range.prev : later.range.next;
-      date = reverse ? later.date.prev : later.date.next;
+  later.dayOfWeek = later.dw = {
+    val: function(d) {
+      return d.dw || (d.dw = later.option.UTC ? d.getUTCDay() + 1 : d.getDay() + 1);
+    },
+    extent: function() {
+      return [ 1, 7 ];
+    },
+    start: function(d) {
+      return later.D.start(d);
+    },
+    end: function(d) {
+      return later.D.end(d);
+    },
+    next: function(d, val) {
+      var dwExtent = later.dw.extent();
+      val = val > dwExtent[1] ? dwExtent[0] : val || dwExtent[1];
+      return later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d) + (val - later.dw.val(d)) + (val <= later.dw.val(d) ? 7 : 0));
+    },
+    prev: function(d, val) {
+      var dwExtent = later.dw.extent();
+      val = val > dwExtent[1] ? dwExtent[1] : val || dwExtent[1];
+      return later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d) + (val - later.dw.val(d)) + (val >= later.dw.val(d) ? -7 : 0));
     }
-    return {
-      value: function(curDate) {
-        init(curDate, {});
-        return m;
-      },
-      isInvalid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if ((inc = range(m, values, 60)) !== m) {
-          return date(Y, M, D, h, inc);
-        }
-        return false;
-      },
-      isValid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if ((inc = later.range.invalid(m, values, 0, 59, 60, false, reverse)) !== false) {
-          return inc === undefined ? undefined : date(Y, M, D, h, inc);
-        }
-        return false;
-      }
-    };
   };
-  later.constraint.M = function(values) {
-    var inc, Y, M, range, date;
-    function init(d, cache, reverse) {
-      var UTC = later.option.UTC;
-      Y = cache.Y || (cache.Y = UTC ? d.getUTCFullYear() : d.getFullYear()), M = cache.M || (cache.M = UTC ? d.getUTCMonth() : d.getMonth()), 
-      range = reverse ? later.range.prev : later.range.next;
-      date = reverse ? later.date.prev : later.date.next;
+  later.dayOfYear = later.dy = {
+    val: function(d) {
+      return d.dy || (d.dy = Math.ceil(1 + (later.D.start(d).getTime() - later.Y.start(d).getTime()) / later.DAY));
+    },
+    extent: function(d) {
+      return d.dyExtent = [ 1, later.M.val(later.date.next(later.Y.val(d), 2, 29)) === 2 ? 366 : 365 ];
+    },
+    start: function(d) {
+      return later.D.start(d);
+    },
+    end: function(d) {
+      return later.D.end(d);
+    },
+    next: function(d, val) {
+      var year = later.date.nextRollover(d, val, later.dy, later.Y), dyExtent = later.dy.extent(year);
+      val = val > dyExtent[1] ? dyExtent[0] : val || dyExtent[1];
+      return later.date.next(later.Y.val(year), later.M.val(year), val);
+    },
+    prev: function(d, val) {
+      var year = later.date.prevRollover(d, val, later.dy, later.Y), dyExtent = later.dy.extent(year);
+      val = val > dyExtent[1] ? dyExtent[1] : val || dyExtent[1];
+      return later.date.prev(later.Y.val(year), later.M.val(year), val);
     }
-    return {
-      value: function(curDate) {
-        init(curDate, {});
-        return M;
-      },
-      isInvalid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if ((inc = range(M + 1, values, 12)) !== M + 1) {
-          return date(Y, inc - 1);
-        }
-        return false;
-      },
-      isValid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if ((inc = later.range.invalid(M + 1, values, 1, 12, 12, true, reverse)) !== false) {
-          return inc === undefined ? undefined : date(Y, inc - 1);
-        }
-        return false;
-      }
-    };
   };
-  later.constraint.s = function(values, reverse, cache) {
-    var lr = later.range, lds = later.date.second, range = reverse ? lr.prev : lr.next, rangeInvalid = reverse ? lr.prevInvalid : lr.nextInvalid, next = reverse ? lds.prev : lds.next, inc, s;
-    return {
-      isInvalid: function(cur) {
-        s = lsd.value(cur, cache);
-        if ((inc = range(s, values, lds.offset)) !== s) {
-          return next(cur, inc, cache);
-        }
-        return false;
-      },
-      isValid: function(cur) {
-        s = lsd.value(cur, cache);
-        if ((inc = rangeInvalid(s, values, lds.extent, lds.offset)) !== false) {
-          return !inc ? undefined : next(cur, inc, cache);
-        }
-        return false;
+  later.hour = later.h = {
+    val: function(d) {
+      return d.h || (d.h = later.option.UTC ? d.getUTCHours() : d.getHours());
+    },
+    extent: function() {
+      return [ 0, 23 ];
+    },
+    start: function(d) {
+      return d.hStart || (d.hStart = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d)));
+    },
+    end: function(d) {
+      return d.hEnd || (d.hEnd = later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d)));
+    },
+    next: function(d, val) {
+      val = val > 23 ? 0 : val;
+      var next = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d) + (val <= later.h.val(d) ? 1 : 0), val);
+      if (!later.option.UTC && next.getTime() < d.getTime()) {
+        next = later.date.next(later.Y.val(next), later.M.val(next), later.D.val(next), val + 1);
       }
-    };
+      return next;
+    },
+    prev: function(d, val) {
+      val = val > 23 ? 23 : val;
+      return later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d) + (val >= later.h.val(d) ? -1 : 0), val);
+    }
   };
-  later.constraint.t = function(values) {
-    var inc, Y, M, D, h, m, s, t, range, date;
-    function init(d, cache, reverse) {
-      var UTC = later.option.UTC;
-      Y = cache.Y || (cache.Y = UTC ? d.getUTCFullYear() : d.getFullYear()), M = cache.M || (cache.M = UTC ? d.getUTCMonth() : d.getMonth()), 
-      D = cache.D || (cache.D = UTC ? d.getUTCDate() : d.getDate()), h = cache.h || (cache.h = UTC ? d.getUTCHours() : d.getHours()), 
-      m = cache.m || (cache.m = UTC ? d.getUTCMinutes() : d.getMinutes()), s = cache.s || (cache.s = UTC ? d.getUTCSeconds() : d.getSeconds()), 
-      t = cache.t || (cache.t = later.date.time(h, m, s)), range = reverse ? later.range.prev : later.range.next;
-      date = reverse ? later.date.prev : later.date.next;
-    }
-    return {
-      value: function(curDate) {
-        init(curDate, {});
-        return t;
-      },
-      isInvalid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if ((inc = range(t, values)) !== t) {
-          var x = inc.split(":"), dayInc = !reverse ? t > inc ? 1 : 0 : t < inc ? -1 : 0;
-          return date(Y, M, D + dayInc, x[0], x[1], x[2]);
-        }
-        return false;
-      },
-      isValid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        var o = t;
-        if (values.indexOf(t) > -1) {
-          do {
-            s = reverse ? s - 1 : s + 1;
-            if (s === -1) {
-              s = 59;
-              m = m - 1;
-            } else if (s === 60) {
-              s = 0;
-              m = m + 1;
-            }
-            if (m === -1) {
-              m = 59;
-              h = h - 1;
-            } else if (m === 60) {
-              m = 0;
-              h = h + 1;
-            }
-            if (h === -1) {
-              h = 23;
-            } else if (h === 24) {
-              h = 0;
-            }
-            t = later.date.time(h, m, s);
-          } while (o !== t && values.indexOf(t) > -1);
-          return t === o ? undefined : reverse ? date(Y, M, D - (t > o ? 1 : 0), h, m, s) : date(Y, M, D + (t < o ? 1 : 0), h, m, s);
-        }
-        return false;
+  later.minute = later.m = {
+    val: function(d) {
+      return d.m || (d.m = later.option.UTC ? d.getUTCMinutes() : d.getMinutes());
+    },
+    extent: function(d) {
+      return [ 0, 59 ];
+    },
+    start: function(d) {
+      return d.mStart || (d.mStart = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d), later.m.val(d)));
+    },
+    end: function(d) {
+      return d.mEnd || (d.mEnd = later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d), later.m.val(d)));
+    },
+    next: function(d, val) {
+      val = val > 59 ? 0 : val;
+      var next = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d) + (val <= later.m.val(d) ? 1 : 0), val);
+      if (!later.option.UTC && next.getTime() < d.getTime()) {
+        next = later.date.next(later.Y.val(next), later.M.val(next), later.D.val(next), later.h.val(next), val + 120);
       }
-    };
+      return next;
+    },
+    prev: function(d, val) {
+      val = val > 59 ? 59 : val;
+      return later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d) + (val >= later.m.val(d) ? -1 : 0), val);
+    }
   };
-  later.constraint.ta = function(values) {
-    var value = values[0], x = value.split(":"), Y, M, D, h, m, s, t, range, date;
-    function init(d, cache, reverse) {
-      var UTC = later.options.UTC;
-      Y = cache.Y || (cache.Y = UTC ? d.getUTCFullYear() : d.getFullYear()), M = cache.M || (cache.M = UTC ? d.getUTCMonth() : d.getMonth()), 
-      D = cache.D || (cache.D = UTC ? d.getUTCDate() : d.getDate()), h = cache.h || (cache.h = UTC ? d.getUTCHours() : d.getHours()), 
-      m = cache.m || (cache.m = UTC ? d.getUTCMinutes() : d.getMinutes()), s = cache.s || (cache.s = UTC ? d.getUTCSeconds() : d.getSeconds()), 
-      t = cache.t || (cache.t = later.date.time(h, m, s)), range = reverse ? later.range.prev : later.range.next;
-      date = reverse ? later.date.prev : later.date.next;
+  later.month = later.M = {
+    val: function(d) {
+      return d.month || (d.month = later.option.UTC ? d.getUTCMonth() + 1 : d.getMonth() + 1);
+    },
+    extent: function() {
+      return [ 1, 12 ];
+    },
+    start: function(d) {
+      return d.MStart || (d.MStart = later.date.next(later.Y.val(d), later.M.val(d)));
+    },
+    end: function(d) {
+      return d.MEnd || (d.MEnd = later.date.prev(later.Y.val(d), later.M.val(d)));
+    },
+    next: function(d, val) {
+      var year = later.date.nextRollover(d, val, later.M, later.Y), MExtent = later.M.extent(year);
+      val = val > MExtent[1] ? MExtent[0] : val || MExtent[1];
+      return later.date.next(later.Y.val(year), val);
+    },
+    prev: function(d, val) {
+      var year = later.date.prevRollover(d, val, later.M, later.Y), MExtent = later.M.extent(year);
+      val = val > MExtent[1] ? MExtent[1] : val || MExtent[1];
+      return later.date.prev(later.Y.val(year), val);
     }
-    return {
-      value: function(curDate) {
-        init(curDate, {});
-        return t;
-      },
-      isInvalid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if (t < value) {
-          return reverse ? date(Y, M, D - 1) : date(Y, M, D, x[0], x[1], x[2]);
-        }
-        return false;
-      },
-      isValid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if (t >= value) {
-          return reverse ? date(Y, M, D, x[0], x[1], x[2] - 1) : date(Y, M, D + 1);
-        }
-        return false;
-      }
-    };
   };
-  later.constraint.tb = function(values) {
-    var value = values[0], x = value.split(":"), Y, M, D, h, m, s, t, range, date;
-    function init(d, cache, reverse) {
-      var UTC = later.options.UTC;
-      Y = cache.Y || (cache.Y = UTC ? d.getUTCFullYear() : d.getFullYear()), M = cache.M || (cache.M = UTC ? d.getUTCMonth() : d.getMonth()), 
-      D = cache.D || (cache.D = UTC ? d.getUTCDate() : d.getDate()), h = cache.h || (cache.h = UTC ? d.getUTCHours() : d.getHours()), 
-      m = cache.m || (cache.m = UTC ? d.getUTCMinutes() : d.getMinutes()), s = cache.s || (cache.s = UTC ? d.getUTCSeconds() : d.getSeconds()), 
-      t = cache.t || (cache.t = later.date.time(h, m, s)), range = reverse ? later.range.prev : later.range.next;
-      date = reverse ? later.date.prev : later.date.next;
-    }
-    return {
-      value: function(curDate) {
-        init(curDate, {});
-        return t;
-      },
-      isInvalid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if (t >= value) {
-          return reverse ? date(Y, M, D, x[0], x[1], x[2] - 1) : date(Y, M, D + 1);
-        }
-        return false;
-      },
-      isValid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if (t < value) {
-          return reverse ? date(Y, M, D - 1, x[0], x[1], x[2] - 1) : date(Y, M, D, x[0], x[1], x[2]);
-        }
-        return false;
+  later.second = later.s = {
+    val: function(d) {
+      return d.s || (d.s = later.option.UTC ? d.getUTCSeconds() : d.getSeconds());
+    },
+    extent: function() {
+      return [ 0, 59 ];
+    },
+    start: function(d) {
+      return d;
+    },
+    end: function(d) {
+      return d;
+    },
+    next: function(d, val) {
+      val = val > 59 ? 0 : val;
+      var next = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d), later.m.val(d) + (val <= later.s.val(d) ? 1 : 0), val);
+      if (!later.option.UTC && next.getTime() < d.getTime()) {
+        next = later.date.next(later.Y.val(next), later.M.val(next), later.D.val(next), later.h.val(next), later.m.val(next), val + 7200);
       }
-    };
+      return next;
+    },
+    prev: function(d, val, cache) {
+      val = val > 59 ? 59 : val;
+      return later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d), later.m.val(d) + (val >= later.s.val(d) ? -1 : 0), val);
+    }
   };
-  later.constraint.dw = function(values) {
-    var inc, Y, M, D, d, range, date;
-    function init(val, cache, reverse) {
-      var UTC = later.option.UTC;
-      Y = cache.Y || (cache.Y = UTC ? val.getUTCFullYear() : val.getFullYear());
-      M = cache.M || (cache.M = UTC ? val.getUTCMonth() : val.getMonth());
-      D = cache.D || (cache.D = UTC ? val.getUTCDate() : val.getDate());
-      d = cache.d || (cache.d = UTC ? val.getUTCDay() : val.getDay());
-      range = reverse ? later.range.prev : later.range.next;
-      date = reverse ? later.date.prev : later.date.next;
+  later.time = later.t = {
+    val: function(d) {
+      return d.t || (d.t = later.date.pad(later.h.val(d)) + ":" + later.date.pad(later.m.val(d)) + ":" + later.date.pad(later.s.val(d)));
+    },
+    extent: function() {
+      return [ "00:00:00", "23:59:59" ];
+    },
+    start: function(d) {
+      return d;
+    },
+    end: function(d) {
+      return d;
+    },
+    next: function(d, val) {
+      var x = val.split(":");
+      return later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d) + (val <= later.t.val(d) ? 1 : 0), x[0], x[1], x[2]);
+    },
+    prev: function(d, val) {
+      var x = val.split(":");
+      return later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d) + (val >= later.t.val(d) ? -1 : 0), x[0], x[1], x[2]);
     }
-    return {
-      value: function(curDate) {
-        init(curDate, {});
-        return d;
-      },
-      isInvalid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if ((inc = range(d + 1, values, 7)) !== d + 1) {
-          return date(Y, M, D + (inc - 1) - d);
-        }
-        return false;
-      },
-      isValid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if ((inc = later.range.invalid(d + 1, values, 1, 7, 7, true, reverse)) !== false) {
-          return inc === undefined ? undefined : date(Y, M, D + (inc - 1) - d);
-        }
-        return false;
-      }
-    };
   };
-  later.constraint.Y = function(values, direction, cache) {
-    var lr = later.range, ldy = later.date.year, range = direction ? lr.prev : lr.next, rangeInvalid = direction ? lr.prevInvalid : lr.nextInvalid, next = direction ? ldy.prev : ldy.next, inc, Y;
-    return {
-      isInvalid: function(cur) {
-        Y = ldy.value(cur, cache);
-        if ((inc = range(Y, values)) !== Y) {
-          return direction ? inc < Y ? next(cur, inc) : undefined : inc > Y ? next(cur, inc) : undefined;
-        }
-        return false;
-      },
-      isValid: function(cur) {
-        Y = ldy.value(cur, cache);
-        if ((inc = rangeInvalid(Y, values, ldy.extent(), ldy.offset())) !== false) {
-          return !inc ? undefined : next(cur, inc);
-        }
-        return false;
-      }
-    };
+  later.weekOfMonth = later.wm = {
+    val: function(d) {
+      return d.wm || (d.wm = (later.D.val(d) + (later.dw.val(later.M.start(d)) - 1) + (7 - later.dw.val(d))) / 7);
+    },
+    extent: function(d) {
+      return d.wmExtent || (d.wmExtent = [ 1, (later.D.extent(d)[1] + (later.dw.val(later.M.start(d)) - 1) + (7 - later.dw.val(later.M.end(d)))) / 7 ]);
+    },
+    start: function(d) {
+      return d.wmStart || (d.wmStart = later.date.next(later.Y.val(d), later.M.val(d), Math.max(later.D.val(d) - later.dw.val(d) + 1, 1)));
+    },
+    end: function(d) {
+      return d.wmEnd || (d.wmEnd = later.date.prev(later.Y.val(d), later.M.val(d), Math.min(later.D.val(d) + (7 - later.dw.val(d)), later.D.extent(d)[1])));
+    },
+    next: function(d, val) {
+      var month = later.date.nextRollover(d, val, later.wm, later.M), wmExtent = later.wm.extent(month);
+      val = val > wmExtent[1] ? wmExtent[0] : val || wmExtent[1];
+      return later.date.next(later.Y.val(month), later.M.val(month), Math.max(1, (val - 1) * 7 - (later.dw.val(month) - 2)));
+    },
+    prev: function(d, val) {
+      var month = later.date.prevRollover(d, val, later.wm, later.M), wmExtent = later.wm.extent(month);
+      val = val > wmExtent[1] ? wmExtent[1] : val || wmExtent[1];
+      return later.wm.end(later.date.next(later.Y.val(month), later.M.val(month), Math.max(1, (val - 1) * 7 - (later.dw.val(month) - 2))));
+    }
   };
-  later.constraint.dy = function(values) {
-    var inc, Y, M, D, dy, Jan1, Today, daysInYear, range, date;
-    var SEC = 1e3, MIN = SEC * 60, HOUR = MIN * 60, DAY = HOUR * 24;
-    function calcDaysInYear(year) {
-      return new Date(Date.UTC(year, 1, 29)).getUTCMonth() === 1 ? 366 : 365;
+  later.weekOfYear = later.wy = {
+    val: function(d) {
+      if (d.wy) return d.wy;
+      var wThur = later.dw.next(later.wy.start(d), 5), YThur = later.dw.next(later.Y.prev(d, later.Y.val(wThur) - 1), 5);
+      return d.wy = 1 + Math.ceil((wThur.getTime() - YThur.getTime()) / later.WEEK);
+    },
+    extent: function(d) {
+      return d.wyExtent || (d.wyExtent = [ 1, later.dw.val(later.Y.start(d)) === 5 || later.dw.val(later.Y.end(d)) === 5 ? 53 : 52 ]);
+    },
+    start: function(d) {
+      return d.wyStart || (d.wyStart = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d) - (later.dw.val(d) > 1 ? later.dw.val(d) - 2 : 6)));
+    },
+    end: function(d) {
+      return d.wyEnd || (d.wyEnd = later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d) + (later.dw.val(d) > 1 ? 8 - later.dw.val(d) : 0)));
+    },
+    next: function(d, val) {
+      var wyStart = later.wy.start(d), wy = later.wy.val(d), year = val && val <= wy || !val && wy == later.wy.extent(d)[1] ? later.Y.next(d, later.Y.val(d) + 1) : later.Y.start(d);
+      val = Math.min(val || later.wy.extent(year)[1], later.wy.extent(year)[1]);
+      var diff = val > wy ? val - wy : later.wy.extent(d)[1] - wy + val;
+      return later.date.next(later.Y.val(wyStart), later.M.val(wyStart), later.D.val(wyStart) + 7 * diff);
+    },
+    prev: function(d, val) {
+      var wyEnd = later.wy.end(d), YPrev = later.Y.prev(wyEnd, later.Y.val(wyEnd) - 1), wy = later.wy.val(d);
+      val = Math.min(val || later.wy.extent(YPrev)[1], later.wy.extent(YPrev)[1]);
+      var diff = val < wy ? wy - val : wy + (later.wy.extent(YPrev)[1] - val);
+      return later.date.prev(later.Y.val(wyEnd), later.M.val(wyEnd), later.D.val(wyEnd) - 7 * diff);
     }
-    function calcDayOfYear(year, month, day) {
-      var first = new Date(Date.UTC(year, 0, 1)).getTime(), current = new Date(Date.UTC(year, month, day)).getTime();
-      return Math.ceil(current - first) / DAY + 1;
+  };
+  later.year = later.Y = {
+    val: function(d) {
+      return d.Y || (d.Y = later.option.UTC ? d.getUTCFullYear() : d.getFullYear());
+    },
+    extent: function() {
+      return [ later.option.minYear, later.option.maxYear ];
+    },
+    start: function(d) {
+      return d.YStart || (d.YStart = later.date.next(later.Y.val(d)));
+    },
+    end: function(d) {
+      return d.YEnd || (d.YEnd = later.date.prev(later.Y.val(d)));
+    },
+    next: function(d, val) {
+      return val > later.Y.val(d) && val <= later.Y.extent()[1] ? later.date.next(val) : undefined;
+    },
+    prev: function(d, val) {
+      return val < later.Y.val(d) && val >= later.Y.extent()[0] ? later.date.prev(val) : undefined;
     }
-    function calcDiff() {
-      var UTC = later.option.UTC, result = date(Y, 0, inc), expected = inc < 0 ? inc + daysInYear : inc > daysInYear ? inc - daysInYear : inc, actual = calcDayOfYear(UTC ? result.getUTCFullYear() : result.getFullYear(), UTC ? result.getUTCMonth() : result.getMonth(), UTC ? result.getUTCDate() : result.getDate());
-      return expected - actual;
-    }
-    function init(d, cache, reverse) {
-      var UTC = later.option.UTC;
-      Y = cache.Y || (cache.Y = UTC ? d.getUTCFullYear() : d.getFullYear());
-      M = cache.M || (cache.M = UTC ? d.getUTCMonth() : d.getMonth());
-      D = cache.D || (cache.D = UTC ? d.getUTCDate() : d.getDate());
-      dy = cache.dy || (cache.dy = calcDayOfYear(Y, M, D));
-      daysInYear = cache.daysInYear || (cache.daysInYear = calcDaysInYear(Y));
-      range = reverse ? later.range.prev : later.range.next;
-      date = reverse ? later.date.prev : later.date.next;
-    }
-    return {
-      value: function(curDate) {
-        init(curDate, {});
-        return dy;
-      },
-      isInvalid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if (((inc = range(dy, values, daysInYear)) || daysInYear) !== dy) {
-          return date(Y, 0, inc + calcDiff());
-        }
-        return false;
-      },
-      isValid: function(curDate, reverse, cache) {
-        init(curDate || new Date(), cache || {}, reverse);
-        if ((inc = later.range.invalid(dy, values, 1, daysInYear, daysInYear, true, reverse)) !== false) {
-          if (!inc) return undefined;
-          return date(Y, 0, inc + calcDiff());
-        }
-        return false;
-      }
-    };
   };
   later.option = {
     resolution: 1,
     UTC: true,
-    maxYear: 2050,
-    minYear: 2e3
+    maxYear: 2025,
+    minYear: 2005
   };
   later.dir = {
     forward: 0,
@@ -532,12 +498,22 @@ later = function() {
     };
   };
   later.date = {};
-  later.date.constant = {
-    SEC: 1e3,
-    MIN: 6e4,
-    HOUR: 36e5,
-    DAY: 864e5,
-    WEEK: 6048e5
+  later.date.nextRollover = function(d, val, constraint, period) {
+    return val && val <= constraint.val(d) || val > constraint.extent(d)[1] || !val && constraint.val(d) === constraint.extent(d)[1] ? period.next(d, period.val(d) + 1) : period.start(d);
+  };
+  later.date.prevRollover = function(d, val, constraint, period) {
+    return val >= constraint.val(d) || !val ? period.start(period.prev(d, period.val(d) - 1)) : period.start(d);
+  };
+  later.SEC = 1e3;
+  later.MIN = later.SEC * 60;
+  later.HOUR = later.MIN * 60;
+  later.DAY = later.HOUR * 24;
+  later.WEEK = later.DAY * 7;
+  later.date.pad = function(val) {
+    return val < 10 ? "0" + val : val;
+  };
+  later.date.mod = function(val, mod, min) {
+    return val > mod ? min || 0 : val < (min || 0) ? mod : val;
   };
   later.date.next = function(Y, M, D, h, m, s) {
     var len = arguments.length;
@@ -551,281 +527,11 @@ later = function() {
   later.date.prev = function(Y, M, D, h, m, s) {
     var len = arguments.length;
     M = len < 2 ? 11 : M - 1;
-    D = len < 3 ? new Date(Date.UTC(Y, M + 1, 0)).getUTCDate() : D;
+    D = len < 3 ? later.D.extent(later.date.next(Y, M + 1))[1] : D;
     h = len < 4 ? 23 : h;
     m = len < 5 ? 59 : m;
     s = len < 6 ? 59 : s;
     return later.option.UTC ? new Date(Date.UTC(Y, M, D, h, m, s)) : new Date(Y, M, D, h, m, s);
-  };
-  later.date.day = {
-    extent: function(d, cache) {
-      var t = cache.daysInMonth || (cache.daysInMonth = later.date.day.value(later.date.month.end(d, cache), {}));
-      return [ 1, t ];
-    },
-    start: function(d, cache) {
-      return cache.dayStart || (cache.dayStart = later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache)));
-    },
-    end: function(d, cache) {
-      return cache.dayEnd || (cache.dayEnd = later.date.prev(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache)));
-    },
-    value: function(d, cache) {
-      return cache.day || (cache.day = later.option.UTC ? d.getUTCDate() : d.getDate());
-    },
-    next: function(d, val, cache) {
-      if (val > later.date.day.extent(d, cache)[1]) {
-        return later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache) + 1, 1);
-      }
-      var month = later.date.month.value(d, cache) + (val < later.date.day.value(d, cache) ? 1 : 0), md = later.date.month.next(d, month, cache), days = later.date.day.extent(md, {})[1];
-      return later.date.next(later.date.year.value(d, cache), month, val > days ? 1 : val);
-    },
-    prev: function(d, val, cache) {
-      var month = later.date.month.value(d, cache) + (val > later.date.day.value(d, cache) ? -1 : 0), md = later.date.month.prev(d, month, cache), days = later.date.day.extent(md, {})[1];
-      return later.date.prev(later.date.year.value(d, cache), month, val > days ? days : val);
-    }
-  };
-  later.date.hour = {
-    extent: function(d, cache) {
-      return [ 0, 23 ];
-    },
-    start: function(d, cache) {
-      return cache.hourStart || (cache.hourStart = later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache), later.date.hour.value(d, cache)));
-    },
-    end: function(d, cache) {
-      return cache.hourEnd || (cache.hourEnd = later.date.prev(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache), later.date.hour.value(d, cache)));
-    },
-    value: function(d, cache) {
-      return cache.hours || (cache.hours = later.option.UTC ? d.getUTCHours() : d.getHours());
-    },
-    next: function(d, val, cache) {
-      return later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache) + (val < later.date.hour.value(d, cache) ? 1 : 0), val);
-    },
-    prev: function(d, val, cache) {
-      return later.date.prev(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache) + (val > later.date.hour.value(d, cache) ? -1 : 0), val);
-    }
-  };
-  later.date.minute = {
-    extent: function(d, cache) {
-      return [ 0, 59 ];
-    },
-    start: function(d, cache) {
-      return cache.minuteStart || (cache.minuteStart = later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache), later.date.hour.value(d, cache), later.date.minute.value(d, cache)));
-    },
-    end: function(d, cache) {
-      return cache.minuteEnd || (cache.minuteEnd = later.date.prev(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache), later.date.hour.value(d, cache), later.date.minute.value(d, cache)));
-    },
-    value: function(d, cache) {
-      return cache.minutes || (cache.minutes = later.option.UTC ? d.getUTCMinutes() : d.getMinutes());
-    },
-    next: function(d, val, cache) {
-      return later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache), later.date.hour.value(d, cache) + (val < later.date.minute.value(d, cache) ? 1 : 0), val);
-    },
-    prev: function(d, val, cache) {
-      return later.date.prev(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache), later.date.hour.value(d, cache) + (val > later.date.minute.value(d, cache) ? -1 : 0), val);
-    }
-  };
-  later.date.month = {
-    extent: function(d, cache) {
-      return [ 1, 12 ];
-    },
-    start: function(d, cache) {
-      return cache.hourStart || (cache.hourStart = later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache)));
-    },
-    end: function(d, cache) {
-      return cache.hourEnd || (cache.hourEnd = later.date.prev(later.date.year.value(d, cache), later.date.month.value(d, cache)));
-    },
-    value: function(d, cache) {
-      return cache.month || (cache.month = later.option.UTC ? d.getUTCMonth() + 1 : d.getMonth() + 1);
-    },
-    next: function(d, val, cache) {
-      return later.date.next(later.date.year.value(d, cache) + (val < later.date.month.value(d, cache) ? 1 : 0), val);
-    },
-    prev: function(d, val, cache) {
-      return later.date.prev(later.date.year.value(d, cache) + (val > later.date.month.value(d, cache) ? -1 : 0), val);
-    }
-  };
-  later.date.second = {
-    extent: function(d, cache) {
-      return [ 0, 59 ];
-    },
-    start: function(d, cache) {
-      return d;
-    },
-    end: function(d, cache) {
-      return d;
-    },
-    value: function(d, cache) {
-      return cache.seconds || (cache.seconds = later.option.UTC ? d.getUTCSeconds() : d.getSeconds());
-    },
-    next: function(d, val, cache) {
-      return later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache), later.date.hour.value(d, cache), later.date.minute.value(d, cache) + (val < later.date.second.value(d, cache) ? 1 : 0), val);
-    },
-    prev: function(d, val, cache) {
-      return later.date.prev(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache), later.date.hour.value(d, cache), later.date.minute.value(d, cache) + (val > later.date.second.value(d, cache) ? -1 : 0), val);
-    }
-  };
-  later.date.time = {
-    pad: function(val) {
-      return val < 10 ? "0" + val : val;
-    },
-    extent: function(d, cache) {
-      return [ "00:00:00", "23:59:59" ];
-    },
-    start: function(d, cache) {
-      return d;
-    },
-    end: function(d, cache) {
-      return d;
-    },
-    value: function(d, cache) {
-      return cache.time || (cache.time = later.date.time.pad(later.date.hour.value(d, cache)) + ":" + later.date.time.pad(later.date.minute.value(d, cache)) + ":" + later.date.time.pad(later.date.second.value(d, cache)));
-    },
-    next: function(d, val, cache) {
-      var x = val.split(":");
-      return later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache) + (val < later.date.time.value(d, cache) ? 1 : 0), x[0], x[1], x[2]);
-    },
-    prev: function(d, val, cache) {
-      var x = val.split(":");
-      return later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache) + (val > later.date.time.value(d, cache) ? -1 : 0), x[0], x[1], x[2]);
-    }
-  };
-  later.date.weekdayCount = {
-    extent: function(d, cache) {
-      return [ 1, Math.ceil(later.date.day.extent(d, cache)[1] / 7) ];
-    },
-    start: function(d, cache) {
-      return cache.weekdayCountStart || (cache.weekdayCountStart = later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache), (later.date.weekdayCount.value(d, cache) - 1) * 7 + 1 || 1));
-    },
-    end: function(d, cache) {
-      return cache.weekdayCountEnd || (cache.weekdayCountEnd = later.date.prev(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.weekdayCount.value(d, cache) * 7));
-    },
-    value: function(d, cache) {
-      return cache.weekdaycount || (cache.weekdaycount = Math.floor((later.date.day.value(d, cache) - 1) / 7) + 1);
-    },
-    next: function(d, val, cache) {
-      return later.date.day.next(d, 1 + 7 * (val - 1), cache);
-    },
-    prev: function(d, val, cache) {
-      return later.date.day.prev(d, 7 + 7 * (val - 1), cache);
-    }
-  };
-  later.date.weekday = {
-    extent: function(d, cache) {
-      return [ 1, 7 ];
-    },
-    start: function(d, cache) {
-      return later.date.day.start(d, cache);
-    },
-    end: function(d, cache) {
-      return later.date.day.end(d, cache);
-    },
-    value: function(d, cache) {
-      return cache.weekday || (cache.weekday = later.option.UTC ? d.getUTCDay() + 1 : d.getDay() + 1);
-    },
-    next: function(d, val, cache) {
-      var wd = later.date.weekday.value(d, cache);
-      return later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache) + (val - wd) + (val < wd ? 7 : 0));
-    },
-    prev: function(d, val, cache) {
-      var wd = later.date.weekday.value(d, cache);
-      return later.date.prev(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache) + (val - wd) + (val > wd ? -7 : 0));
-    }
-  };
-  later.date.week = {
-    extent: function(d, cache) {
-      return [ 1, cache.weekCount || (cache.weekCount = (later.date.day.extent(d, cache)[1] + (later.date.weekday.value(later.date.month.start(d, cache), {}) - 1) + (7 - later.date.weekday.value(later.date.month.end(d, cache), {}))) / 7) ];
-    },
-    start: function(d, cache) {
-      return cache.weekStart || (cache.weekStart = later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache), Math.max(later.date.day.value(d, cache) - later.date.weekday.value(d, cache) + 1, 1)));
-    },
-    end: function(d, cache) {
-      return cache.weekEnd || (cache.weekEnd = later.date.prev(later.date.year.value(d, cache), later.date.month.value(d, cache), Math.min(later.date.day.value(d, cache) + (7 - later.date.weekday.value(d, cache)), later.date.day.extent(d, cache)[1])));
-    },
-    value: function(d, cache) {
-      return cache.week || (cache.week = (later.date.day.value(d, cache) + (later.date.weekday.value(later.date.month.start(d, cache), {}) - 1) + (7 - later.date.weekday.value(d, {}))) / 7);
-    },
-    next: function(d, val, cache) {
-      var w = later.date.week.value(d, cache), month = val > w ? later.date.month.start(d, cache) : later.date.month.next(d, later.date.month.value(d, cache) + 1, cache);
-      return later.date.next(later.date.year.value(d, cache), later.date.month.value(month, {}), Math.max(1, (val - 1) * 7 - (later.date.weekday.value(month, {}) - 2)));
-    },
-    prev: function(d, val, cache) {
-      var w = later.date.week.value(d, cache), month = val < w ? later.date.month.start(d, cache) : later.date.month.start(later.date.month.prev(d, later.date.month.value(d, cache) - 1, cache), {});
-      return later.date.week.end(later.date.next(later.date.year.value(d, cache), later.date.month.value(month, {}), Math.max(1, (val - 1) * 7 - (later.date.weekday.value(month, {}) - 2))), {});
-    }
-  };
-  later.date.weekyear = {
-    extent: function(d, cache) {
-      if (cache.weekyearCount) return [ 1, cache.weekyearCount ];
-      var firstWeekdayOfYear = cache.firstWeekdayOfYear || (cache.firstWeekdayOfYear = later.date.weekday.value(later.date.year.start(d, cache), {}));
-      var lastWeekdayOfYear = cache.lastWeekdayOfYear || (cache.lastWeekdayOfYear = later.date.weekday.value(later.date.year.end(d, cache), {}));
-      return [ 1, cache.weekyearCount = firstWeekdayOfYear === 5 || lastWeekdayOfYear === 5 ? 53 : 52 ];
-    },
-    start: function(d, cache) {
-      return cache.weekyearStart || (cache.weekyearStart = later.date.next(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache) - (later.date.weekday.value(d, cache) > 1 ? later.date.weekday.value(d, cache) - 2 : 6)));
-    },
-    end: function(d, cache) {
-      return cache.weekyearEnd || (cache.weekyearEnd = later.date.prev(later.date.year.value(d, cache), later.date.month.value(d, cache), later.date.day.value(d, cache) + (later.date.weekday.value(d, cache) > 1 ? 8 - later.date.weekday.value(d, cache) : 0)));
-    },
-    value: function(d, cache) {
-      if (cache.weekyear) return cache.weekyear;
-      var thursWeek = later.date.weekday.next(later.date.weekyear.start(d, cache), 5, {});
-      var thursYear = later.date.weekday.next(later.date.year.prev(d, later.date.year.value(thursWeek, {}) - 1, cache), 5, {});
-      return cache.weekyear || (cache.weekyear = 1 + Math.ceil((thursWeek.getTime() - thursYear.getTime()) / later.date.constant.WEEK));
-    },
-    next: function(d, val, cache) {
-      var wStart = later.date.weekyear.start(d, cache), w = later.date.weekyear.value(d, cache), diff = val > w ? val - w : later.date.weekyear.extent(d, cache)[1] - w + val;
-      return later.date.next(later.date.year.value(wStart, {}), later.date.month.value(wStart, {}), later.date.day.value(wStart, {}) + 7 * diff);
-    },
-    prev: function(d, val, cache) {
-      var wEnd = later.date.weekyear.end(d, cache), w = later.date.weekyear.value(d, cache), diff = val < w ? w - val : w + (later.date.weekyear.extent(later.date.year.prev(wEnd, later.date.year.value(wEnd, {}) - 1, {}), {})[1] - val);
-      return later.date.prev(later.date.year.value(wEnd, {}), later.date.month.value(wEnd, {}), later.date.day.value(wEnd, {}) - 7 * diff);
-    }
-  };
-  later.date.yearday = {
-    extent: function(d, cache) {
-      if (cache.yeardayCount) return [ 1, cache.yeardayCount ];
-      var y = later.date.year.value(d, cache), yeardayCount = y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0) ? 366 : 365;
-      return [ 1, cache.yeardayCount = yeardayCount ];
-    },
-    start: function(d, cache) {
-      return later.date.year.start(d, cache);
-    },
-    end: function(d, cache) {
-      return later.date.year.end(d, cache);
-    },
-    value: function(d, cache) {
-      if (cache.yearday) return cache.yearday;
-      var dayCounts = [ 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 ], month = later.date.month.value(d, cache) - 1, offset = month > 1 && later.date.yearday.extent(d, cache)[1] === 366 ? 1 : 0, day = dayCounts[month] + later.date.day.value(d, cache) + offset;
-      return cache.yearday = day;
-    },
-    next: function(d, val, cache) {
-      return later.date.next(later.date.year.value(d, cache) + (val < later.date.yearday.value(d, cache) ? 1 : 0), 1, val);
-    },
-    prev: function(d, val, cache) {
-      return later.date.prev(later.date.year.value(d, cache) + (val > later.date.yearday.value(d, cache) ? -1 : 0), 1, val);
-    }
-  };
-  later.date.year = {
-    extent: function(d, cache) {
-      return [ later.option.minYear, later.option.maxYear ];
-    },
-    start: function(d, cache) {
-      return cache.yearStart || (cache.yearStart = later.date.next(later.date.year.value(d, cache)));
-    },
-    end: function(d, cache) {
-      return cache.yearEnd || (cache.yearEnd = later.date.prev(later.date.year.value(d, cache)));
-    },
-    value: function(d, cache) {
-      return cache.year || (cache.year = later.option.UTC ? d.getUTCFullYear() : d.getFullYear());
-    },
-    next: function(d, val, cache) {
-      return val < later.date.year.extent()[1] ? later.date.next(val) : undefined;
-    },
-    prev: function(d, val, cache) {
-      return val > later.date.year.extent()[0] ? later.date.prev(val) : undefined;
-    }
-  };
-  later.date.mod = function(val, mod, min) {
-    return val > mod ? min || 0 : val < (min || 0) ? mod : val;
   };
   later.parse = {};
   later.parse.cron = function() {

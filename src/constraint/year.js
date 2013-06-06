@@ -51,7 +51,9 @@ later.year = later.Y = {
   * @param {int} val: The desired value
   */
   next: function(d, val) {
-    return val < later.Y.extent()[1] ? later.date.next(val) : undefined;
+    return val > later.Y.val(d) && val <= later.Y.extent()[1] ?
+      later.date.next(val) :
+      undefined;
   },
 
   /**
@@ -61,7 +63,9 @@ later.year = later.Y = {
   * @param {int} val: The desired value
   */
   prev: function(d, val) {
-    return val > later.Y.extent()[0] ? later.date.prev(val) : undefined;
+    return val < later.Y.val(d) && val >= later.Y.extent()[0] ?
+      later.date.prev(val) :
+      undefined;
   }
 
 };

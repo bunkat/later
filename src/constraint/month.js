@@ -52,7 +52,14 @@ later.month = later.M = {
   * @param {int} val: The desired value
   */
   next: function(d, val) {
-    return later.date.next(later.Y.val(d) + (val < later.M.val(d) ? 1 : 0), val);
+    var year = later.date.nextRollover(d, val, later.M, later.Y),
+        MExtent = later.M.extent(year);
+
+    val = val > MExtent[1] ? MExtent[0] : val || MExtent[1];
+
+    return later.date.next(
+      later.Y.val(year),
+      val);
   },
 
   /**
@@ -62,7 +69,14 @@ later.month = later.M = {
   * @param {int} val: The desired value
   */
   prev: function(d, val) {
-    return later.date.prev(later.Y.val(d) + (val > later.M.val(d) ? -1 : 0), val);
+    var year = later.date.prevRollover(d, val, later.M, later.Y),
+        MExtent = later.M.extent(year);
+
+    val = val > MExtent[1] ? MExtent[1] : val || MExtent[1];
+
+    return later.date.prev(
+      later.Y.val(year),
+      val);
   }
 
 };

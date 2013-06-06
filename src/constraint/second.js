@@ -15,7 +15,7 @@ later.second = later.s = {
   *
   * @param {Date} d: The date to calculate the value of
   */
-  value: function(d) {
+  val: function(d) {
     return d.s || (d.s = later.option.UTC ? d.getUTCSeconds() : d.getSeconds());
   },
 
@@ -51,13 +51,28 @@ later.second = later.s = {
   * @param {int} val: The desired value
   */
   next: function(d, val) {
-    return later.date.next(
+    val = val > 59 ? 0 : val;
+
+    var next = later.date.next(
       later.Y.val(d),
       later.M.val(d),
       later.D.val(d),
       later.h.val(d),
-      later.m.val(d) + (val < later.s.val(d) ? 1 : 0),
+      later.m.val(d) + (val <= later.s.val(d) ? 1 : 0),
       val);
+
+    // correct for passing over a daylight savings boundry
+    if(!later.option.UTC && next.getTime() < d.getTime()) {
+      next = later.date.next(
+        later.Y.val(next),
+        later.M.val(next),
+        later.D.val(next),
+        later.h.val(next),
+        later.m.val(next),
+        val + 7200);
+    }
+
+    return next;
   },
 
   /**
@@ -67,12 +82,14 @@ later.second = later.s = {
   * @param {int} val: The desired value
   */
   prev: function(d, val, cache) {
+    val = val > 59 ? 59 : val;
+
     return later.date.prev(
       later.Y.val(d),
       later.M.val(d),
       later.D.val(d),
       later.h.val(d),
-      later.m.val(d) + (val > later.s.val(d) ? -1 : 0),
+      later.m.val(d) + (val >= later.s.val(d) ? -1 : 0),
       val);
   }
 
