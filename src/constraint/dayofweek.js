@@ -11,12 +11,17 @@
 later.dayOfWeek = later.dw = {
 
   /**
+  * The name of this constraint.
+  */
+  name: 'day of week',
+
+  /**
   * The day of week value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
   */
   val: function(d) {
-    return d.dw || (d.dw = later.option.UTC ? d.getUTCDay()+1 : d.getDay()+1);
+    return d.dw || (d.dw = later.date.getDay.call(d)+1);
   },
 
   /**
@@ -49,13 +54,9 @@ later.dayOfWeek = later.dw = {
   * Returns the start of the next instance of the day of week value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
-    var dwExtent = later.dw.extent();
-
-    val = val > dwExtent[1] ? dwExtent[0] : val || dwExtent[1];
-
     return later.date.next(
       later.Y.val(d),
       later.M.val(d),
@@ -66,13 +67,9 @@ later.dayOfWeek = later.dw = {
   * Returns the end of the previous instance of the day of week value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
-    var dwExtent = later.dw.extent();
-
-    val = val > dwExtent[1] ? dwExtent[1] : val || dwExtent[1];
-
     return later.date.prev(
       later.Y.val(d),
       later.M.val(d),

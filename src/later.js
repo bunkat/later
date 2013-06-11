@@ -1,6 +1,7 @@
 import "start";
 import "compat/";
 
+import "array/";
 import "constraint/";
 import "core/";
 import "date/";

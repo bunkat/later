@@ -11,12 +11,17 @@
 later.hour = later.h = {
 
   /**
+  * The name of this constraint.
+  */
+  name: 'hour',
+
+  /**
   * The hour value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
   */
   val: function(d) {
-    return d.h || (d.h = later.option.UTC ? d.getUTCHours() : d.getHours());
+    return d.h || (d.h = later.date.getHour.call(d));
   },
 
   /**
@@ -50,11 +55,9 @@ later.hour = later.h = {
   * Returns the start of the next instance of the hour value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
-    val = val > 23 ? 0 : val;
-
     var next = later.date.next(
       later.Y.val(d),
       later.M.val(d),
@@ -62,7 +65,7 @@ later.hour = later.h = {
       val);
 
     // correct for passing over a daylight savings boundry
-    if(!later.option.UTC && next.getTime() < d.getTime()) {
+    if(!later.option.UTC && next.getTime() <= d.getTime()) {
       next = later.date.next(
         later.Y.val(next),
         later.M.val(next),
@@ -78,11 +81,9 @@ later.hour = later.h = {
   * Returns the end of the previous instance of the hour value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
-    val = val > 23 ? 23 : val;
-
     return later.date.prev(
       later.Y.val(d),
       later.M.val(d),

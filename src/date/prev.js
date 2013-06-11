@@ -22,6 +22,7 @@
 * @param {Int} s: Second between 0 and 59, defaults to 59
 */
 later.date.prev = function(Y, M, D, h, m, s) {
+
   var len = arguments.length;
   M = len < 2 ? 11 : M-1;
   D = len < 3 ? later.D.extent(later.date.next(Y, M+1))[1] : D;
@@ -29,7 +30,5 @@ later.date.prev = function(Y, M, D, h, m, s) {
   m = len < 5 ? 59 : m;
   s = len < 6 ? 59 : s;
 
-  return later.option.UTC ?
-    new Date(Date.UTC(Y, M, D, h, m, s)) :
-    new Date(Y, M, D, h, m, s);
+  return later.date.build(Y, M, D, h, m, s);
 };

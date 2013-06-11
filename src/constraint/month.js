@@ -11,12 +11,17 @@
 later.month = later.M = {
 
   /**
+  * The name of this constraint.
+  */
+  name: 'month',
+
+  /**
   * The month value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
   */
   val: function(d) {
-    return d.month || (d.month = later.option.UTC ? d.getUTCMonth()+1 : d.getMonth()+1);
+    return d.M || (d.M = later.date.getMonth.call(d)+1);
   },
 
   /**
@@ -49,16 +54,11 @@ later.month = later.M = {
   * Returns the start of the next instance of the month value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
-    var year = later.date.nextRollover(d, val, later.M, later.Y),
-        MExtent = later.M.extent(year);
-
-    val = val > MExtent[1] ? MExtent[0] : val || MExtent[1];
-
     return later.date.next(
-      later.Y.val(year),
+      later.Y.val(d) + (val <= later.M.val(d) ? 1 : 0),
       val);
   },
 
@@ -66,16 +66,11 @@ later.month = later.M = {
   * Returns the end of the previous instance of the month value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
-    var year = later.date.prevRollover(d, val, later.M, later.Y),
-        MExtent = later.M.extent(year);
-
-    val = val > MExtent[1] ? MExtent[1] : val || MExtent[1];
-
     return later.date.prev(
-      later.Y.val(year),
+      later.Y.val(d) - (val >= later.M.val(d) ? 1 : 0),
       val);
   }
 

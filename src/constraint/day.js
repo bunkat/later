@@ -11,12 +11,17 @@
 later.day = later.D = {
 
   /**
+  * The name of this constraint.
+  */
+  name: 'day',
+
+  /**
   * The day value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
   */
   val: function(d) {
-    return d.D || (d.D = later.option.UTC ? d.getUTCDate() : d.getDate());
+    return d.D || (d.D = later.date.getDate.call(d));
   },
 
   /**
@@ -56,13 +61,13 @@ later.day = later.D = {
   * days in the following month.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
     var month = later.date.nextRollover(d, val, later.D, later.M),
-        DExtent = later.D.extent(month);
+        DMax = later.D.extent(month)[1];
 
-    val = val > DExtent[1] ? DExtent[0] : val || DExtent[1];
+    val = val > DMax ? 1 : val;
 
     return later.date.next(
       later.Y.val(month),
@@ -77,13 +82,13 @@ later.day = later.D = {
   * in the previous month.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
     var month = later.date.prevRollover(d, val, later.D, later.M),
-        DExtent = later.D.extent(month);
+        DMax = later.D.extent(month)[1];
 
-    val = val > DExtent[1] ? DExtent[1] : val || DExtent[1];
+    val = val > DMax ? DMax : val;
 
     return later.date.prev(
       later.Y.val(month),

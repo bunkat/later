@@ -12,6 +12,11 @@
 later.weekOfYear = later.wy = {
 
   /**
+  * The name of this constraint.
+  */
+  name: 'week of year (ISO)',
+
+  /**
   * The ISO week year value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
@@ -21,7 +26,7 @@ later.weekOfYear = later.wy = {
 
     // move to the Thursday in the target week and find Thurs of target year
     var wThur = later.dw.next(later.wy.start(d), 5),
-        YThur = later.dw.next(later.Y.prev(d, later.Y.val(wThur)-1), 5);
+        YThur = later.dw.next(later.Y.prev(wThur, later.Y.val(wThur)-1), 5);
 
     // caculate the difference between the two dates in weeks
     return (d.wy = 1 + Math.ceil((wThur.getTime() - YThur.getTime()) / later.WEEK));
@@ -33,8 +38,14 @@ later.weekOfYear = later.wy = {
   * @param {Date} d: The date indicating the year to find ISO values for
   */
   extent: function(d) {
-    return d.wyExtent || (d.wyExtent = [1,
-      later.dw.val(later.Y.start(d)) === 5 || later.dw.val(later.Y.end(d)) === 5 ? 53 : 52]);
+    if (d.wyExtent) return d.wyExtent;
+
+    // go to start of ISO week to get to the right year
+    var year = later.dw.next(later.wy.start(d), 5),
+        dwFirst = later.dw.val(later.Y.start(year)),
+        dwLast = later.dw.val(later.Y.end(year));
+
+    return (d.wyExtent = [1, dwFirst === 5 || dwLast === 5 ? 53 : 52]);
   },
 
   /**
@@ -69,22 +80,26 @@ later.weekOfYear = later.wy = {
   * Returns the start of the next instance of the ISO week value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
-    var wyStart = later.wy.start(d),
-        wy = later.wy.val(d),
-        year = (val && val <= wy) || (!val && wy == later.wy.extent(d)[1]) ?
-          later.Y.next(d, later.Y.val(d)+1) :
-          later.Y.start(d);
+    var wyThur = later.dw.next(later.wy.start(d), 5),
+        year = later.date.nextRollover(wyThur, val, later.wy, later.Y);
 
-    val = Math.min(val || later.wy.extent(year)[1], later.wy.extent(year)[1]);
-    var diff = val > wy ? val - wy : later.wy.extent(d)[1] - wy + val;
+    // handle case where 1st of year is last week of previous month
+    if(later.wy.val(year) !== 1) {
+      year = later.dw.next(year, 2);
+    }
+
+    var wyMax = later.wy.extent(year)[1],
+        wyStart = later.wy.start(year);
+
+    val = val > wyMax ? 1 : val;
 
     return later.date.next(
         later.Y.val(wyStart),
         later.M.val(wyStart),
-        later.D.val(wyStart) + 7 * diff
+        later.D.val(wyStart) + 7 * (val-1)
       );
   },
 
@@ -92,20 +107,26 @@ later.weekOfYear = later.wy = {
   * Returns the end of the previous instance of the ISO week value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
-    var wyEnd = later.wy.end(d),
-        YPrev = later.Y.prev(wyEnd, later.Y.val(wyEnd)-1),
-        wy = later.wy.val(d);
+    var wyThur = later.dw.next(later.wy.start(d), 5),
+        year = later.date.prevRollover(wyThur, val, later.wy, later.Y);
 
-    val = Math.min(val || later.wy.extent(YPrev)[1], later.wy.extent(YPrev)[1]);
-    var diff = val < wy ? wy - val : wy + (later.wy.extent(YPrev)[1] - val);
+    // handle case where 1st of year is last week of previous month
+    if(later.wy.val(year) !== 1) {
+      year = later.dw.next(year, 2);
+    }
 
-    return later.date.prev(
+    var wyMax = later.wy.extent(year)[1],
+        wyEnd = later.wy.end(year);
+
+    val = val > wyMax ? wyMax : val;
+
+    return later.wy.end(later.date.next(
         later.Y.val(wyEnd),
         later.M.val(wyEnd),
-        later.D.val(wyEnd) - 7 * diff
-      );
+        later.D.val(wyEnd) + 7 * (val-1)
+      ));
   }
 };

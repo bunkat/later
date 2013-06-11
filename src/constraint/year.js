@@ -11,12 +11,17 @@
 later.year = later.Y = {
 
   /**
+  * The name of this constraint.
+  */
+  name: 'year',
+
+  /**
   * The year value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
   */
   val: function(d) {
-    return d.Y || (d.Y = later.option.UTC ? d.getUTCFullYear() : d.getFullYear());
+    return d.Y || (d.Y = later.date.getYear.call(d));
   },
 
   /**
@@ -48,7 +53,7 @@ later.year = later.Y = {
   * Returns the start of the next instance of the year value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
     return val > later.Y.val(d) && val <= later.Y.extent()[1] ?
@@ -60,7 +65,7 @@ later.year = later.Y = {
   * Returns the end of the previous instance of the year value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
     return val < later.Y.val(d) && val >= later.Y.extent()[0] ?

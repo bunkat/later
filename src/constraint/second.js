@@ -11,12 +11,17 @@
 later.second = later.s = {
 
   /**
+  * The name of this constraint.
+  */
+  name: 'second',
+
+  /**
   * The second value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
   */
   val: function(d) {
-    return d.s || (d.s = later.option.UTC ? d.getUTCSeconds() : d.getSeconds());
+    return d.s || (d.s = later.date.getSec.call(d));
   },
 
   /**
@@ -48,11 +53,9 @@ later.second = later.s = {
   * Returns the start of the next instance of the second value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
-    val = val > 59 ? 0 : val;
-
     var next = later.date.next(
       later.Y.val(d),
       later.M.val(d),
@@ -62,7 +65,7 @@ later.second = later.s = {
       val);
 
     // correct for passing over a daylight savings boundry
-    if(!later.option.UTC && next.getTime() < d.getTime()) {
+    if(!later.option.UTC && next.getTime() <= d.getTime()) {
       next = later.date.next(
         later.Y.val(next),
         later.M.val(next),
@@ -79,11 +82,9 @@ later.second = later.s = {
   * Returns the end of the previous instance of the second value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val, cache) {
-    val = val > 59 ? 59 : val;
-
     return later.date.prev(
       later.Y.val(d),
       later.M.val(d),

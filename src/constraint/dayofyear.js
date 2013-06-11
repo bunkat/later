@@ -11,6 +11,11 @@
 later.dayOfYear = later.dy = {
 
   /**
+  * The name of this constraint.
+  */
+  name: 'day of year',
+
+  /**
   * The day of year value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
@@ -27,8 +32,10 @@ later.dayOfYear = later.dy = {
   * @param {Date} d: The date indicating the month to find the extent of
   */
   extent: function(d) {
-    return (d.dyExtent =
-      [1, later.M.val(later.date.next(later.Y.val(d), 2, 29)) === 2 ? 366 : 365]);
+    var year = later.Y.val(d);
+
+    return d.dyExtent || (d.dyExtent =
+      [1, !(year % 4 !== 0 || (year % 100 === 0 && year % 400 !== 0)) ? 366 : 365]);
   },
 
   /**
@@ -53,13 +60,13 @@ later.dayOfYear = later.dy = {
   * Returns the start of the next instance of the day of year value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
     var year = later.date.nextRollover(d, val, later.dy, later.Y),
-        dyExtent = later.dy.extent(year);
+        dyMax = later.dy.extent(year)[1];
 
-    val = val > dyExtent[1] ? dyExtent[0] : val || dyExtent[1];
+    val = val > dyMax ? 1 : val;
 
     return later.date.next(
       later.Y.val(year),
@@ -73,13 +80,13 @@ later.dayOfYear = later.dy = {
   * Returns the end of the previous instance of the day of year value indicated.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
     var year = later.date.prevRollover(d, val, later.dy, later.Y),
-        dyExtent = later.dy.extent(year);
+        dyMax = later.dy.extent(year)[1];
 
-    val = val > dyExtent[1] ? dyExtent[1] : val || dyExtent[1];
+    val = val > dyMax ? dyMax : val;
 
     return later.date.prev(
       later.Y.val(year),

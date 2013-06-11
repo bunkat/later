@@ -13,6 +13,11 @@
 later.weekOfMonth = later.wm = {
 
   /**
+  * The name of this constraint.
+  */
+  name: 'week of month',
+
+  /**
   * The week of month value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
@@ -65,13 +70,13 @@ later.weekOfMonth = later.wm = {
   * days in the following month.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
     var month = later.date.nextRollover(d, val, later.wm, later.M),
-        wmExtent = later.wm.extent(month);
+        wmMax = later.wm.extent(month)[1];
 
-    val = val > wmExtent[1] ? wmExtent[0] : val || wmExtent[1];
+    val = val > wmMax ? 1 : val;
 
     // jump to the Sunday of the desired week, set to 1st of month for week 1
     return later.date.next(
@@ -86,13 +91,13 @@ later.weekOfMonth = later.wm = {
   * days in the previous month.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
     var month = later.date.prevRollover(d, val, later.wm, later.M),
-        wmExtent = later.wm.extent(month);
+        wmMax = later.wm.extent(month)[1];
 
-    val = val > wmExtent[1] ? wmExtent[1] : val || wmExtent[1];
+    val = val > wmMax ? wmMax : val;
 
     // jump to the end of Saturday of the desired week
     return later.wm.end(later.date.next(

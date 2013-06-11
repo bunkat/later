@@ -23,7 +23,8 @@ console.log(JSON.stringify({
     "mocha": "*",
     "should": ">=0.6.3",
     "jslint": "*",
-    "uglify-js": "*"
+    "uglify-js": "*",
+    "benchmark": "*"
   },
   "scripts": {
     "test": "node_modules/.bin/vows; echo"

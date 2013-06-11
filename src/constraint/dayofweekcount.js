@@ -12,6 +12,11 @@
 later.dayOfWeekCount = later.dc = {
 
   /**
+  * The name of this constraint.
+  */
+  name: 'day of week count',
+
+  /**
   * The day of week count value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
@@ -62,13 +67,13 @@ later.dayOfWeekCount = later.dc = {
   * Returns the next earliest date with the day of week count specified.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
     var month = later.date.nextRollover(d, val, later.dc, later.M),
-        dcExtent = later.dc.extent(month);
+        dcMax = later.dc.extent(month)[1];
 
-    val = val > dcExtent[1] ? dcExtent[0] : val || dcExtent[1];
+    val = val > dcMax ? 1 : val;
 
     return later.date.next(
       later.Y.val(month),
@@ -81,13 +86,13 @@ later.dayOfWeekCount = later.dc = {
   * Returns the closest previous date with the day of week count specified.
   *
   * @param {Date} d: The starting date
-  * @param {int} val: The desired value
+  * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
     var month = later.date.prevRollover(d, val, later.dc, later.M),
-        dcExtent = later.dc.extent(month);
+        dcMax = later.dc.extent(month)[1];
 
-    val = val > dcExtent[1] ? dcExtent[1] : val || dcExtent[1];
+    val = val > dcMax ? dcMax : val;
 
     return later.dc.end(later.date.prev(
       later.Y.val(month),

@@ -4,3 +4,4 @@ import "compile";
 import "schedule";
 import "set-interval";
 import "set-timeout";
+import "instancesof";

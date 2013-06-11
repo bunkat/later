@@ -13,7 +13,7 @@ test: later.js
 	@NODE_ENV=test ./node_modules/.bin/mocha --reporter $(REPORTER) $(TESTS)
 
 benchmark: all
-	@node test/benchmark.js
+	@node benchmark/constraint/next-bench.js
 
 later.js: $(shell node_modules/.bin/smash --list src/later.js)
 	@rm -f $@
