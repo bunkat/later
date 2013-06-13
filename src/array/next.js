@@ -12,6 +12,9 @@
 
 later.array.next = function (val, values, extent) {
 
+  // skip UNDEFINED values...
+
+
   var cur,
       zeroVal = extent[0] === 0 ? 0 : extent[1],
       next = values[0] || zeroVal;
@@ -31,5 +34,5 @@ later.array.next = function (val, values, extent) {
     break;
   }
 
-  return next <= extent[1] ? next : extent[0];
+  return next <= extent[1] ? next : values[0] || zeroVal;
 };

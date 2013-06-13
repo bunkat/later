@@ -16,6 +16,12 @@ later.year = later.Y = {
   name: 'year',
 
   /**
+  * The rough amount of seconds between start and end for this constraint.
+  * (doesn't need to be exact)
+  */
+  range: 31556900,
+
+  /**
   * The year value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
@@ -26,9 +32,11 @@ later.year = later.Y = {
 
   /**
   * The minimum and maximum valid values for the year constraint.
+  * If max is past 2099, later.D.extent must be fixed to calculate leap years
+  * correctly.
   */
   extent: function() {
-    return [later.option.minYear, later.option.maxYear];
+    return [1970, 2099];
   },
 
   /**
@@ -56,9 +64,7 @@ later.year = later.Y = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
-    return val > later.Y.val(d) && val <= later.Y.extent()[1] ?
-      later.date.next(val) :
-      undefined;
+    return val > later.Y.val(d) ? later.date.next(val) : undefined;
   },
 
   /**
@@ -68,9 +74,7 @@ later.year = later.Y = {
   * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
-    return val < later.Y.val(d) && val >= later.Y.extent()[0] ?
-      later.date.prev(val) :
-      undefined;
+    return val < later.Y.val(d) ? later.date.prev(val) : undefined;
   }
 
 };

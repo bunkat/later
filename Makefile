@@ -1,5 +1,5 @@
-REPORTER ?= min
-TESTS ?= test/constraint/*-test.js
+REPORTER ?= dot
+TESTS ?= $(shell find test -name "*-test.js")
 
 all: \
 	later.js \
@@ -12,8 +12,19 @@ all: \
 test: later.js
 	@NODE_ENV=test ./node_modules/.bin/mocha --reporter $(REPORTER) $(TESTS)
 
+test-cov: later-cov.js
+	@LATER_COV=1 $(MAKE) test REPORTER=html-cov > coverage.html-cov
+
+later-cov.js: src-cov $(shell node_modules/.bin/smash --list src-cov/later.js)
+	@rm -f $@
+  node_modules/.bin/smash src/later.js
+	@chmod a-w $@
+
+src-cov: all
+	@jscoverage --no-highlight src src-cov
+
 benchmark: all
-	@node benchmark/constraint/next-bench.js
+	@node benchmark/core/instanceof-bench.js
 
 later.js: $(shell node_modules/.bin/smash --list src/later.js)
 	@rm -f $@

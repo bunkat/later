@@ -10,9 +10,10 @@
 *     http://github.com/bunkat/later
 */
 
-later.array.prev = function (val, values, zeroVal) {
+later.array.prev = function (val, values, extent) {
 
   var cur, len = values.length,
+      zeroVal = extent[0] === 0 ? 0 : extent[1],
       prev = values[len-1] || zeroVal;
 
   for(var i = 0; i < len; i++) {

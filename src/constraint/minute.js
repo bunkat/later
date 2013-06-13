@@ -16,6 +16,12 @@ later.minute = later.m = {
   name: 'minute',
 
   /**
+  * The rough amount of seconds between start and end for this constraint.
+  * (doesn't need to be exact)
+  */
+  range: 60,
+
+  /**
   * The minute value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
@@ -66,7 +72,7 @@ later.minute = later.m = {
       val);
 
     // correct for passing over a daylight savings boundry
-    if(!later.option.UTC && next.getTime() <= d.getTime()) {
+    if(!later.date.isUTC && next.getTime() <= d.getTime()) {
       next = later.date.next(
         later.Y.val(next),
         later.M.val(next),

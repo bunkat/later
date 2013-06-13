@@ -16,6 +16,12 @@ later.day = later.D = {
   name: 'day',
 
   /**
+  * The rough amount of seconds between start and end for this constraint.
+  * (doesn't need to be exact)
+  */
+  range: 86400,
+
+  /**
   * The day value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
@@ -31,8 +37,16 @@ later.day = later.D = {
   * @param {Date} d: The date indicating the month to find the extent of
   */
   extent: function(d) {
-    return d.DExtent || (d.DExtent = [1, later.D.val(
-      new Date(later.Y.val(d), later.M.val(d), 0))]);
+    if(d.DExtent) return d.DExtent;
+
+    var month = later.M.val(d),
+        max = later.date.daysInMonth[month];
+
+    if(month === 2 && later.dy.extent(d)[1] === 366) {
+      max = max+1;
+    }
+
+    return (d.DExtent = [1, max]);
   },
 
   /**

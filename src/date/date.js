@@ -6,6 +6,7 @@ later.date.UTC = function() {
     return new Date(Date.UTC(Y, M, D, h, m, s));
   };
 
+  later.date.isUTC = true;
   later.date.getYear = Date.prototype.getUTCFullYear;
   later.date.getMonth = Date.prototype.getUTCMonth;
   later.date.getDate = Date.prototype.getUTCDate;
@@ -21,6 +22,7 @@ later.date.localTime = function() {
     return new Date(Y, M, D, h, m, s);
   };
 
+  later.date.isUTC = false;
   later.date.getYear = Date.prototype.getFullYear;
   later.date.getMonth = Date.prototype.getMonth;
   later.date.getDate = Date.prototype.getDate;
@@ -34,7 +36,7 @@ later.date.localTime = function() {
 later.date.UTC();
 
 later.date.nextRollover = function(d, val, constraint, period) {
-  return val <= constraint.val(d) ?
+  return val <= constraint.val(d) || val > constraint.extent(d)[1] ?
             period.next(d, period.val(d)+1) :
             period.start(d);
 
@@ -58,3 +60,6 @@ later.date.prevRollover = function(d, val, constraint, period) {
             period.start(d);*/
 };
 
+
+
+later.date.daysInMonth = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];

@@ -7,7 +7,7 @@ module.exports = runner = function (later, constraint) {
       d.getHours(), d.getMinutes(), d.getSeconds()));
   }
 
-  function runBasicTest(fn, data, utc) {
+  function runSingleTest(fn, data, utc) {
     var date = utc ? convertToUTC(data.date) : data.date,
         dateString = utc ? date.toUTCString() : date,
         ex = utc && (data[fn] instanceof Date) ? convertToUTC(data[fn]) : data[fn],
@@ -19,7 +19,7 @@ module.exports = runner = function (later, constraint) {
     });
   }
 
-  function runComplexTest(fn, data, utc) {
+  function runSweepTest(fn, data, utc) {
     var min = data.extent[0],
         max = data.extent[1],
         inc = Math.ceil((max-min)/200); // max 200 tests per constraint
@@ -57,7 +57,7 @@ module.exports = runner = function (later, constraint) {
       // result should match ex, should be greater than date, and should
       // be at the start of the time period
       // if check is hack to support year constraints which can return undefined
-      if(constraint.name === 'year' && (amt <= constraint.val(date) || amt > later.option.maxYear)) {
+      if(constraint.name === 'year' && (amt <= constraint.val(date) || amt > later.Y.extent()[1])) {
         should.not.exist(next);
       }
       else {
@@ -87,7 +87,7 @@ module.exports = runner = function (later, constraint) {
       // result should match ex, should be greater than date, and should
       // be at the start of the time period
       // if check is hack to support year constraints which can return undefined
-      if(constraint.name === 'year' && (amt >= constraint.val(date) || amt < later.option.minYear)) {
+      if(constraint.name === 'year' && (amt >= constraint.val(date) || amt < later.Y.extent()[0])) {
         should.not.exist(prev);
       }
       else {
@@ -110,7 +110,7 @@ module.exports = runner = function (later, constraint) {
         ['val', 'extent', 'start', 'end'].forEach(function (fn) {
           describe(fn, function() {
             for(i = 0; i < len; i++) {
-              runBasicTest(fn, data[i], utc);
+              runSingleTest(fn, data[i], utc);
             }
           });
         });
@@ -120,7 +120,7 @@ module.exports = runner = function (later, constraint) {
         ['next', 'prev'].forEach(function (fn) {
           describe(fn, function() {
             for(i = 0; i < len; i++) {
-              runComplexTest(fn, data[i], utc);
+              runSweepTest(fn, data[i], utc);
             }
           });
         });

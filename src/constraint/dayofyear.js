@@ -16,6 +16,12 @@ later.dayOfYear = later.dy = {
   name: 'day of year',
 
   /**
+  * The rough amount of seconds between start and end for this constraint.
+  * (doesn't need to be exact)
+  */
+  range: 86400,
+
+  /**
   * The day of year value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
@@ -34,8 +40,9 @@ later.dayOfYear = later.dy = {
   extent: function(d) {
     var year = later.Y.val(d);
 
-    return d.dyExtent || (d.dyExtent =
-      [1, !(year % 4 !== 0 || (year % 100 === 0 && year % 400 !== 0)) ? 366 : 365]);
+    // shortcut on finding leap years since this function gets called a lot
+    // works between 1901 and 2099
+    return d.dyExtent || (d.dyExtent = [1, year % 4 ? 365 : 366]);
   },
 
   /**

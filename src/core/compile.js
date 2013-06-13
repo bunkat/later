@@ -2,7 +2,7 @@
 * Compile
 * (c) 2013 Bill, BunKat LLC.
 *
-* Compiles a schedule definition into a schedule from which instances can be
+* Compiles a schedule definition into a form from which instances can be
 * efficiently calculated from.
 *
 * Later is freely distributable under the MIT license.
@@ -16,19 +16,32 @@ later.compile = function(schedDef) {
       constraintsLen = 0,
       tickConstraint;
 
-  // create constraints for values in schedule (order matters!)
-  for(var i = 0, len = later.constraintOrder.length; i < len; i++) {
-    var constraintName = later.constraintOrder[i],
-        vals = schedDef[constraintName];
+  for(var key in schedDef) {
+    var nameParts = key.split('_'),
+        name = nameParts[0],
+        mod = nameParts[1],
+        vals = schedDef[key],
+        constraint = mod ? later.modifier[mod](later[name], vals[0]) : later[name];
 
-    if(vals) {
-      constraints.push({constraint: later[constraintName], vals: vals});
-      constraintsLen++;
-    }
+    constraints.push({constraint: constraint, vals: vals});
+    constraintsLen++;
   }
+
+  // sort constraints based on their range for best performance (we want to
+  // always skip the largest block of time possible to find the next valid
+  // value)
+  constraints.sort(function(a,b) {
+    return a.constraint.range < b.constraint.range;
+  });
 
   // this is the smallest constraint which we will use to tick this schedule
   tickConstraint = constraints[constraintsLen-1].constraint;
+
+  function compareFn(dir) {
+    return dir === 'next' ?
+      function(a,b) { return a > b; } :
+      function(a,b) { return b > a; };
+  }
 
   return {
 
@@ -64,7 +77,7 @@ later.compile = function(schedDef) {
         }
       }
 
-      return next;
+      return next ? tickConstraint.start(next) : undefined;
     },
 
     /**
@@ -76,18 +89,19 @@ later.compile = function(schedDef) {
     * @param {Date} startDate: The first possible valid occurrence
     */
     end: function(dir, startDate) {
-      var nextInvalidVal = later.array[dir + 'Invalid'],
-          i = constraintsLen-1,
-          next;
+      dir = 'next';
 
-      // loop is only needed for case where a constraint is specified, but all
-      // values are valid
-      do {
+      var nextInvalidVal = later.array[dir + 'Invalid'],
+          compare = compareFn(dir),
+          result;
+
+      for(var i = constraintsLen-1; i >= 0; i--) {
         var constraint = constraints[i].constraint,
             curVal = constraint.val(startDate),
             vals = constraints[i].vals,
             extent = constraint.extent(startDate),
-            nextVal = nextInvalidVal(curVal, vals, extent);
+            nextVal = nextInvalidVal(curVal, vals, extent),
+            next;
 
         if(nextVal === curVal) { // startDate is invalid, use that
           next = startDate;
@@ -96,9 +110,12 @@ later.compile = function(schedDef) {
           next = constraint[dir](startDate, nextVal);
         }
 
-      } while(--i >= 0 && next === undefined);
+        if(next && (!result || compare(result, next))) {
+          result = next;
+        }
+      }
 
-      return next;
+      return result;
     },
 
     /**

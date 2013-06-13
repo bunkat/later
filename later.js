@@ -61,7 +61,7 @@ later = function() {
       }
       break;
     }
-    return next <= extent[1] ? next : extent[0];
+    return next <= extent[1] ? next : values[0] || zeroVal;
   };
   later.array.nextInvalid = function(val, values, extent) {
     var min = extent[0], max = extent[1], len = values.length, zeroVal = values[len - 1] === 0 && min !== 0 ? max : 0, next = val, i = values.indexOf(val), start = next;
@@ -80,8 +80,8 @@ later = function() {
     }
     return next;
   };
-  later.array.prev = function(val, values, zeroVal) {
-    var cur, len = values.length, prev = values[len - 1] || zeroVal;
+  later.array.prev = function(val, values, extent) {
+    var cur, len = values.length, zeroVal = extent[0] === 0 ? 0 : extent[1], prev = values[len - 1] || zeroVal;
     for (var i = 0; i < len; i++) {
       cur = values[i] || zeroVal;
       if (cur < val) {
@@ -131,11 +131,17 @@ later = function() {
   };
   later.day = later.D = {
     name: "day",
+    range: 86400,
     val: function(d) {
       return d.D || (d.D = later.date.getDate.call(d));
     },
     extent: function(d) {
-      return d.DExtent || (d.DExtent = [ 1, later.D.val(new Date(later.Y.val(d), later.M.val(d), 0)) ]);
+      if (d.DExtent) return d.DExtent;
+      var month = later.M.val(d), max = later.date.daysInMonth[month];
+      if (month === 2 && later.dy.extent(d)[1] === 366) {
+        max = max + 1;
+      }
+      return d.DExtent = [ 1, max ];
     },
     start: function(d) {
       return d.DStart || (d.DStart = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d)));
@@ -156,6 +162,7 @@ later = function() {
   };
   later.dayOfWeekCount = later.dc = {
     name: "day of week count",
+    range: 604800,
     val: function(d) {
       return d.dc || (d.dc = Math.floor((later.D.val(d) - 1) / 7) + 1);
     },
@@ -179,8 +186,9 @@ later = function() {
       return later.dc.end(later.date.prev(later.Y.val(month), later.M.val(month), 1 + 7 * (val - 1)));
     }
   };
-  later.dayOfWeek = later.dw = {
+  later.dayOfWeek = later.dw = later.d = {
     name: "day of week",
+    range: 86400,
     val: function(d) {
       return d.dw || (d.dw = later.date.getDay.call(d) + 1);
     },
@@ -202,12 +210,13 @@ later = function() {
   };
   later.dayOfYear = later.dy = {
     name: "day of year",
+    range: 86400,
     val: function(d) {
       return d.dy || (d.dy = Math.ceil(1 + (later.D.start(d).getTime() - later.Y.start(d).getTime()) / later.DAY));
     },
     extent: function(d) {
       var year = later.Y.val(d);
-      return d.dyExtent || (d.dyExtent = [ 1, !(year % 4 !== 0 || year % 100 === 0 && year % 400 !== 0) ? 366 : 365 ]);
+      return d.dyExtent || (d.dyExtent = [ 1, year % 4 ? 365 : 366 ]);
     },
     start: function(d) {
       return later.D.start(d);
@@ -228,6 +237,7 @@ later = function() {
   };
   later.hour = later.h = {
     name: "hour",
+    range: 3600,
     val: function(d) {
       return d.h || (d.h = later.date.getHour.call(d));
     },
@@ -242,7 +252,7 @@ later = function() {
     },
     next: function(d, val) {
       var next = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d) + (val <= later.h.val(d) ? 1 : 0), val);
-      if (!later.option.UTC && next.getTime() <= d.getTime()) {
+      if (!later.date.isUTC && next.getTime() <= d.getTime()) {
         next = later.date.next(later.Y.val(next), later.M.val(next), later.D.val(next), val + 1);
       }
       return next;
@@ -253,6 +263,7 @@ later = function() {
   };
   later.minute = later.m = {
     name: "minute",
+    range: 60,
     val: function(d) {
       return d.m || (d.m = later.date.getMin.call(d));
     },
@@ -267,7 +278,7 @@ later = function() {
     },
     next: function(d, val) {
       var next = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d) + (val <= later.m.val(d) ? 1 : 0), val);
-      if (!later.option.UTC && next.getTime() <= d.getTime()) {
+      if (!later.date.isUTC && next.getTime() <= d.getTime()) {
         next = later.date.next(later.Y.val(next), later.M.val(next), later.D.val(next), later.h.val(next), val + 120);
       }
       return next;
@@ -278,6 +289,7 @@ later = function() {
   };
   later.month = later.M = {
     name: "month",
+    range: 2629740,
     val: function(d) {
       return d.M || (d.M = later.date.getMonth.call(d) + 1);
     },
@@ -299,6 +311,7 @@ later = function() {
   };
   later.second = later.s = {
     name: "second",
+    range: 1,
     val: function(d) {
       return d.s || (d.s = later.date.getSec.call(d));
     },
@@ -313,7 +326,7 @@ later = function() {
     },
     next: function(d, val) {
       var next = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d), later.m.val(d) + (val <= later.s.val(d) ? 1 : 0), val);
-      if (!later.option.UTC && next.getTime() <= d.getTime()) {
+      if (!later.date.isUTC && next.getTime() <= d.getTime()) {
         next = later.date.next(later.Y.val(next), later.M.val(next), later.D.val(next), later.h.val(next), later.m.val(next), val + 7200);
       }
       return next;
@@ -324,6 +337,7 @@ later = function() {
   };
   later.time = later.t = {
     name: "time",
+    range: 86400,
     val: function(d) {
       return d.t || (d.t = later.h.val(d) * 3600 + later.m.val(d) * 60 + later.s.val(d));
     },
@@ -338,7 +352,7 @@ later = function() {
     },
     next: function(d, val) {
       var next = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d) + (val <= later.t.val(d) ? 1 : 0), 0, 0, val);
-      if (!later.option.UTC && next.getTime() < d.getTime()) {
+      if (!later.date.isUTC && next.getTime() < d.getTime()) {
         next = later.date.next(later.Y.val(next), later.M.val(next), later.D.val(next), later.h.val(next), later.m.val(next), val + 7200);
       }
       return next;
@@ -349,6 +363,7 @@ later = function() {
   };
   later.weekOfMonth = later.wm = {
     name: "week of month",
+    range: 604800,
     val: function(d) {
       return d.wm || (d.wm = (later.D.val(d) + (later.dw.val(later.M.start(d)) - 1) + (7 - later.dw.val(d))) / 7);
     },
@@ -374,6 +389,7 @@ later = function() {
   };
   later.weekOfYear = later.wy = {
     name: "week of year (ISO)",
+    range: 604800,
     val: function(d) {
       if (d.wy) return d.wy;
       var wThur = later.dw.next(later.wy.start(d), 5), YThur = later.dw.next(later.Y.prev(wThur, later.Y.val(wThur) - 1), 5);
@@ -411,11 +427,12 @@ later = function() {
   };
   later.year = later.Y = {
     name: "year",
+    range: 31556900,
     val: function(d) {
       return d.Y || (d.Y = later.date.getYear.call(d));
     },
     extent: function() {
-      return [ later.option.minYear, later.option.maxYear ];
+      return [ 1970, 2099 ];
     },
     start: function(d) {
       return d.YStart || (d.YStart = later.date.next(later.Y.val(d)));
@@ -424,34 +441,76 @@ later = function() {
       return d.YEnd || (d.YEnd = later.date.prev(later.Y.val(d)));
     },
     next: function(d, val) {
-      return val > later.Y.val(d) && val <= later.Y.extent()[1] ? later.date.next(val) : undefined;
+      return val > later.Y.val(d) ? later.date.next(val) : undefined;
     },
     prev: function(d, val) {
-      return val < later.Y.val(d) && val >= later.Y.extent()[0] ? later.date.prev(val) : undefined;
+      return val < later.Y.val(d) ? later.date.prev(val) : undefined;
     }
   };
-  later.constraintOrder = [ "Y", "year", "dy", "dayOfYear", "wy", "weekOfYear", "M", "month", "wm", "weekOfMonth", "dwc", "dayOfWeekCount", "D", "day", "dw", "dayOfWeek", "t", "time", "h", "hour", "m", "minute", "s", "second" ];
-  later.option = {
-    maxYear: 2025,
-    minYear: 2005
+  later.modifier = {};
+  later.modifier.after = later.modifier.a = function(constraint, value) {
+    return {
+      name: "after " + constraint.name,
+      range: constraint.range,
+      val: function(d) {
+        var cVal = constraint.val(d);
+        return cVal >= value ? value : cVal;
+      },
+      extent: constraint.extent,
+      start: constraint.start,
+      end: constraint.end,
+      next: function(startDate, val) {
+        if (val > value) val = constraint.extent(startDate)[0];
+        return constraint.next(startDate, val);
+      },
+      prev: function(startDate, val) {
+        if (val >= value) val = constraint.extent(startDate)[1];
+        return constraint.prev(startDate, val);
+      }
+    };
   };
-  later.dir = {
-    forward: 0,
-    reverse: 1
+  later.modifier.before = later.modifier.b = function(constraint, value) {
+    return {
+      name: "before " + constraint.name,
+      range: constraint.range,
+      val: function(d) {
+        var cVal = constraint.val(d);
+        return cVal <= value ? value : cVal;
+      },
+      extent: constraint.extent,
+      start: constraint.start,
+      end: constraint.end,
+      next: function(startDate, val) {
+        if (val <= value) val = constraint.extent(startDate)[0];
+        return constraint.next(startDate, val);
+      },
+      prev: function(startDate, val) {
+        if (val < value) val = constraint.extent(startDate)[1];
+        return constraint.prev(startDate, val);
+      }
+    };
   };
   later.compile = function(schedDef) {
     var constraints = [], constraintsLen = 0, tickConstraint;
-    for (var i = 0, len = later.constraintOrder.length; i < len; i++) {
-      var constraintName = later.constraintOrder[i], vals = schedDef[constraintName];
-      if (vals) {
-        constraints.push({
-          constraint: later[constraintName],
-          vals: vals
-        });
-        constraintsLen++;
-      }
+    for (var key in schedDef) {
+      var nameParts = key.split("_"), name = nameParts[0], mod = nameParts[1], vals = schedDef[key], constraint = mod ? later.modifier[mod](later[name], vals[0]) : later[name];
+      constraints.push({
+        constraint: constraint,
+        vals: vals
+      });
+      constraintsLen++;
     }
+    constraints.sort(function(a, b) {
+      return a.constraint.range < b.constraint.range;
+    });
     tickConstraint = constraints[constraintsLen - 1].constraint;
+    function compareFn(dir) {
+      return dir === "next" ? function(a, b) {
+        return a > b;
+      } : function(a, b) {
+        return b > a;
+      };
+    }
     return {
       start: function(dir, startDate) {
         var next = startDate, nextVal = later.array[dir], done = false;
@@ -466,131 +525,30 @@ later = function() {
             }
           }
         }
-        return next;
+        return next ? tickConstraint.start(next) : undefined;
       },
       end: function(dir, startDate) {
-        var nextInvalidVal = later.array[dir + "Invalid"], i = constraintsLen - 1, next;
-        do {
-          var constraint = constraints[i].constraint, curVal = constraint.val(startDate), vals = constraints[i].vals, extent = constraint.extent(startDate), nextVal = nextInvalidVal(curVal, vals, extent);
+        dir = "next";
+        var nextInvalidVal = later.array[dir + "Invalid"], compare = compareFn(dir), result;
+        for (var i = constraintsLen - 1; i >= 0; i--) {
+          var constraint = constraints[i].constraint, curVal = constraint.val(startDate), vals = constraints[i].vals, extent = constraint.extent(startDate), nextVal = nextInvalidVal(curVal, vals, extent), next;
           if (nextVal === curVal) {
             next = startDate;
           } else if (nextVal) {
             next = constraint[dir](startDate, nextVal);
           }
-        } while (--i >= 0 && next === undefined);
-        return next;
+          if (next && (!result || compare(result, next))) {
+            result = next;
+          }
+        }
+        return result;
       },
       tick: function(dir, date) {
         return new Date(dir === "next" ? tickConstraint.end(date).getTime() + later.SEC : tickConstraint.start(date).getTime() - later.SEC);
       }
     };
   };
-  later.schedule = function(sched, resolution) {
-    resolution = resolution === undefined ? later.option.resolution : resolution;
-    var schedules = [], schedulesLen = sched && sched.schedules ? sched.schedules.length : 0, exceptions = [], exceptionsLen = sched && sched.exceptions ? sched.exceptions.length : 0;
-    for (var i = 0; i < schedulesLen; i++) {
-      schedules.push(later.compile(sched.schedules[i]));
-    }
-    for (var j = 0; j < exceptionsLen; j++) {
-      exceptions.push(later.compile(sched.exceptions[j]));
-    }
-    function tick(date, reverse) {
-      return !reverse ? new Date(date.getTime() + resolution * 1e3) : new Date(date.getTime() - resolution * 1e3);
-    }
-    function compare(a, b, reverse) {
-      return reverse ? a.getTime() < b.getTime() : a.getTime() > b.getTime();
-    }
-    function isValid(sched, except, date) {
-      date.setMilliseconds(0);
-      var next = getNext(sched, except, date);
-      return next ? date.getTime() === next.getTime() : false;
-    }
-    function get(startDate, endDate, count, reverse) {
-      var result;
-      if (count === 1) {
-        result = getNext(schedules, exceptions, startDate, endDate, reverse);
-      } else {
-        result = [];
-        while (count--) {
-          var tDate = getNext(schedules, exceptions, startDate, endDate, reverse);
-          if (!tDate) break;
-          result.push(tDate);
-          startDate = tick(tDate, reverse);
-        }
-      }
-      return result;
-    }
-    function getNext(sched, except, startDate, endDate, reverse) {
-      var start = startDate || new Date(), result;
-      while (start) {
-        var tDate;
-        if (sched.length) {
-          for (var i = 0, len = sched.length; i < len; i++) {
-            tDate = sched[i].getValid(start, reverse);
-            if (tDate && (!result || compare(result, tDate, reverse))) {
-              result = tDate;
-            }
-          }
-        } else {
-          result = start;
-        }
-        start = null;
-        if (result && except.length) {
-          tDate = getNextInvalid(except, [], result, reverse);
-          if (tDate.getTime() !== result.getTime()) {
-            start = tDate;
-            result = undefined;
-          }
-        }
-        if (result && endDate && compare(result, endDate, reverse)) {
-          result = undefined;
-          break;
-        }
-      }
-      return result;
-    }
-    function getNextInvalid(sched, except, startDate, reverse) {
-      var start = startDate || new Date();
-      while (start && isValid(sched, except, start)) {
-        var nextExcep, nextInvalid;
-        for (var i = 0, len = sched.length; i < len; i++) {
-          var tDate = sched[i].getInvalid(start, reverse);
-          if (tDate && (!nextInvalid || compare(tDate, nextInvalid, reverse))) {
-            nextInvalid = tDate;
-          }
-        }
-        if (except.length) {
-          nextExcep = getNext(except, [], start, null, reverse);
-        }
-        if (!nextInvalid && !nextExcep) {
-          start = undefined;
-        } else {
-          start = new Date(nextInvalid && nextExcep ? Math.min(nextInvalid.getTime(), nextExcep.getTime()) : nextExcep || nextInvalid);
-        }
-      }
-      return start;
-    }
-    return {
-      isValid: function(date) {
-        return isValid(schedules, exceptions, date);
-      },
-      next: function(start, end, count) {
-        return get(start, end, count || 1, false);
-      },
-      nextRange: function(start, end) {
-        var tStart = getNext(schedules, exceptions, start, end, false), tEnd = getNextInvalid(schedules, exceptions, tStart, false);
-        return [ tStart, tEnd ];
-      },
-      prev: function(start, end, count) {
-        return get(start, end, count || 1, true);
-      },
-      prevRange: function(start) {
-        var tStart = getNext(schedules, exceptions, start, null, true), tEnd = getNextInvalid(schedules, exceptions, tStart, true);
-        return [ tStart, tEnd ];
-      }
-    };
-  };
-  later.instancesOf = function(sched) {
+  later.schedule = function(sched) {
     var schedules = [], schedulesLen = sched.schedules.length, exceptions = [], exceptionsLen = sched.exceptions ? sched.exceptions.length : 0;
     for (var i = 0; i < schedulesLen; i++) {
       schedules.push(later.compile(sched.schedules[i]));
@@ -616,14 +574,8 @@ later = function() {
             calcSchedStarts(dir, schedStarts, exceptionEnd);
             continue;
           }
-          if (isRange) {
-            var rangeEnd = getEnd(dir, schedStarts, next);
-            calcSchedStarts(dir, schedStarts, rangeEnd);
-            results.push([ new Date(next), new Date(rangeEnd) ]);
-          } else {
-            results.push(new Date(next));
-            tickSchedStarts(dir, schedStarts, next);
-          }
+          results.push(isRange ? [ new Date(next), new Date(getEnd(dir, schedStarts, next)) ] : new Date(next));
+          tickSchedStarts(dir, schedStarts, next);
           break;
         }
         if (!next) {
@@ -635,7 +587,7 @@ later = function() {
     function getEnd(dir, schedStarts, next) {
       var compare = compareFn(dir), end;
       for (var i = 0; i < schedulesLen; i++) {
-        if (schedStarts[i].getTime() === next.getTime()) {
+        if (schedStarts[i] && schedStarts[i].getTime() === next.getTime()) {
           var schedEnd = schedules[i].end(dir, next);
           if (!end || compare(schedEnd, end)) {
             end = schedEnd;
@@ -654,8 +606,9 @@ later = function() {
       var compare = compareFn(dir), result;
       if (exceptionsLen) {
         for (var i = 0; i < exceptionsLen; i++) {
-          if (exceptions[i].start(dir, next).getTime() === next.getTime()) {
-            var end = exceptions[i].end(dir, next);
+          var exceptStart = exceptions[i].start(dir, next);
+          if (exceptStart && (exceptStart.getTime() === next.getTime() || compare(next, exceptStart))) {
+            var end = dir === "next" ? exceptions[i].end(dir, next) : new Date(exceptStart.getTime() - 1e3);
             result = !result || compare(end, result) ? end : result;
           }
         }
@@ -664,7 +617,7 @@ later = function() {
     }
     function tickSchedStarts(dir, schedStarts, next) {
       for (var i = 0; i < schedulesLen; i++) {
-        if (schedStarts[i].getTime() === next.getTime()) {
+        if (schedStarts[i] && schedStarts[i].getTime() === next.getTime()) {
           schedStarts[i] = schedules[i].start(dir, schedules[i].tick(dir, next));
         }
       }
@@ -689,7 +642,7 @@ later = function() {
     }
     return {
       isValid: function(d) {
-        return this.next(1, d, d) !== undefined;
+        return getInstances("next", 1, d, d) !== undefined;
       },
       next: function(count, startDate, endDate) {
         return getInstances("next", count || 1, startDate, endDate);
@@ -710,6 +663,7 @@ later = function() {
     later.date.build = function(Y, M, D, h, m, s) {
       return new Date(Date.UTC(Y, M, D, h, m, s));
     };
+    later.date.isUTC = true;
     later.date.getYear = Date.prototype.getUTCFullYear;
     later.date.getMonth = Date.prototype.getUTCMonth;
     later.date.getDate = Date.prototype.getUTCDate;
@@ -722,6 +676,7 @@ later = function() {
     later.date.build = function(Y, M, D, h, m, s) {
       return new Date(Y, M, D, h, m, s);
     };
+    later.date.isUTC = false;
     later.date.getYear = Date.prototype.getFullYear;
     later.date.getMonth = Date.prototype.getMonth;
     later.date.getDate = Date.prototype.getDate;
@@ -732,22 +687,17 @@ later = function() {
   };
   later.date.UTC();
   later.date.nextRollover = function(d, val, constraint, period) {
-    return val <= constraint.val(d) ? period.next(d, period.val(d) + 1) : period.start(d);
+    return val <= constraint.val(d) || val > constraint.extent(d)[1] ? period.next(d, period.val(d) + 1) : period.start(d);
   };
   later.date.prevRollover = function(d, val, constraint, period) {
     return val >= constraint.val(d) ? period.start(period.prev(d, period.val(d) - 1)) : period.start(d);
   };
+  later.date.daysInMonth = [ 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
   later.SEC = 1e3;
   later.MIN = later.SEC * 60;
   later.HOUR = later.MIN * 60;
   later.DAY = later.HOUR * 24;
   later.WEEK = later.DAY * 7;
-  later.date.pad = function(val) {
-    return val < 10 ? "0" + val : val;
-  };
-  later.date.mod = function(val, mod, min) {
-    return val > mod ? min || 0 : val < (min || 0) ? mod : val;
-  };
   later.date.next = function(Y, M, D, h, m, s) {
     return later.date.build(Y, M !== undefined ? M - 1 : 0, D !== undefined ? D : 1, h || 0, m || 0, s || 0);
   };
@@ -1367,56 +1317,6 @@ later = function() {
         return parseScheduleExpr(str.toLowerCase());
       }
     };
-  };
-  later.range = {};
-  later.range.isValid = function(val, values, max, hasLast) {
-    return values.indexOf(val) > -1 || hasLast && val === max && values.indexOf(0) > -1;
-  };
-  later.range.next = function(val, values, minOffset) {
-    var cur, next = null, min = values[0], i = values.length;
-    while (i--) {
-      cur = values[i];
-      if (cur === val) {
-        return val;
-      }
-      min = cur < min ? cur : min;
-      next = cur > val && (!next || cur < next) ? cur : next;
-    }
-    return next || (minOffset === undefined ? min : min + minOffset);
-  };
-  later.range.nextInvalid = function(val, values, extent, offset, hasLast) {
-    var min = extent[0], max = extent[1];
-    if (later.range.isValid(val, values, max, hasLast)) {
-      var orig = val;
-      do {
-        val = later.date.mod(val + 1, max, min);
-      } while (val !== orig && later.range.isValid(val, values, max, hasLast));
-      return val === orig ? undefined : val > orig ? val : val + offset;
-    }
-    return false;
-  };
-  later.range.prev = function(val, values, maxOffset) {
-    var cur, prev = null, i = values.length, max = values[i - 1];
-    while (i--) {
-      cur = values[i];
-      if (cur === val) {
-        return val;
-      }
-      max = cur > max ? cur : max;
-      prev = cur < val && (!prev || cur > prev) ? cur : prev;
-    }
-    return prev !== null ? prev : maxOffset === undefined ? max : max - maxOffset;
-  };
-  later.range.prevInvalid = function(val, values, extent, offset, hasLast) {
-    var min = extent[0], max = extent[1];
-    if (later.range.isValid(val, values, max, hasLast)) {
-      var orig = val;
-      do {
-        val = later.date.mod(val - 1, max, min);
-      } while (val !== orig && later.range.isValid(val, values, max, hasLast));
-      return val === orig ? undefined : val < orig ? val : val - offset;
-    }
-    return false;
   };
   return later;
 }();

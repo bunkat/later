@@ -18,6 +18,12 @@ later.weekOfMonth = later.wm = {
   name: 'week of month',
 
   /**
+  * The rough amount of seconds between start and end for this constraint.
+  * (doesn't need to be exact)
+  */
+  range: 604800,
+
+  /**
   * The week of month value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of

@@ -8,12 +8,18 @@
 * For all details and documentation:
 *     http://github.com/bunkat/later
 */
-later.dayOfWeek = later.dw = {
+later.dayOfWeek = later.dw = later.d = {
 
   /**
   * The name of this constraint.
   */
   name: 'day of week',
+
+  /**
+  * The rough amount of seconds between start and end for this constraint.
+  * (doesn't need to be exact)
+  */
+  range: 86400,
 
   /**
   * The day of week value of the specified date.

@@ -17,6 +17,12 @@ later.dayOfWeekCount = later.dc = {
   name: 'day of week count',
 
   /**
+  * The rough amount of seconds between start and end for this constraint.
+  * (doesn't need to be exact)
+  */
+  range: 604800,
+
+  /**
   * The day of week count value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of

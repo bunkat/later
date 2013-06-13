@@ -16,6 +16,12 @@ later.hour = later.h = {
   name: 'hour',
 
   /**
+  * The rough amount of seconds between start and end for this constraint.
+  * (doesn't need to be exact)
+  */
+  range: 3600,
+
+  /**
   * The hour value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
@@ -65,7 +71,7 @@ later.hour = later.h = {
       val);
 
     // correct for passing over a daylight savings boundry
-    if(!later.option.UTC && next.getTime() <= d.getTime()) {
+    if(!later.date.isUTC && next.getTime() <= d.getTime()) {
       next = later.date.next(
         later.Y.val(next),
         later.M.val(next),

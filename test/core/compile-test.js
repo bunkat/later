@@ -9,7 +9,11 @@ describe('Compile', function() {
     describe('next', function() {
 
       it('should return start date if start is valid', function() {
-        later.compile({Y:[2013]}).start('next', d).should.eql(d);
+        later.compile({Y:[2013], M:[3], D:[21], s:[5]}).start('next', d).should.eql(d);
+      });
+
+      it('should return start date if after modifier is used', function() {
+        later.compile({M: [3], Y_a:[2012]}).start('next', d).should.eql(new Date('2013-03-01T00:00:00Z'));
       });
 
       it('should return next valid occurrence if invalid', function() {
@@ -28,7 +32,7 @@ describe('Compile', function() {
       });
 
       it('should return previous valid occurrence if invalid', function() {
-        later.compile({Y:[2012]}).start('prev', d).should.eql(new Date('2012-12-31T23:59:59Z'));
+        later.compile({Y:[2012]}).start('prev', d).should.eql(new Date('2012-01-01T00:00:00Z'));
       });
 
     });
@@ -46,18 +50,6 @@ describe('Compile', function() {
 
       it('should return next invalid occurrence if valid', function() {
         later.compile({Y:[2013,2014]}).end('next', d).should.eql(new Date('2015-01-01T00:00:00Z'));
-      });
-
-    });
-
-    describe('prev', function() {
-
-      it('should return start date if start is valid', function() {
-        later.compile({Y:[2014]}).end('prev', d).should.eql(d);
-      });
-
-      it('should return previous invalid occurrence if valid', function() {
-        later.compile({Y:[2012,2013]}).end('prev', d).should.eql(new Date('2011-12-31T23:59:59Z'));
       });
 
     });
