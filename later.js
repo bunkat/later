@@ -337,7 +337,7 @@ later = function() {
   };
   later.time = later.t = {
     name: "time",
-    range: 86400,
+    range: 1,
     val: function(d) {
       return d.t || (d.t = later.h.val(d) * 3600 + later.m.val(d) * 60 + later.s.val(d));
     },
@@ -451,13 +451,16 @@ later = function() {
   later.modifier.after = later.modifier.a = function(constraint, value) {
     return {
       name: "after " + constraint.name,
-      range: constraint.range,
+      range: constraint.range - 1,
       val: function(d) {
         var cVal = constraint.val(d);
         return cVal >= value ? value : cVal;
       },
       extent: constraint.extent,
-      start: constraint.start,
+      start: function(d) {
+        if (constraint.val(d) === value) return d;
+        return constraint.start(constraint.prev(d, value));
+      },
       end: constraint.end,
       next: function(startDate, val) {
         if (val > value) val = constraint.extent(startDate)[0];
@@ -479,7 +482,10 @@ later = function() {
       },
       extent: constraint.extent,
       start: constraint.start,
-      end: constraint.end,
+      end: function(d) {
+        if (constraint.val(d) === d) return d;
+        return constraint.next(d, value);
+      },
       next: function(startDate, val) {
         if (val <= value) val = constraint.extent(startDate)[0];
         return constraint.next(startDate, val);
@@ -503,6 +509,7 @@ later = function() {
     constraints.sort(function(a, b) {
       return a.constraint.range < b.constraint.range;
     });
+    console.log(constraints);
     tickConstraint = constraints[constraintsLen - 1].constraint;
     function compareFn(dir) {
       return dir === "next" ? function(a, b) {
@@ -515,9 +522,12 @@ later = function() {
       start: function(dir, startDate) {
         var next = startDate, nextVal = later.array[dir], done = false;
         while (!done && next) {
+          console.log("start next=" + next.toUTCString());
           done = true;
           for (var i = 0; i < constraintsLen; i++) {
             var constraint = constraints[i].constraint, curVal = constraint.val(next), vals = constraints[i].vals, extent = constraint.extent(next), newVal = nextVal(curVal, vals, extent);
+            console.log("curVal=" + curVal);
+            console.log("newVal=" + newVal);
             if (curVal !== newVal) {
               next = constraint[dir](next, newVal);
               done = false;
@@ -525,6 +535,8 @@ later = function() {
             }
           }
         }
+        console.log("next=" + next.toUTCString());
+        console.log("next start=" + tickConstraint.start(next).toUTCString());
         return next ? tickConstraint.start(next) : undefined;
       },
       end: function(dir, startDate) {
@@ -565,6 +577,10 @@ later = function() {
       calcSchedStarts(dir, schedStarts, startDate);
       while (count--) {
         while (next = schedStarts[nextIndex(schedStarts)]) {
+          if (compare(startDate, next)) {
+            tickSchedStarts(dir, schedStarts, next);
+            continue;
+          }
           if (endDate && compare(next.getTime(), endDate.getTime())) {
             next = null;
             break;
@@ -574,8 +590,16 @@ later = function() {
             calcSchedStarts(dir, schedStarts, exceptionEnd);
             continue;
           }
-          results.push(isRange ? [ new Date(next), new Date(getEnd(dir, schedStarts, next)) ] : new Date(next));
-          tickSchedStarts(dir, schedStarts, next);
+          console.log("before udpate=" + schedStarts);
+          if (isRange) {
+            var end = getEnd(dir, schedStarts, next);
+            results.push([ new Date(next), new Date(end) ]);
+            calcSchedStarts(dir, schedStarts, dir === "next" ? end : new Date(next.getTime() - 1e3));
+          } else {
+            results.push(new Date(next));
+            tickSchedStarts(dir, schedStarts, next);
+          }
+          console.log("after update=" + schedStarts);
           break;
         }
         if (!next) {
@@ -853,9 +877,10 @@ later = function() {
     };
   };
   later.parse.recur = function() {
-    var schedules = [], exceptions = [], cur, curArr = schedules, curName, values, every, after, applyMin, applyMax, i, last;
+    var schedules = [], exceptions = [], cur, curArr = schedules, curName, values, every, after, before, applyMin, applyMax, i, last;
     function add(name, min, max) {
-      name = after ? "a" + name : name;
+      name = after ? name + "_a" : name;
+      name = before ? name + "_b" : name;
       if (!cur) {
         curArr.push({});
         cur = curArr[0];
@@ -879,11 +904,12 @@ later = function() {
       values = applyMin ? [ min ] : applyMax ? [ max ] : values;
       var length = values.length;
       for (i = 0; i < length; i += 1) {
-        if (curName.indexOf(values[i]) < 0) {
-          curName.push(values[i]);
+        var val = values[i] - (before ? 1 : 0);
+        if (curName.indexOf(val) < 0) {
+          curName.push(val);
         }
       }
-      values = every = after = applyMin = applyMax = 0;
+      values = every = after = before = applyMin = applyMax = 0;
     }
     return {
       schedules: schedules,
@@ -901,6 +927,11 @@ later = function() {
         values = [ x ];
         return this;
       },
+      before: function(x) {
+        before = true;
+        values = [ x ];
+        return this;
+      },
       first: function() {
         applyMin = 1;
         return this;
@@ -909,37 +940,13 @@ later = function() {
         applyMax = 1;
         return this;
       },
-      at: function() {
-        values = arguments;
+      time: function() {
         for (var i = 0, len = values.length; i < len; i++) {
           var split = values[i].split(":");
-          if (split.length < 3) {
-            values[i] += ":00";
-          }
+          if (split.length < 3) split.push(0);
+          values[i] = +split[0] * 3600 + +split[1] * 60 + +split[2];
         }
         add("t");
-        return this;
-      },
-      afterTime: function() {
-        values = arguments;
-        for (var i = 0, len = values.length; i < len; i++) {
-          var split = values[i].split(":");
-          if (split.length < 3) {
-            values[i] += ":00";
-          }
-        }
-        add("ta");
-        return this;
-      },
-      beforeTime: function() {
-        values = arguments;
-        for (var i = 0, len = values.length; i < len; i++) {
-          var split = values[i].split(":");
-          if (split.length < 3) {
-            values[i] += ":00";
-          }
-        }
-        add("tb");
         return this;
       },
       second: function() {
@@ -1198,9 +1205,9 @@ later = function() {
           break;
 
          case TOKENTYPES.at:
-          r.at(parseTokenValue(TOKENTYPES.time));
+          r.time(parseTokenValue(TOKENTYPES.time));
           while (checkAndParse(TOKENTYPES.and)) {
-            r.at(parseTokenValue(TOKENTYPES.time));
+            r.time(parseTokenValue(TOKENTYPES.time));
           }
           break;
 

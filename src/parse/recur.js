@@ -17,7 +17,7 @@ later.parse.recur = function () {
       cur,
       curArr = schedules,
       curName,
-      values, every, after, applyMin, applyMax, i, last;
+      values, every, after, before, applyMin, applyMax, i, last;
 
   /**
   * Adds values to the specified constraint in the current schedule.
@@ -27,7 +27,8 @@ later.parse.recur = function () {
   * @param {Int} max: Maximum value for this constraint
   */
   function add(name, min, max) {
-    name = after ? 'a' + name : name;
+    name = after ? name + '_a' : name;
+    name = before ? name + '_b' : name;
 
     if (!cur) {
       curArr.push({});
@@ -53,13 +54,14 @@ later.parse.recur = function () {
     values = applyMin ? [min] : applyMax ? [max] : values;
     var length = values.length;
     for (i = 0; i < length; i += 1) {
-      if (curName.indexOf(values[i]) < 0) {
-        curName.push(values[i]);
+      var val = values[i] - (before ? 1 : 0);
+      if (curName.indexOf(val) < 0) {
+        curName.push(val);
       }
     }
 
     // reset the built up state
-    values = every = after = applyMin = applyMax = 0;
+    values = every = after = before = applyMin = applyMax = 0;
   }
 
   return {
@@ -112,10 +114,8 @@ later.parse.recur = function () {
     },
 
     /**
-    * Specifies the minimum interval between occurrences.
-    * Must be followed by the desired time period (minute(), hour(),
-    * etc). For example, to specify a schedule that occurs after four hours
-    * from the start time:
+    * Specifies the minimum valid value.  For example, to specify a schedule
+    * that is valid for all hours after four:
     *
     * recur().after(4).hour();
     *
@@ -124,6 +124,21 @@ later.parse.recur = function () {
     */
     after: function (x) {
       after = true;
+      values = [x];
+      return this;
+    },
+
+    /**
+    * Specifies the maximum valid value.  For example, to specify a schedule
+    * that is valid for all hours before four:
+    *
+    * recur().before(4).hour();
+    *
+    * @param {Int} x: Recurring interval
+    * @api public
+    */
+    before: function (x) {
+      before = true;
       values = [x];
       return this;
     },
@@ -162,67 +177,20 @@ later.parse.recur = function () {
     * hh:mm:ss format using 24 hour time. For example, to specify
     * a schedule for 8:30 pm every day:
     *
-    * recur().at('20:30:00');
+    * recur().time('20:30:00');
     *
     * @param {String} time: Time in hh:mm:ss 24-hour format
     * @api public
     */
-    at: function () {
-      values = arguments;
+    time: function () {
+      //values = arguments;
       for (var i = 0, len = values.length; i < len; i++) {
         var split = values[i].split(':');
-        if (split.length < 3) {
-          values[i] += ':00';
-        }
+        if(split.length < 3) split.push(0);
+        values[i] = (+split[0]) * 3600 + (+split[1]) * 60 + (+split[2]);
       }
 
       add('t');
-      return this;
-    },
-
-    /**
-    * Specifies a specific time that valid occurrences must occur
-    * after. Time must be specified in hh:mm:ss format using 24 hour
-    * time. For example, to specify a schedule after 8:30 pm every day:
-    *
-    * recur().afterTime('20:30:00');
-    *
-    * @param {String} time: Time in hh:mm:ss 24-hour format
-    * @api public
-    */
-    afterTime: function () {
-      values = arguments;
-      for (var i = 0, len = values.length; i < len; i++) {
-        var split = values[i].split(':');
-        if (split.length < 3) {
-          values[i] += ':00';
-        }
-      }
-
-      add('ta');
-      return this;
-    },
-
-    /**
-    * Specifies a specific time that valid occurrences must occur
-    * before. Time must be specified in hh:mm:ss format using 24 hour
-    * time. For example, to specify a schedule before 8:30 pm every day:
-    *
-    * recur().beforeTime('20:30:00');
-    *
-    * @param {String} time: Time in hh:mm:ss 24-hour format
-    * @api public
-    */
-    beforeTime: function () {
-      values = arguments;
-      for (var i = 0, len = values.length; i < len; i++) {
-        var split = values[i].split(':');
-        if (split.length < 3) {
-          values[i] += ':00';
-        }
-      }
-
-      add('tb');
       return this;
     },
 

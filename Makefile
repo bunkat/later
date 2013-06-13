@@ -7,21 +7,31 @@ all: \
 	component.json \
 	package.json
 
-.PHONY: clean all test
+.PHONY: clean all test test-cov
 
 test: later.js
 	@NODE_ENV=test ./node_modules/.bin/mocha --reporter $(REPORTER) $(TESTS)
 
 test-cov: later-cov.js
-	@LATER_COV=1 $(MAKE) test REPORTER=html-cov > coverage.html-cov
+	@LATER_COV=1 $(MAKE) test REPORTER=html-cov > coverage.html
 
-later-cov.js: src-cov $(shell node_modules/.bin/smash --list src-cov/later.js)
+later-cov.js: later.js
 	@rm -f $@
-  node_modules/.bin/smash src/later.js
+	@jscoverage --no-highlight src src-cov \
+		--no-instrument=later.js \
+		--no-instrument=modifier/index.js \
+		--no-instrument=array/index.js \
+		--no-instrument=date/index.js \
+		--no-instrument=constraint/index.js \
+		--no-instrument=parse/index.js \
+		--no-instrument=core/index.js \
+		--no-instrument=compat/index.js \
+		--no-instrument=start.js \
+		--no-instrument=end.js \
+		--no-instrument=component.js \
+		--no-instrument=package.js
+	node_modules/.bin/smash src-cov/later.js > later-cov.js
 	@chmod a-w $@
-
-src-cov: all
-	@jscoverage --no-highlight src src-cov
 
 benchmark: all
 	@node benchmark/core/instanceof-bench.js

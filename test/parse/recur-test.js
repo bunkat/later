@@ -94,17 +94,36 @@ describe('Parse Recur', function() {
 
 		it('should store the appropriate minute constraint', function() {
 			var r = recur().after(15).minute();
-			r.schedules[0].am.should.eql([15]);
+			r.schedules[0].m_a.should.eql([15]);
 		});
 
 		it('should store the appropriate week of year constraint', function() {
 			var r = recur().after(10).weekOfYear();
-			r.schedules[0].awy.should.eql([10]);
+			r.schedules[0].wy_a.should.eql([10]);
 		});
 
 		it('should store the appropriate year constraint', function() {
 			var r = recur().after(10).year();
-			r.schedules[0].aY.should.eql([10]);
+			r.schedules[0].Y_a.should.eql([10]);
+		});
+
+	});
+
+	describe('before', function() {
+
+		it('should store the appropriate minute constraint', function() {
+			var r = recur().before(15).minute();
+			r.schedules[0].m_b.should.eql([14]);
+		});
+
+		it('should store the appropriate week of year constraint', function() {
+			var r = recur().before(10).weekOfYear();
+			r.schedules[0].wy_b.should.eql([9]);
+		});
+
+		it('should store the appropriate year constraint', function() {
+			var r = recur().before(10).year();
+			r.schedules[0].Y_b.should.eql([9]);
 		});
 
 	});
@@ -127,44 +146,34 @@ describe('Parse Recur', function() {
 
 	});
 
-	describe('at', function() {
+	describe('time', function() {
 
 		it('should store a single time constraint', function() {
-			var r = recur().at('08:30:00');
-			r.schedules[0].t.should.eql(['08:30:00']);
+			var r = recur().time('08:30:00');
+			r.schedules[0].t.should.eql([30600]);
 		});
 
 		it('should store multiple time constraints', function() {
-			var r = recur().at('08:30:00', '10:30:00');
-			r.schedules[0].t.should.eql(['08:30:00', '10:30:00']);
+			var r = recur().time('08:30', '10:30');
+			r.schedules[0].t.should.eql([30600, 37800]);
 		});
 
 	});
 
-	describe('before time', function() {
+	describe('before', function() {
 
 		it('should store a single before time constraint', function() {
-			var r = recur().beforeTime('08:30:00');
-			r.schedules[0].tb.should.eql(['08:30:00']);
-		});
-
-		it('should store multiple before time constraints', function() {
-			var r = recur().beforeTime('08:30', '10:30:00');
-			r.schedules[0].tb.should.eql(['08:30:00', '10:30:00']);
+			var r = recur().before().time('08:30:00');
+			r.schedules[0].t_b.should.eql([30599]);
 		});
 
 	});
 
-	describe('after time', function() {
+	describe('after', function() {
 
 		it('should store a single after time constraint', function() {
-			var r = recur().afterTime('08:30:00');
-			r.schedules[0].ta.should.eql(['08:30:00']);
-		});
-
-		it('should store multiple after time constraints', function() {
-			var r = recur().afterTime('08:30', '10:30:00');
-			r.schedules[0].ta.should.eql(['08:30:00', '10:30:00']);
+			var r = recur().after().time('08:30:00');
+			r.schedules[0].t_a.should.eql([30600]);
 		});
 
 	});

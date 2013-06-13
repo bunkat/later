@@ -43,6 +43,12 @@ later.schedule = function(sched) {
 
       while((next = schedStarts[nextIndex(schedStarts)])) {
 
+        // make sure that we aren't earlier than the startDate
+        if(compare(startDate, next)) {
+          tickSchedStarts(dir, schedStarts, next);
+          continue;
+        }
+
         // make sure we didn't go past the end date
         if((endDate && compare(next.getTime(), endDate.getTime()))) {
           next = null;
@@ -57,13 +63,20 @@ later.schedule = function(sched) {
           continue;
         }
 
-        // date is good, push to results and tick schedules to next time
-        results.push( isRange ?
-          [new Date(next), new Date(getEnd(dir, schedStarts, next))] :
-           new Date(next)
-        );
+        console.log('before udpate=' + schedStarts);
 
-        tickSchedStarts(dir, schedStarts, next);
+        // date is good, push to results and tick schedules to next time
+        if(isRange) {
+          var end = getEnd(dir, schedStarts, next);
+          results.push([new Date(next), new Date(end)]);
+          calcSchedStarts(dir, schedStarts, dir === 'next' ? end : new Date(next.getTime()-1000));
+        }
+        else {
+          results.push(new Date(next));
+          tickSchedStarts(dir, schedStarts, next);
+        }
+
+        console.log('after update=' + schedStarts);
 
         break;
       }

@@ -28,7 +28,7 @@ later.modifier.after = later.modifier.a = function(constraint, value) {
     /**
     * Pass through to the constraint.
     */
-    range: constraint.range,
+    range: constraint.range - 1,
 
     /**
     * The value of the specified date. Returns value for any constraint val
@@ -49,7 +49,10 @@ later.modifier.after = later.modifier.a = function(constraint, value) {
     /**
     * Pass through to the constraint.
     */
-    start: constraint.start,
+    start: function(d) {
+        if(constraint.val(d) === value) return d;
+        return constraint.start(constraint.prev(d, value));
+    },
 
     /**
     * Pass through to the constraint.

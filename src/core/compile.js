@@ -34,6 +34,8 @@ later.compile = function(schedDef) {
     return a.constraint.range < b.constraint.range;
   });
 
+  console.log(constraints);
+
   // this is the smallest constraint which we will use to tick this schedule
   tickConstraint = constraints[constraintsLen-1].constraint;
 
@@ -58,6 +60,7 @@ later.compile = function(schedDef) {
           done = false;
 
       while(!done && next) {
+        console.log('start next=' + next.toUTCString());
         done = true;
 
         // verify all of the constraints in order since we want to make the
@@ -69,6 +72,10 @@ later.compile = function(schedDef) {
               extent = constraint.extent(next),
               newVal = nextVal(curVal, vals, extent);
 
+          console.log('curVal=' + curVal);
+          console.log('newVal=' + newVal);
+
+
           if(curVal !== newVal) {
             next = constraint[dir](next, newVal);
             done = false;
@@ -77,6 +84,8 @@ later.compile = function(schedDef) {
         }
       }
 
+      console.log('next=' + next.toUTCString());
+      console.log('next start=' + tickConstraint.start(next).toUTCString());
       return next ? tickConstraint.start(next) : undefined;
     },
 

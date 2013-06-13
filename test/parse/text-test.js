@@ -90,82 +90,82 @@ describe('Parse Text', function() {
 
 		it('should parse after second restriction', function() {
 			var p = parser().parse('after 15 s');
-			p.schedules[0].should.have.ownProperty('as');
-			p.schedules[0].as.should.eql([15]);
+			p.schedules[0].should.have.ownProperty('s_a');
+			p.schedules[0].s_a.should.eql([15]);
 		});
 
 		it('should parse after minute restriction', function() {
 			var p = parser().parse('after 15 minutes');
-			p.schedules[0].should.have.ownProperty('am');
-			p.schedules[0].am.should.eql([15]);
+			p.schedules[0].should.have.ownProperty('m_a');
+			p.schedules[0].m_a.should.eql([15]);
 		});
 
 		it('should parse after hour restriction', function() {
 			var p = parser().parse('after 5 hours');
-			p.schedules[0].should.have.ownProperty('ah');
-			p.schedules[0].ah.should.eql([5]);
+			p.schedules[0].should.have.ownProperty('h_a');
+			p.schedules[0].h_a.should.eql([5]);
 		});
 
 		it('should parse after day of week restriction', function() {
 			var p = parser().parse('after 2nd day of the week');
-			p.schedules[0].should.have.ownProperty('ad');
-			p.schedules[0].ad.should.eql([2]);
+			p.schedules[0].should.have.ownProperty('d_a');
+			p.schedules[0].d_a.should.eql([2]);
 		});
 
 		it('should parse after day of month restriction', function() {
 			var p = parser().parse('after 5 days of the month');
-			p.schedules[0].should.have.ownProperty('aD');
-			p.schedules[0].aD.should.eql([5]);
+			p.schedules[0].should.have.ownProperty('D_a');
+			p.schedules[0].D_a.should.eql([5]);
 		});
 
 		it('should parse after day restriction', function() {
 			var p = parser().parse('after 5 days');
-			p.schedules[0].should.have.ownProperty('aD');
-			p.schedules[0].aD.should.eql([5]);
+			p.schedules[0].should.have.ownProperty('D_a');
+			p.schedules[0].D_a.should.eql([5]);
 		});
 
-		it('should parse after day of month restriction', function() {
+		it('should parse after day of year restriction', function() {
 			var p = parser().parse('after 5 days of the year');
-			p.schedules[0].should.have.ownProperty('ady');
-			p.schedules[0].ady.should.eql([5]);
+			p.schedules[0].should.have.ownProperty('dy_a');
+			p.schedules[0].dy_a.should.eql([5]);
 		});
 
 		it('should parse after week restriction', function() {
 			var p = parser().parse('after 2 weeks');
-			p.schedules[0].should.have.ownProperty('awy');
-			p.schedules[0].awy.should.eql([2]);
+			p.schedules[0].should.have.ownProperty('wy_a');
+			p.schedules[0].wy_a.should.eql([2]);
 		});
 
 		it('should parse after week of month restriction', function() {
 			var p = parser().parse('after 2 weeks of the month');
-			p.schedules[0].should.have.ownProperty('awm');
-			p.schedules[0].awm.should.eql([2]);
+			p.schedules[0].should.have.ownProperty('wm_a');
+			p.schedules[0].wm_a.should.eql([2]);
 		});
 
 		it('should parse after month restriction', function() {
 			var p = parser().parse('after 5 month');
-			p.schedules[0].should.have.ownProperty('aM');
-			p.schedules[0].aM.should.eql([5]);
+			p.schedules[0].should.have.ownProperty('M_a');
+			p.schedules[0].M_a.should.eql([5]);
 		});
 
 		it('should parse after week of year restriction', function() {
 			var p = parser().parse('after 10 weeks of the year');
-			p.schedules[0].should.have.ownProperty('awy');
-			p.schedules[0].awy.should.eql([10]);
+			p.schedules[0].should.have.ownProperty('wy_a');
+			p.schedules[0].wy_a.should.eql([10]);
 		});
 
 		it('should parse after year restriction', function() {
 			var p = parser().parse('after 10 years');
-			p.schedules[0].should.have.ownProperty('aY');
-			p.schedules[0].aY.should.eql([10]);
+			p.schedules[0].should.have.ownProperty('Y_a');
+			p.schedules[0].Y_a.should.eql([10]);
 		});
 
 		it('should parse multiple restrictions', function() {
 			var p = parser().parse('after 30th m after 5 months');
-			p.schedules[0].should.have.ownProperty('am');
-			p.schedules[0].am.should.eql([30]);
-			p.schedules[0].should.have.ownProperty('aM');
-			p.schedules[0].aM.should.eql([5]);
+			p.schedules[0].should.have.ownProperty('m_a');
+			p.schedules[0].m_a.should.eql([30]);
+			p.schedules[0].should.have.ownProperty('M_a');
+			p.schedules[0].M_a.should.eql([5]);
 		});
 	});
 
@@ -285,37 +285,37 @@ describe('Parse Text', function() {
 		it('should parse 24 hour time without leading zero', function() {
 			var p = parser().parse('at 5:00');
 			p.schedules[0].should.have.ownProperty('t');
-			p.schedules[0].t.should.eql(['05:00:00']);
+			p.schedules[0].t.should.eql([18000]);
 		});
 
 		it('should parse multiple 24 hour time without leading zero', function() {
 			var p = parser().parse('at 5:00,10:00');
 			p.schedules[0].should.have.ownProperty('t');
-			p.schedules[0].t.should.eql(['05:00:00', '10:00:00']);
+			p.schedules[0].t.should.eql([18000, 36000]);
 		});
 
 		it('should parse 24 hour time', function() {
 			var p = parser().parse('at 05:00:00');
 			p.schedules[0].should.have.ownProperty('t');
-			p.schedules[0].t.should.eql(['05:00:00']);
+			p.schedules[0].t.should.eql([18000]);
 		});
 
 		it('should parse multiple 24 hour time', function() {
 			var p = parser().parse('at 05:00 and 10:00');
 			p.schedules[0].should.have.ownProperty('t');
-			p.schedules[0].t.should.eql(['05:00:00', '10:00:00']);
+			p.schedules[0].t.should.eql([18000, 36000]);
 		});
 
 		it('should parse 12 hour time in the am', function() {
 			var p = parser().parse('at 5:00 am');
 			p.schedules[0].should.have.ownProperty('t');
-			p.schedules[0].t.should.eql(['05:00:00']);
+			p.schedules[0].t.should.eql([18000]);
 		});
 
 		it('should parse 12 hour time in the pm', function() {
 			var p = parser().parse('at 5:00 pm');
 			p.schedules[0].should.have.ownProperty('t');
-			p.schedules[0].t.should.eql(['17:00:00']);
+			p.schedules[0].t.should.eql([61200]);
 		});
 	});
 
@@ -385,8 +385,8 @@ describe('Parse Text', function() {
 
 		it('should create a composite schedule', function() {
 			var p = parser().parse('at 5:00 also at 10:00');
-			p.schedules[0].t.should.eql(['05:00:00']);
-			p.schedules[1].t.should.eql(['10:00:00']);
+			p.schedules[0].t.should.eql([18000]);
+			p.schedules[1].t.should.eql([36000]);
 		});
 
 	});
@@ -395,8 +395,8 @@ describe('Parse Text', function() {
 
 		it('should create an exception schedule', function() {
 			var p = parser().parse('at 5:00 except at 10:00');
-			p.schedules[0].t.should.eql(['05:00:00']);
-			p.exceptions[0].t.should.eql(['10:00:00']);
+			p.schedules[0].t.should.eql([18000]);
+			p.exceptions[0].t.should.eql([36000]);
 		});
 
 	});

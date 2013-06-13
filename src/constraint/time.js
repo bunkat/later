@@ -20,7 +20,7 @@ later.time = later.t = {
   * The rough amount of seconds between start and end for this constraint.
   * (doesn't need to be exact)
   */
-  range: 86400,
+  range: 1,
 
   /**
   * The time value of the specified date.

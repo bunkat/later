@@ -250,9 +250,9 @@ later.parse.text = function () {
           r.on(parseRanges(TOKENTYPES.yearIndex)).year();
           break;
         case TOKENTYPES.at:
-          r.at(parseTokenValue(TOKENTYPES.time));
+          r.time(parseTokenValue(TOKENTYPES.time));
           while (checkAndParse(TOKENTYPES.and)) {
-            r.at(parseTokenValue(TOKENTYPES.time));
+            r.time(parseTokenValue(TOKENTYPES.time));
           }
           break;
         case TOKENTYPES.also:
