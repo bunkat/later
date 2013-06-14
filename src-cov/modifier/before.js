@@ -43,12 +43,14 @@ if (! _$jscoverage['modifier/before.js']) {
   _$jscoverage['modifier/before.js'][21] = 0;
   _$jscoverage['modifier/before.js'][40] = 0;
   _$jscoverage['modifier/before.js'][41] = 0;
-  _$jscoverage['modifier/before.js'][63] = 0;
-  _$jscoverage['modifier/before.js'][64] = 0;
-  _$jscoverage['modifier/before.js'][71] = 0;
-  _$jscoverage['modifier/before.js'][72] = 0;
+  _$jscoverage['modifier/before.js'][58] = 0;
+  _$jscoverage['modifier/before.js'][59] = 0;
+  _$jscoverage['modifier/before.js'][66] = 0;
+  _$jscoverage['modifier/before.js'][67] = 0;
+  _$jscoverage['modifier/before.js'][74] = 0;
+  _$jscoverage['modifier/before.js'][75] = 0;
 }
-_$jscoverage['modifier/before.js'].source = ["/**","* Before Modifier","* (c) 2013 Bill, BunKat LLC.","*","* Modifies a constraint such that all values that are less than the","* specified value are considered valid.","*","* Later is freely distributable under the MIT license.","* For all details and documentation:","*     http://github.com/bunkat/later","*/","","/**","* Creates a new modified constraint.","*","* @param {Constraint} constraint: The constraint to be modified","* @param {Integer} value: The starting value of the before constraint","*/","later.modifier.before = later.modifier.b = function(constraint, value) {","","  return {","","    /**","    * Returns the name of the constraint with the 'before' modifier.","    */","    name: 'before ' + constraint.name,","","    /**","    * Pass through to the constraint.","    */","    range: constraint.range,","","    /**","    * The value of the specified date. Returns value for any constraint val","    * that is less than or equal to value.","    *","    * @param {Date} d: The date to calculate the value of","    */","    val: function(d) {","      var cVal = constraint.val(d);","      return cVal &lt;= value ? value : cVal;","    },","","    /**","    * Pass through to the constraint.","    */","    extent: constraint.extent,","","    /**","    * Pass through to the constraint.","    */","    start: constraint.start,","","    /**","    * Pass through to the constraint.","    */","    end: constraint.end,","","    /**","    * Pass through to the constraint.","    */","    next: function(startDate, val) {","        if(val &lt;= value) val = constraint.extent(startDate)[0];","        return constraint.next(startDate, val);","    },","","    /**","    * Pass through to the constraint.","    */","    prev: function(startDate, val) {","        if(val &lt; value) val = constraint.extent(startDate)[1];","        return constraint.prev(startDate, val);","    }","","  };","","};"];
+_$jscoverage['modifier/before.js'].source = ["/**","* Before Modifier","* (c) 2013 Bill, BunKat LLC.","*","* Modifies a constraint such that all values that are less than the","* specified value are considered valid.","*","* Later is freely distributable under the MIT license.","* For all details and documentation:","*     http://github.com/bunkat/later","*/","","/**","* Creates a new modified constraint.","*","* @param {Constraint} constraint: The constraint to be modified","* @param {Integer} value: The starting value of the before constraint","*/","later.modifier.before = later.modifier.b = function(constraint, value) {","","  return {","","    /**","    * Returns the name of the constraint with the 'before' modifier.","    */","    name: 'before ' + constraint.name,","","    /**","    * Pass through to the constraint.","    */","    range: constraint.range,","","    /**","    * The value of the specified date. Returns value for any constraint val","    * that is less than or equal to value.","    *","    * @param {Date} d: The date to calculate the value of","    */","    val: function(d) {","      var cVal = constraint.val(d);","      return cVal &lt;= value ? value : cVal;","    },","","    /**","    * Pass through to the constraint.","    */","    extent: constraint.extent,","","    /**","    * Pass through to the constraint.","    */","    start: constraint.start,","","    /**","    * Pass through to the constraint.","    */","    end: function(d) {","        if(constraint.val(d) === d) return d;","        return constraint.next(d, value);","    },","","    /**","    * Pass through to the constraint.","    */","    next: function(startDate, val) {","        if(val &lt;= value) val = constraint.extent(startDate)[0];","        return constraint.next(startDate, val);","    },","","    /**","    * Pass through to the constraint.","    */","    prev: function(startDate, val) {","        if(val &lt; value) val = constraint.extent(startDate)[1];","        return constraint.prev(startDate, val);","    }","","  };","","};"];
 _$jscoverage['modifier/before.js'][19]++;
 later.modifier.before = (later.modifier.b = (function (constraint, value) {
   _$jscoverage['modifier/before.js'][21]++;
@@ -57,21 +59,29 @@ later.modifier.before = (later.modifier.b = (function (constraint, value) {
   var cVal = constraint.val(d);
   _$jscoverage['modifier/before.js'][41]++;
   return ((cVal <= value)? value: cVal);
-}), extent: constraint.extent, start: constraint.start, end: constraint.end, next: (function (startDate, val) {
-  _$jscoverage['modifier/before.js'][63]++;
+}), extent: constraint.extent, start: constraint.start, end: (function (d) {
+  _$jscoverage['modifier/before.js'][58]++;
+  if ((constraint.val(d) === d)) {
+    _$jscoverage['modifier/before.js'][58]++;
+    return d;
+  }
+  _$jscoverage['modifier/before.js'][59]++;
+  return constraint.next(d, value);
+}), next: (function (startDate, val) {
+  _$jscoverage['modifier/before.js'][66]++;
   if ((val <= value)) {
-    _$jscoverage['modifier/before.js'][63]++;
+    _$jscoverage['modifier/before.js'][66]++;
     val = constraint.extent(startDate)[0];
   }
-  _$jscoverage['modifier/before.js'][64]++;
+  _$jscoverage['modifier/before.js'][67]++;
   return constraint.next(startDate, val);
 }), prev: (function (startDate, val) {
-  _$jscoverage['modifier/before.js'][71]++;
+  _$jscoverage['modifier/before.js'][74]++;
   if ((val < value)) {
-    _$jscoverage['modifier/before.js'][71]++;
+    _$jscoverage['modifier/before.js'][74]++;
     val = constraint.extent(startDate)[1];
   }
-  _$jscoverage['modifier/before.js'][72]++;
+  _$jscoverage['modifier/before.js'][75]++;
   return constraint.prev(startDate, val);
 })});
 }));

@@ -12,27 +12,24 @@
 
 later.array.next = function (val, values, extent) {
 
-  // skip UNDEFINED values...
-
-
   var cur,
-      zeroVal = extent[0] === 0 ? 0 : extent[1],
-      next = values[0] || zeroVal;
+      zeroIsLargest = extent[0] !== 0,
+      nextIdx = 0;
 
   for(var i = values.length-1; i > -1; --i) {
-    cur = values[i] || zeroVal;
-
-    if(cur > val) {
-      next = cur;
-      continue;
-    }
+    cur = values[i];
 
     if(cur === val) {
       return cur;
     }
 
+    if(cur > val || (cur === 0 && zeroIsLargest && extent[1] > val)) {
+      nextIdx = i;
+      continue;
+    }
+
     break;
   }
 
-  return next <= extent[1] ? next : values[0] || zeroVal;
+  return values[nextIdx];
 };

@@ -63,6 +63,8 @@ later.dayOfWeek = later.dw = later.d = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
+    val = val || later.dw.extent()[1];
+
     return later.date.next(
       later.Y.val(d),
       later.M.val(d),
@@ -76,6 +78,8 @@ later.dayOfWeek = later.dw = later.d = {
   * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
+    val = val || later.dw.extent()[1];
+
     return later.date.prev(
       later.Y.val(d),
       later.M.val(d),

@@ -146,33 +146,20 @@ describe('Parse Recur', function() {
 
 	});
 
-	describe('time', function() {
 
-		it('should store a single time constraint', function() {
-			var r = recur().time('08:30:00');
-			r.schedules[0].t.should.eql([30600]);
-		});
-
-		it('should store multiple time constraints', function() {
-			var r = recur().time('08:30', '10:30');
-			r.schedules[0].t.should.eql([30600, 37800]);
-		});
-
-	});
-
-	describe('before', function() {
+	describe('before time', function() {
 
 		it('should store a single before time constraint', function() {
-			var r = recur().before().time('08:30:00');
+			var r = recur().before('08:30:00').time();
 			r.schedules[0].t_b.should.eql([30599]);
 		});
 
 	});
 
-	describe('after', function() {
+	describe('after time', function() {
 
 		it('should store a single after time constraint', function() {
-			var r = recur().after().time('08:30:00');
+			var r = recur().after('08:30:00').time();
 			r.schedules[0].t_a.should.eql([30600]);
 		});
 

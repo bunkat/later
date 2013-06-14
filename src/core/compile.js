@@ -70,13 +70,13 @@ later.compile = function(schedDef) {
               curVal = constraint.val(next),
               vals = constraints[i].vals,
               extent = constraint.extent(next),
-              newVal = nextVal(curVal, vals, extent);
+              newVal = nextVal(curVal, vals, extent),
+              testVal = extent[0] !== 0 ? newVal || extent[1] : newVal;
 
           console.log('curVal=' + curVal);
           console.log('newVal=' + newVal);
 
-
-          if(curVal !== newVal) {
+          if(curVal !== testVal) {
             next = constraint[dir](next, newVal);
             done = false;
             break;
@@ -84,8 +84,10 @@ later.compile = function(schedDef) {
         }
       }
 
-      console.log('next=' + next.toUTCString());
-      console.log('next start=' + tickConstraint.start(next).toUTCString());
+      if(next) {
+        console.log('next=' + next.toUTCString());
+        console.log('next start=' + tickConstraint.start(next).toUTCString());
+      }
       return next ? tickConstraint.start(next) : undefined;
     },
 
@@ -110,12 +112,13 @@ later.compile = function(schedDef) {
             vals = constraints[i].vals,
             extent = constraint.extent(startDate),
             nextVal = nextInvalidVal(curVal, vals, extent),
+            testVal = extent[0] !== 0 ? nextVal || extent[1] : nextVal,
             next;
 
-        if(nextVal === curVal) { // startDate is invalid, use that
+        if(testVal === curVal) { // startDate is invalid, use that
           next = startDate;
         }
-        else if(nextVal) { // constraint has invalid value, use that
+        else if(nextVal !== undefined) { // constraint has invalid value, use that
           next = constraint[dir](startDate, nextVal);
         }
 

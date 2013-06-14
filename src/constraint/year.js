@@ -64,6 +64,7 @@ later.year = later.Y = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
+    val = val || later.Y.extent()[1];
     return val > later.Y.val(d) ? later.date.next(val) : undefined;
   },
 
@@ -74,6 +75,7 @@ later.year = later.Y = {
   * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
+    val = val || later.Y.extent()[1];
     return val < later.Y.val(d) ? later.date.prev(val) : undefined;
   }
 

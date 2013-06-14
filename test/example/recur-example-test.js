@@ -99,7 +99,7 @@ describe('Recur Examples', function() {
     prev.should.eql(expected.reverse());
   });
 
-  it.only('Last day of every month', function() {
+  it('Last day of every month', function() {
     later.date.UTC();
 
     var sched = later.parse.recur().last().dayOfMonth();
@@ -124,8 +124,45 @@ describe('Recur Examples', function() {
     var next = later.schedule(sched).next(12, start, end);
     next.should.eql(expected);
 
-    var prev = later.schedule(sched).prev(3, end, start);
+    var prev = later.schedule(sched).prev(12, end, start);
     console.log(prev);
+    prev.should.eql(expected.reverse());
+
+  });
+
+  it('Last Wednesday of every month', function() {
+    later.date.UTC();
+
+    // last wednesday could be the 4th or 5th instance in the month,
+    // exception removes cases where it is the 4th but there is a 5th instance
+    var sched = later.parse
+                .recur()
+                  .after(4).dayOfWeekCount().on(4).dayOfWeek()
+                .except()
+                  .before(25).dayOfMonth();
+
+    var start = new Date('2012-01-01T00:00:00Z'),
+        end = new Date('2013-01-01T00:00:00Z'),
+        expected = [
+          new Date('2012-01-25T00:00:00Z'),
+          new Date('2012-02-29T00:00:00Z'),
+          new Date('2012-03-28T00:00:00Z'),
+          new Date('2012-04-25T00:00:00Z'),
+          new Date('2012-05-30T00:00:00Z'),
+          new Date('2012-06-27T00:00:00Z'),
+          new Date('2012-07-25T00:00:00Z'),
+          new Date('2012-08-29T00:00:00Z'),
+          new Date('2012-09-26T00:00:00Z'),
+          new Date('2012-10-31T00:00:00Z'),
+          new Date('2012-11-28T00:00:00Z'),
+          new Date('2012-12-26T00:00:00Z')
+        ];
+
+    var next = later.schedule(sched).next(12, start, end);
+    console.log(next);
+    next.should.eql(expected);
+
+    var prev = later.schedule(sched).prev(12, end, start);
     prev.should.eql(expected.reverse());
 
   });
@@ -202,9 +239,5 @@ describe('Recur Examples', function() {
     prev.should.eql(expected.reverse());
 
   });
-
-
-
-
 
 });

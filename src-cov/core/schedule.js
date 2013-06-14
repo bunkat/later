@@ -56,60 +56,69 @@ if (! _$jscoverage['core/schedule.js']) {
   _$jscoverage['core/schedule.js'][47] = 0;
   _$jscoverage['core/schedule.js'][48] = 0;
   _$jscoverage['core/schedule.js'][49] = 0;
+  _$jscoverage['core/schedule.js'][53] = 0;
   _$jscoverage['core/schedule.js'][54] = 0;
   _$jscoverage['core/schedule.js'][55] = 0;
-  _$jscoverage['core/schedule.js'][56] = 0;
-  _$jscoverage['core/schedule.js'][57] = 0;
+  _$jscoverage['core/schedule.js'][60] = 0;
   _$jscoverage['core/schedule.js'][61] = 0;
+  _$jscoverage['core/schedule.js'][62] = 0;
+  _$jscoverage['core/schedule.js'][63] = 0;
   _$jscoverage['core/schedule.js'][66] = 0;
-  _$jscoverage['core/schedule.js'][68] = 0;
+  _$jscoverage['core/schedule.js'][69] = 0;
+  _$jscoverage['core/schedule.js'][70] = 0;
+  _$jscoverage['core/schedule.js'][71] = 0;
   _$jscoverage['core/schedule.js'][72] = 0;
-  _$jscoverage['core/schedule.js'][73] = 0;
-  _$jscoverage['core/schedule.js'][77] = 0;
+  _$jscoverage['core/schedule.js'][75] = 0;
+  _$jscoverage['core/schedule.js'][76] = 0;
+  _$jscoverage['core/schedule.js'][79] = 0;
   _$jscoverage['core/schedule.js'][81] = 0;
-  _$jscoverage['core/schedule.js'][82] = 0;
-  _$jscoverage['core/schedule.js'][84] = 0;
+  _$jscoverage['core/schedule.js'][85] = 0;
   _$jscoverage['core/schedule.js'][86] = 0;
-  _$jscoverage['core/schedule.js'][87] = 0;
-  _$jscoverage['core/schedule.js'][88] = 0;
-  _$jscoverage['core/schedule.js'][89] = 0;
+  _$jscoverage['core/schedule.js'][90] = 0;
+  _$jscoverage['core/schedule.js'][94] = 0;
   _$jscoverage['core/schedule.js'][95] = 0;
-  _$jscoverage['core/schedule.js'][96] = 0;
   _$jscoverage['core/schedule.js'][97] = 0;
-  _$jscoverage['core/schedule.js'][98] = 0;
+  _$jscoverage['core/schedule.js'][99] = 0;
+  _$jscoverage['core/schedule.js'][100] = 0;
+  _$jscoverage['core/schedule.js'][101] = 0;
   _$jscoverage['core/schedule.js'][102] = 0;
-  _$jscoverage['core/schedule.js'][105] = 0;
-  _$jscoverage['core/schedule.js'][106] = 0;
-  _$jscoverage['core/schedule.js'][107] = 0;
   _$jscoverage['core/schedule.js'][108] = 0;
   _$jscoverage['core/schedule.js'][109] = 0;
   _$jscoverage['core/schedule.js'][110] = 0;
-  _$jscoverage['core/schedule.js'][112] = 0;
-  _$jscoverage['core/schedule.js'][113] = 0;
+  _$jscoverage['core/schedule.js'][111] = 0;
+  _$jscoverage['core/schedule.js'][115] = 0;
   _$jscoverage['core/schedule.js'][118] = 0;
+  _$jscoverage['core/schedule.js'][119] = 0;
+  _$jscoverage['core/schedule.js'][120] = 0;
   _$jscoverage['core/schedule.js'][121] = 0;
   _$jscoverage['core/schedule.js'][122] = 0;
   _$jscoverage['core/schedule.js'][123] = 0;
-  _$jscoverage['core/schedule.js'][124] = 0;
-  _$jscoverage['core/schedule.js'][129] = 0;
-  _$jscoverage['core/schedule.js'][130] = 0;
-  _$jscoverage['core/schedule.js'][132] = 0;
-  _$jscoverage['core/schedule.js'][133] = 0;
+  _$jscoverage['core/schedule.js'][125] = 0;
+  _$jscoverage['core/schedule.js'][126] = 0;
+  _$jscoverage['core/schedule.js'][131] = 0;
   _$jscoverage['core/schedule.js'][134] = 0;
-  _$jscoverage['core/schedule.js'][139] = 0;
-  _$jscoverage['core/schedule.js'][140] = 0;
-  _$jscoverage['core/schedule.js'][141] = 0;
+  _$jscoverage['core/schedule.js'][135] = 0;
+  _$jscoverage['core/schedule.js'][136] = 0;
+  _$jscoverage['core/schedule.js'][137] = 0;
   _$jscoverage['core/schedule.js'][142] = 0;
+  _$jscoverage['core/schedule.js'][143] = 0;
   _$jscoverage['core/schedule.js'][145] = 0;
   _$jscoverage['core/schedule.js'][146] = 0;
-  _$jscoverage['core/schedule.js'][150] = 0;
+  _$jscoverage['core/schedule.js'][147] = 0;
+  _$jscoverage['core/schedule.js'][152] = 0;
   _$jscoverage['core/schedule.js'][153] = 0;
-  _$jscoverage['core/schedule.js'][157] = 0;
-  _$jscoverage['core/schedule.js'][161] = 0;
-  _$jscoverage['core/schedule.js'][165] = 0;
-  _$jscoverage['core/schedule.js'][169] = 0;
+  _$jscoverage['core/schedule.js'][154] = 0;
+  _$jscoverage['core/schedule.js'][155] = 0;
+  _$jscoverage['core/schedule.js'][158] = 0;
+  _$jscoverage['core/schedule.js'][159] = 0;
+  _$jscoverage['core/schedule.js'][163] = 0;
+  _$jscoverage['core/schedule.js'][166] = 0;
+  _$jscoverage['core/schedule.js'][170] = 0;
+  _$jscoverage['core/schedule.js'][174] = 0;
+  _$jscoverage['core/schedule.js'][178] = 0;
+  _$jscoverage['core/schedule.js'][182] = 0;
 }
-_$jscoverage['core/schedule.js'].source = ["/**","* Schedule","* (c) 2013 Bill, BunKat LLC.","*","* Returns an object to calculate future or previous occurrences of the","* specified schedule.","*","* Later is freely distributable under the MIT license.","* For all details and documentation:","*     http://github.com/bunkat/later","*/","","later.schedule = function(sched) {","","  // compile the schedule components","  var schedules = [], schedulesLen = sched.schedules.length,","      exceptions = [], exceptionsLen = sched.exceptions ? sched.exceptions.length : 0;","","  for(var i = 0; i &lt; schedulesLen; i++) {","    schedules.push(later.compile(sched.schedules[i]));","  }","","  for(var j = 0; j &lt; exceptionsLen; j++) {","    exceptions.push(later.compile(sched.exceptions[j]));","  }","","  function getInstances(dir, count, startDate, endDate, isRange) {","    var d = startDate ? new Date(startDate) : new Date(),","        instances = getStart(dir, count, d, endDate, isRange);","","    return instances.length === 0 ? undefined :","           count === 1 ? instances[0] : instances;","  }","","  function getStart(dir, count, startDate, endDate, isRange) {","    var nextIndex = indexFn(dir), compare = compareFn(dir),","        schedStarts = [], next, results = [];","","    // calc the earliest start date for each schedule","    calcSchedStarts(dir, schedStarts, startDate);","","    while(count--) {","","      while((next = schedStarts[nextIndex(schedStarts)])) {","","        // make sure we didn't go past the end date","        if((endDate &amp;&amp; compare(next.getTime(), endDate.getTime()))) {","          next = null;","          break;","        }","","        // make sure that this date isn't included in any exception","        // if it is, update the schedule starts and try again","        var exceptionEnd = getExceptionEnd(dir, next);","        if(exceptionEnd) {","          calcSchedStarts(dir, schedStarts, exceptionEnd);","          continue;","        }","","        // date is good, push to results and tick schedules to next time","        results.push( isRange ?","          [new Date(next), new Date(getEnd(dir, schedStarts, next))] :","           new Date(next)","        );","","        tickSchedStarts(dir, schedStarts, next);","","        break;","      }","","      // break out if we've run out of valid dates","      if(!next) {","        break;","      }","    }","","    return results;","  }","","","  function getEnd(dir, schedStarts, next) {","    var compare = compareFn(dir), end;","","    for(var i = 0; i &lt; schedulesLen; i++) {","      // find the max end date for any schedule that is valid at 'next'","      if(schedStarts[i] &amp;&amp; schedStarts[i].getTime() === next.getTime()) {","        var schedEnd = schedules[i].end(dir, next);","        if(!end || compare(schedEnd,end)) {","          end = schedEnd;","        }","      }","    }","","    // find the min start date of any exception starting from 'next'","    for(var j = 0; j &lt; exceptionsLen; j++) {","      var exceptStart = exceptions[j].start(dir, next);","      if(compare(end, exceptStart)) {","        end = exceptStart;","      }","    }","","    return new Date(end);","  }","","  function getExceptionEnd(dir, next) {","    var compare = compareFn(dir), result;","    if(exceptionsLen) {","      for(var i = 0; i &lt; exceptionsLen; i++) {","        var exceptStart = exceptions[i].start(dir, next);","        if(exceptStart &amp;&amp; (exceptStart.getTime() === next.getTime() || compare(next, exceptStart))) {","          //var end = exceptions[i].end(dir, next);","          var end = dir === 'next' ? exceptions[i].end(dir, next) : new Date(exceptStart.getTime()-1000);","          result = !result || compare(end, result) ? end : result;","        }","      }","    }","","    return result;","  }","","  function tickSchedStarts(dir, schedStarts, next) {","    for(var i = 0; i &lt; schedulesLen; i++) {","      if(schedStarts[i] &amp;&amp; schedStarts[i].getTime() === next.getTime()) {","        schedStarts[i] = schedules[i].start(dir, schedules[i].tick(dir, next));","      }","    }","  }","","  function calcSchedStarts(dir, schedStarts, next) {","    var compare = compareFn(dir);","","    for(var i = 0; i &lt; schedulesLen; i++) {","      if(!schedStarts[i] || compare(next, schedStarts[i])) {","        schedStarts[i] = schedules[i].start(dir, next);","      }","    }","  }","","  function compareFn(dir) {","    return dir === 'next' ?","      function(a,b) { return a &gt; b; } :","      function(a,b) { return b &gt; a; };","  }","","  function indexFn(dir) {","    return dir === 'next' ? later.array.minIndex : later.array.maxIndex;","  }","","","  return {","","    isValid: function(d) {","      return getInstances('next', 1, d, d) !== undefined;","    },","","    next: function(count, startDate, endDate) {","      return getInstances('next', count || 1, startDate, endDate);","    },","","    prev: function(count, startDate, endDate) {","      return getInstances('prev', count || 1, startDate, endDate);","    },","","    nextRange: function(count, startDate, endDate) {","      return getInstances('next', count || 1, startDate, endDate, true);","    },","","    prevRange: function(count, startDate, endDate) {","      return getInstances('prev', count || 1, startDate, endDate, true);","    }","","  };","","};"];
+_$jscoverage['core/schedule.js'].source = ["/**","* Schedule","* (c) 2013 Bill, BunKat LLC.","*","* Returns an object to calculate future or previous occurrences of the","* specified schedule.","*","* Later is freely distributable under the MIT license.","* For all details and documentation:","*     http://github.com/bunkat/later","*/","","later.schedule = function(sched) {","","  // compile the schedule components","  var schedules = [], schedulesLen = sched.schedules.length,","      exceptions = [], exceptionsLen = sched.exceptions ? sched.exceptions.length : 0;","","  for(var i = 0; i &lt; schedulesLen; i++) {","    schedules.push(later.compile(sched.schedules[i]));","  }","","  for(var j = 0; j &lt; exceptionsLen; j++) {","    exceptions.push(later.compile(sched.exceptions[j]));","  }","","  function getInstances(dir, count, startDate, endDate, isRange) {","    var d = startDate ? new Date(startDate) : new Date(),","        instances = getStart(dir, count, d, endDate, isRange);","","    return instances.length === 0 ? undefined :","           count === 1 ? instances[0] : instances;","  }","","  function getStart(dir, count, startDate, endDate, isRange) {","    var nextIndex = indexFn(dir), compare = compareFn(dir),","        schedStarts = [], next, results = [];","","    // calc the earliest start date for each schedule","    calcSchedStarts(dir, schedStarts, startDate);","","    while(count--) {","","      while((next = schedStarts[nextIndex(schedStarts)])) {","","        // make sure that we aren't earlier than the startDate","        if(compare(startDate, next)) {","          tickSchedStarts(dir, schedStarts, next);","          continue;","        }","","        // make sure we didn't go past the end date","        if((endDate &amp;&amp; compare(next.getTime(), endDate.getTime()))) {","          next = null;","          break;","        }","","        // make sure that this date isn't included in any exception","        // if it is, update the schedule starts and try again","        var exceptionEnd = getExceptionEnd(dir, next);","        if(exceptionEnd) {","          calcSchedStarts(dir, schedStarts, exceptionEnd);","          continue;","        }","","        console.log('before udpate=' + schedStarts);","","        // date is good, push to results and tick schedules to next time","        if(isRange) {","          var end = getEnd(dir, schedStarts, next);","          results.push([new Date(next), new Date(end)]);","          calcSchedStarts(dir, schedStarts, dir === 'next' ? end : new Date(next.getTime()-1000));","        }","        else {","          results.push(new Date(next));","          tickSchedStarts(dir, schedStarts, next);","        }","","        console.log('after update=' + schedStarts);","","        break;","      }","","      // break out if we've run out of valid dates","      if(!next) {","        break;","      }","    }","","    return results;","  }","","","  function getEnd(dir, schedStarts, next) {","    var compare = compareFn(dir), end;","","    for(var i = 0; i &lt; schedulesLen; i++) {","      // find the max end date for any schedule that is valid at 'next'","      if(schedStarts[i] &amp;&amp; schedStarts[i].getTime() === next.getTime()) {","        var schedEnd = schedules[i].end(dir, next);","        if(!end || compare(schedEnd,end)) {","          end = schedEnd;","        }","      }","    }","","    // find the min start date of any exception starting from 'next'","    for(var j = 0; j &lt; exceptionsLen; j++) {","      var exceptStart = exceptions[j].start(dir, next);","      if(compare(end, exceptStart)) {","        end = exceptStart;","      }","    }","","    return new Date(end);","  }","","  function getExceptionEnd(dir, next) {","    var compare = compareFn(dir), result;","    if(exceptionsLen) {","      for(var i = 0; i &lt; exceptionsLen; i++) {","        var exceptStart = exceptions[i].start(dir, next);","        if(exceptStart &amp;&amp; (exceptStart.getTime() === next.getTime() || compare(next, exceptStart))) {","          //var end = exceptions[i].end(dir, next);","          var end = dir === 'next' ? exceptions[i].end(dir, next) : new Date(exceptStart.getTime()-1000);","          result = !result || compare(end, result) ? end : result;","        }","      }","    }","","    return result;","  }","","  function tickSchedStarts(dir, schedStarts, next) {","    for(var i = 0; i &lt; schedulesLen; i++) {","      if(schedStarts[i] &amp;&amp; schedStarts[i].getTime() === next.getTime()) {","        schedStarts[i] = schedules[i].start(dir, schedules[i].tick(dir, next));","      }","    }","  }","","  function calcSchedStarts(dir, schedStarts, next) {","    var compare = compareFn(dir);","","    for(var i = 0; i &lt; schedulesLen; i++) {","      if(!schedStarts[i] || compare(next, schedStarts[i])) {","        schedStarts[i] = schedules[i].start(dir, next);","      }","    }","  }","","  function compareFn(dir) {","    return dir === 'next' ?","      function(a,b) { return a &gt; b; } :","      function(a,b) { return b &gt; a; };","  }","","  function indexFn(dir) {","    return dir === 'next' ? later.array.minIndex : later.array.maxIndex;","  }","","","  return {","","    isValid: function(d) {","      return getInstances('next', 1, d, d) !== undefined;","    },","","    next: function(count, startDate, endDate) {","      return getInstances('next', count || 1, startDate, endDate);","    },","","    prev: function(count, startDate, endDate) {","      return getInstances('prev', count || 1, startDate, endDate);","    },","","    nextRange: function(count, startDate, endDate) {","      return getInstances('next', count || 1, startDate, endDate, true);","    },","","    prevRange: function(count, startDate, endDate) {","      return getInstances('prev', count || 1, startDate, endDate, true);","    }","","  };","","};"];
 _$jscoverage['core/schedule.js'][13]++;
 later.schedule = (function (sched) {
   _$jscoverage['core/schedule.js'][16]++;
@@ -142,144 +151,166 @@ later.schedule = (function (sched) {
       _$jscoverage['core/schedule.js'][44]++;
       while ((next = schedStarts[nextIndex(schedStarts)])) {
         _$jscoverage['core/schedule.js'][47]++;
-        if ((endDate && compare(next.getTime(), endDate.getTime()))) {
+        if (compare(startDate, next)) {
           _$jscoverage['core/schedule.js'][48]++;
-          next = null;
+          tickSchedStarts(dir, schedStarts, next);
           _$jscoverage['core/schedule.js'][49]++;
-          break;
-        }
-        _$jscoverage['core/schedule.js'][54]++;
-        var exceptionEnd = getExceptionEnd(dir, next);
-        _$jscoverage['core/schedule.js'][55]++;
-        if (exceptionEnd) {
-          _$jscoverage['core/schedule.js'][56]++;
-          calcSchedStarts(dir, schedStarts, exceptionEnd);
-          _$jscoverage['core/schedule.js'][57]++;
           continue;
         }
+        _$jscoverage['core/schedule.js'][53]++;
+        if ((endDate && compare(next.getTime(), endDate.getTime()))) {
+          _$jscoverage['core/schedule.js'][54]++;
+          next = null;
+          _$jscoverage['core/schedule.js'][55]++;
+          break;
+        }
+        _$jscoverage['core/schedule.js'][60]++;
+        var exceptionEnd = getExceptionEnd(dir, next);
         _$jscoverage['core/schedule.js'][61]++;
-        results.push((isRange? [new Date(next), new Date(getEnd(dir, schedStarts, next))]: new Date(next)));
+        if (exceptionEnd) {
+          _$jscoverage['core/schedule.js'][62]++;
+          calcSchedStarts(dir, schedStarts, exceptionEnd);
+          _$jscoverage['core/schedule.js'][63]++;
+          continue;
+        }
         _$jscoverage['core/schedule.js'][66]++;
-        tickSchedStarts(dir, schedStarts, next);
-        _$jscoverage['core/schedule.js'][68]++;
+        console.log(("before udpate=" + schedStarts));
+        _$jscoverage['core/schedule.js'][69]++;
+        if (isRange) {
+          _$jscoverage['core/schedule.js'][70]++;
+          var end = getEnd(dir, schedStarts, next);
+          _$jscoverage['core/schedule.js'][71]++;
+          results.push([new Date(next), new Date(end)]);
+          _$jscoverage['core/schedule.js'][72]++;
+          calcSchedStarts(dir, schedStarts, ((dir === "next")? end: new Date((next.getTime() - 1000))));
+        }
+        else {
+          _$jscoverage['core/schedule.js'][75]++;
+          results.push(new Date(next));
+          _$jscoverage['core/schedule.js'][76]++;
+          tickSchedStarts(dir, schedStarts, next);
+        }
+        _$jscoverage['core/schedule.js'][79]++;
+        console.log(("after update=" + schedStarts));
+        _$jscoverage['core/schedule.js'][81]++;
         break;
 }
-      _$jscoverage['core/schedule.js'][72]++;
+      _$jscoverage['core/schedule.js'][85]++;
       if ((! next)) {
-        _$jscoverage['core/schedule.js'][73]++;
+        _$jscoverage['core/schedule.js'][86]++;
         break;
       }
 }
-    _$jscoverage['core/schedule.js'][77]++;
+    _$jscoverage['core/schedule.js'][90]++;
     return results;
 }
-  _$jscoverage['core/schedule.js'][81]++;
+  _$jscoverage['core/schedule.js'][94]++;
   function getEnd(dir, schedStarts, next) {
-    _$jscoverage['core/schedule.js'][82]++;
+    _$jscoverage['core/schedule.js'][95]++;
     var compare = compareFn(dir), end;
-    _$jscoverage['core/schedule.js'][84]++;
+    _$jscoverage['core/schedule.js'][97]++;
     for (var i = 0; (i < schedulesLen); (i++)) {
-      _$jscoverage['core/schedule.js'][86]++;
+      _$jscoverage['core/schedule.js'][99]++;
       if ((schedStarts[i] && (schedStarts[i].getTime() === next.getTime()))) {
-        _$jscoverage['core/schedule.js'][87]++;
+        _$jscoverage['core/schedule.js'][100]++;
         var schedEnd = schedules[i].end(dir, next);
-        _$jscoverage['core/schedule.js'][88]++;
+        _$jscoverage['core/schedule.js'][101]++;
         if (((! end) || compare(schedEnd, end))) {
-          _$jscoverage['core/schedule.js'][89]++;
+          _$jscoverage['core/schedule.js'][102]++;
           end = schedEnd;
         }
       }
 }
-    _$jscoverage['core/schedule.js'][95]++;
+    _$jscoverage['core/schedule.js'][108]++;
     for (var j = 0; (j < exceptionsLen); (j++)) {
-      _$jscoverage['core/schedule.js'][96]++;
+      _$jscoverage['core/schedule.js'][109]++;
       var exceptStart = exceptions[j].start(dir, next);
-      _$jscoverage['core/schedule.js'][97]++;
+      _$jscoverage['core/schedule.js'][110]++;
       if (compare(end, exceptStart)) {
-        _$jscoverage['core/schedule.js'][98]++;
+        _$jscoverage['core/schedule.js'][111]++;
         end = exceptStart;
       }
 }
-    _$jscoverage['core/schedule.js'][102]++;
+    _$jscoverage['core/schedule.js'][115]++;
     return new Date(end);
 }
-  _$jscoverage['core/schedule.js'][105]++;
+  _$jscoverage['core/schedule.js'][118]++;
   function getExceptionEnd(dir, next) {
-    _$jscoverage['core/schedule.js'][106]++;
+    _$jscoverage['core/schedule.js'][119]++;
     var compare = compareFn(dir), result;
-    _$jscoverage['core/schedule.js'][107]++;
+    _$jscoverage['core/schedule.js'][120]++;
     if (exceptionsLen) {
-      _$jscoverage['core/schedule.js'][108]++;
+      _$jscoverage['core/schedule.js'][121]++;
       for (var i = 0; (i < exceptionsLen); (i++)) {
-        _$jscoverage['core/schedule.js'][109]++;
+        _$jscoverage['core/schedule.js'][122]++;
         var exceptStart = exceptions[i].start(dir, next);
-        _$jscoverage['core/schedule.js'][110]++;
+        _$jscoverage['core/schedule.js'][123]++;
         if ((exceptStart && ((exceptStart.getTime() === next.getTime()) || compare(next, exceptStart)))) {
-          _$jscoverage['core/schedule.js'][112]++;
+          _$jscoverage['core/schedule.js'][125]++;
           var end = ((dir === "next")? exceptions[i].end(dir, next): new Date((exceptStart.getTime() - 1000)));
-          _$jscoverage['core/schedule.js'][113]++;
+          _$jscoverage['core/schedule.js'][126]++;
           result = (((! result) || compare(end, result))? end: result);
         }
 }
     }
-    _$jscoverage['core/schedule.js'][118]++;
+    _$jscoverage['core/schedule.js'][131]++;
     return result;
 }
-  _$jscoverage['core/schedule.js'][121]++;
+  _$jscoverage['core/schedule.js'][134]++;
   function tickSchedStarts(dir, schedStarts, next) {
-    _$jscoverage['core/schedule.js'][122]++;
+    _$jscoverage['core/schedule.js'][135]++;
     for (var i = 0; (i < schedulesLen); (i++)) {
-      _$jscoverage['core/schedule.js'][123]++;
+      _$jscoverage['core/schedule.js'][136]++;
       if ((schedStarts[i] && (schedStarts[i].getTime() === next.getTime()))) {
-        _$jscoverage['core/schedule.js'][124]++;
+        _$jscoverage['core/schedule.js'][137]++;
         schedStarts[i] = schedules[i].start(dir, schedules[i].tick(dir, next));
       }
 }
 }
-  _$jscoverage['core/schedule.js'][129]++;
+  _$jscoverage['core/schedule.js'][142]++;
   function calcSchedStarts(dir, schedStarts, next) {
-    _$jscoverage['core/schedule.js'][130]++;
+    _$jscoverage['core/schedule.js'][143]++;
     var compare = compareFn(dir);
-    _$jscoverage['core/schedule.js'][132]++;
+    _$jscoverage['core/schedule.js'][145]++;
     for (var i = 0; (i < schedulesLen); (i++)) {
-      _$jscoverage['core/schedule.js'][133]++;
+      _$jscoverage['core/schedule.js'][146]++;
       if (((! schedStarts[i]) || compare(next, schedStarts[i]))) {
-        _$jscoverage['core/schedule.js'][134]++;
+        _$jscoverage['core/schedule.js'][147]++;
         schedStarts[i] = schedules[i].start(dir, next);
       }
 }
 }
-  _$jscoverage['core/schedule.js'][139]++;
+  _$jscoverage['core/schedule.js'][152]++;
   function compareFn(dir) {
-    _$jscoverage['core/schedule.js'][140]++;
+    _$jscoverage['core/schedule.js'][153]++;
     return ((dir === "next")? (function (a, b) {
-  _$jscoverage['core/schedule.js'][141]++;
+  _$jscoverage['core/schedule.js'][154]++;
   return (a > b);
 }): (function (a, b) {
-  _$jscoverage['core/schedule.js'][142]++;
+  _$jscoverage['core/schedule.js'][155]++;
   return (b > a);
 }));
 }
-  _$jscoverage['core/schedule.js'][145]++;
+  _$jscoverage['core/schedule.js'][158]++;
   function indexFn(dir) {
-    _$jscoverage['core/schedule.js'][146]++;
+    _$jscoverage['core/schedule.js'][159]++;
     return ((dir === "next")? later.array.minIndex: later.array.maxIndex);
 }
-  _$jscoverage['core/schedule.js'][150]++;
+  _$jscoverage['core/schedule.js'][163]++;
   return ({isValid: (function (d) {
-  _$jscoverage['core/schedule.js'][153]++;
+  _$jscoverage['core/schedule.js'][166]++;
   return (getInstances("next", 1, d, d) !== undefined);
 }), next: (function (count, startDate, endDate) {
-  _$jscoverage['core/schedule.js'][157]++;
+  _$jscoverage['core/schedule.js'][170]++;
   return getInstances("next", (count || 1), startDate, endDate);
 }), prev: (function (count, startDate, endDate) {
-  _$jscoverage['core/schedule.js'][161]++;
+  _$jscoverage['core/schedule.js'][174]++;
   return getInstances("prev", (count || 1), startDate, endDate);
 }), nextRange: (function (count, startDate, endDate) {
-  _$jscoverage['core/schedule.js'][165]++;
+  _$jscoverage['core/schedule.js'][178]++;
   return getInstances("next", (count || 1), startDate, endDate, true);
 }), prevRange: (function (count, startDate, endDate) {
-  _$jscoverage['core/schedule.js'][169]++;
+  _$jscoverage['core/schedule.js'][182]++;
   return getInstances("prev", (count || 1), startDate, endDate, true);
 })});
 });

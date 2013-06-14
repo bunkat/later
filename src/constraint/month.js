@@ -63,6 +63,8 @@ later.month = later.M = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
+    val = val || later.M.extent()[1];
+
     return later.date.next(
       later.Y.val(d) + (val <= later.M.val(d) ? 1 : 0),
       val);
@@ -75,6 +77,8 @@ later.month = later.M = {
   * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
+    val = val || later.M.extent()[1];
+
     return later.date.prev(
       later.Y.val(d) - (val >= later.M.val(d) ? 1 : 0),
       val);

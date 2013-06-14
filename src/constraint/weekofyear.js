@@ -100,7 +100,7 @@ later.weekOfYear = later.wy = {
     var wyMax = later.wy.extent(year)[1],
         wyStart = later.wy.start(year);
 
-    val = val > wyMax ? 1 : val;
+    val = val > wyMax ? 1 : val || wyMax;
 
     return later.date.next(
         later.Y.val(wyStart),
@@ -127,7 +127,7 @@ later.weekOfYear = later.wy = {
     var wyMax = later.wy.extent(year)[1],
         wyEnd = later.wy.end(year);
 
-    val = val > wyMax ? wyMax : val;
+    val = val > wyMax ? wyMax : val || wyMax;
 
     return later.wy.end(later.date.next(
         later.Y.val(wyEnd),

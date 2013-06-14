@@ -49,19 +49,19 @@ later = function() {
     }
   };
   later.array.next = function(val, values, extent) {
-    var cur, zeroVal = extent[0] === 0 ? 0 : extent[1], next = values[0] || zeroVal;
+    var cur, zeroIsLargest = extent[0] !== 0, nextIdx = 0;
     for (var i = values.length - 1; i > -1; --i) {
-      cur = values[i] || zeroVal;
-      if (cur > val) {
-        next = cur;
-        continue;
-      }
+      cur = values[i];
       if (cur === val) {
         return cur;
       }
+      if (cur > val || cur === 0 && zeroIsLargest && extent[1] > val) {
+        nextIdx = i;
+        continue;
+      }
       break;
     }
-    return next <= extent[1] ? next : values[0] || zeroVal;
+    return values[nextIdx];
   };
   later.array.nextInvalid = function(val, values, extent) {
     var min = extent[0], max = extent[1], len = values.length, zeroVal = values[len - 1] === 0 && min !== 0 ? max : 0, next = val, i = values.indexOf(val), start = next;
@@ -81,19 +81,19 @@ later = function() {
     return next;
   };
   later.array.prev = function(val, values, extent) {
-    var cur, len = values.length, zeroVal = extent[0] === 0 ? 0 : extent[1], prev = values[len - 1] || zeroVal;
+    var cur, len = values.length, zeroIsLargest = extent[0] !== 0, prevIdx = len - 1;
     for (var i = 0; i < len; i++) {
-      cur = values[i] || zeroVal;
-      if (cur < val) {
-        prev = cur;
-        continue;
-      }
+      cur = values[i];
       if (cur === val) {
         return cur;
       }
+      if (cur < val || cur === 0 && zeroIsLargest && extent[1] < val) {
+        prevIdx = i;
+        continue;
+      }
       break;
     }
-    return prev;
+    return values[prevIdx];
   };
   later.array.prevInvalid = function(val, values, extent) {
     var min = extent[0], max = extent[1], len = values.length, zeroVal = values[len - 1] === 0 && min !== 0 ? max : 0, next = val, i = values.indexOf(val);
@@ -151,12 +151,12 @@ later = function() {
     },
     next: function(d, val) {
       var month = later.date.nextRollover(d, val, later.D, later.M), DMax = later.D.extent(month)[1];
-      val = val > DMax ? 1 : val;
+      val = val > DMax ? 1 : val || DMax;
       return later.date.next(later.Y.val(month), later.M.val(month), val);
     },
     prev: function(d, val) {
       var month = later.date.prevRollover(d, val, later.D, later.M), DMax = later.D.extent(month)[1];
-      val = val > DMax ? DMax : val;
+      val = val > DMax ? DMax : val || DMax;
       return later.date.prev(later.Y.val(month), later.M.val(month), val);
     }
   };
@@ -177,12 +177,12 @@ later = function() {
     },
     next: function(d, val) {
       var month = later.date.nextRollover(d, val, later.dc, later.M), dcMax = later.dc.extent(month)[1];
-      val = val > dcMax ? 1 : val;
+      val = val > dcMax ? 1 : val || dcMax;
       return later.date.next(later.Y.val(month), later.M.val(month), 1 + 7 * (val - 1));
     },
     prev: function(d, val) {
       var month = later.date.prevRollover(d, val, later.dc, later.M), dcMax = later.dc.extent(month)[1];
-      val = val > dcMax ? dcMax : val;
+      val = val > dcMax ? dcMax : val || dcMax;
       return later.dc.end(later.date.prev(later.Y.val(month), later.M.val(month), 1 + 7 * (val - 1)));
     }
   };
@@ -202,9 +202,11 @@ later = function() {
       return later.D.end(d);
     },
     next: function(d, val) {
+      val = val || later.dw.extent()[1];
       return later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d) + (val - later.dw.val(d)) + (val <= later.dw.val(d) ? 7 : 0));
     },
     prev: function(d, val) {
+      val = val || later.dw.extent()[1];
       return later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d) + (val - later.dw.val(d)) + (val >= later.dw.val(d) ? -7 : 0));
     }
   };
@@ -226,12 +228,12 @@ later = function() {
     },
     next: function(d, val) {
       var year = later.date.nextRollover(d, val, later.dy, later.Y), dyMax = later.dy.extent(year)[1];
-      val = val > dyMax ? 1 : val;
+      val = val > dyMax ? 1 : val || dyMax;
       return later.date.next(later.Y.val(year), later.M.val(year), val);
     },
     prev: function(d, val) {
       var year = later.date.prevRollover(d, val, later.dy, later.Y), dyMax = later.dy.extent(year)[1];
-      val = val > dyMax ? dyMax : val;
+      val = val > dyMax ? dyMax : val || dyMax;
       return later.date.prev(later.Y.val(year), later.M.val(year), val);
     }
   };
@@ -303,9 +305,11 @@ later = function() {
       return d.MEnd || (d.MEnd = later.date.prev(later.Y.val(d), later.M.val(d)));
     },
     next: function(d, val) {
+      val = val || later.M.extent()[1];
       return later.date.next(later.Y.val(d) + (val <= later.M.val(d) ? 1 : 0), val);
     },
     prev: function(d, val) {
+      val = val || later.M.extent()[1];
       return later.date.prev(later.Y.val(d) - (val >= later.M.val(d) ? 1 : 0), val);
     }
   };
@@ -378,12 +382,12 @@ later = function() {
     },
     next: function(d, val) {
       var month = later.date.nextRollover(d, val, later.wm, later.M), wmMax = later.wm.extent(month)[1];
-      val = val > wmMax ? 1 : val;
+      val = val > wmMax ? 1 : val || wmMax;
       return later.date.next(later.Y.val(month), later.M.val(month), Math.max(1, (val - 1) * 7 - (later.dw.val(month) - 2)));
     },
     prev: function(d, val) {
       var month = later.date.prevRollover(d, val, later.wm, later.M), wmMax = later.wm.extent(month)[1];
-      val = val > wmMax ? wmMax : val;
+      val = val > wmMax ? wmMax : val || wmMax;
       return later.wm.end(later.date.next(later.Y.val(month), later.M.val(month), Math.max(1, (val - 1) * 7 - (later.dw.val(month) - 2))));
     }
   };
@@ -412,7 +416,7 @@ later = function() {
         year = later.dw.next(year, 2);
       }
       var wyMax = later.wy.extent(year)[1], wyStart = later.wy.start(year);
-      val = val > wyMax ? 1 : val;
+      val = val > wyMax ? 1 : val || wyMax;
       return later.date.next(later.Y.val(wyStart), later.M.val(wyStart), later.D.val(wyStart) + 7 * (val - 1));
     },
     prev: function(d, val) {
@@ -421,7 +425,7 @@ later = function() {
         year = later.dw.next(year, 2);
       }
       var wyMax = later.wy.extent(year)[1], wyEnd = later.wy.end(year);
-      val = val > wyMax ? wyMax : val;
+      val = val > wyMax ? wyMax : val || wyMax;
       return later.wy.end(later.date.next(later.Y.val(wyEnd), later.M.val(wyEnd), later.D.val(wyEnd) + 7 * (val - 1)));
     }
   };
@@ -441,9 +445,11 @@ later = function() {
       return d.YEnd || (d.YEnd = later.date.prev(later.Y.val(d)));
     },
     next: function(d, val) {
+      val = val || later.Y.extent()[1];
       return val > later.Y.val(d) ? later.date.next(val) : undefined;
     },
     prev: function(d, val) {
+      val = val || later.Y.extent()[1];
       return val < later.Y.val(d) ? later.date.prev(val) : undefined;
     }
   };
@@ -525,28 +531,30 @@ later = function() {
           console.log("start next=" + next.toUTCString());
           done = true;
           for (var i = 0; i < constraintsLen; i++) {
-            var constraint = constraints[i].constraint, curVal = constraint.val(next), vals = constraints[i].vals, extent = constraint.extent(next), newVal = nextVal(curVal, vals, extent);
+            var constraint = constraints[i].constraint, curVal = constraint.val(next), vals = constraints[i].vals, extent = constraint.extent(next), newVal = nextVal(curVal, vals, extent), testVal = extent[0] !== 0 ? newVal || extent[1] : newVal;
             console.log("curVal=" + curVal);
             console.log("newVal=" + newVal);
-            if (curVal !== newVal) {
+            if (curVal !== testVal) {
               next = constraint[dir](next, newVal);
               done = false;
               break;
             }
           }
         }
-        console.log("next=" + next.toUTCString());
-        console.log("next start=" + tickConstraint.start(next).toUTCString());
+        if (next) {
+          console.log("next=" + next.toUTCString());
+          console.log("next start=" + tickConstraint.start(next).toUTCString());
+        }
         return next ? tickConstraint.start(next) : undefined;
       },
       end: function(dir, startDate) {
         dir = "next";
         var nextInvalidVal = later.array[dir + "Invalid"], compare = compareFn(dir), result;
         for (var i = constraintsLen - 1; i >= 0; i--) {
-          var constraint = constraints[i].constraint, curVal = constraint.val(startDate), vals = constraints[i].vals, extent = constraint.extent(startDate), nextVal = nextInvalidVal(curVal, vals, extent), next;
-          if (nextVal === curVal) {
+          var constraint = constraints[i].constraint, curVal = constraint.val(startDate), vals = constraints[i].vals, extent = constraint.extent(startDate), nextVal = nextInvalidVal(curVal, vals, extent), testVal = extent[0] !== 0 ? nextVal || extent[1] : nextVal, next;
+          if (testVal === curVal) {
             next = startDate;
-          } else if (nextVal) {
+          } else if (nextVal !== undefined) {
             next = constraint[dir](startDate, nextVal);
           }
           if (next && (!result || compare(result, next))) {
@@ -711,10 +719,10 @@ later = function() {
   };
   later.date.UTC();
   later.date.nextRollover = function(d, val, constraint, period) {
-    return val <= constraint.val(d) || val > constraint.extent(d)[1] ? period.next(d, period.val(d) + 1) : period.start(d);
+    return val && val <= constraint.val(d) || val > constraint.extent(d)[1] || !val && constraint.val(d) === constraint.extent(d)[1] ? period.next(d, period.val(d) + 1) : period.start(d);
   };
   later.date.prevRollover = function(d, val, constraint, period) {
-    return val >= constraint.val(d) ? period.start(period.prev(d, period.val(d) - 1)) : period.start(d);
+    return val >= constraint.val(d) || !val ? period.start(period.prev(d, period.val(d) - 1)) : period.start(d);
   };
   later.date.daysInMonth = [ 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
   later.SEC = 1e3;
@@ -1205,9 +1213,9 @@ later = function() {
           break;
 
          case TOKENTYPES.at:
-          r.time(parseTokenValue(TOKENTYPES.time));
+          r.on(parseTokenValue(TOKENTYPES.time)).time();
           while (checkAndParse(TOKENTYPES.and)) {
-            r.time(parseTokenValue(TOKENTYPES.time));
+            r.on(parseTokenValue(TOKENTYPES.time)).time();
           }
           break;
 

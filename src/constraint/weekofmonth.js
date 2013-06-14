@@ -82,7 +82,7 @@ later.weekOfMonth = later.wm = {
     var month = later.date.nextRollover(d, val, later.wm, later.M),
         wmMax = later.wm.extent(month)[1];
 
-    val = val > wmMax ? 1 : val;
+    val = val > wmMax ? 1 : val || wmMax;
 
     // jump to the Sunday of the desired week, set to 1st of month for week 1
     return later.date.next(
@@ -103,7 +103,7 @@ later.weekOfMonth = later.wm = {
     var month = later.date.prevRollover(d, val, later.wm, later.M),
         wmMax = later.wm.extent(month)[1];
 
-    val = val > wmMax ? wmMax : val;
+    val = val > wmMax ? wmMax : val || wmMax;
 
     // jump to the end of Saturday of the desired week
     return later.wm.end(later.date.next(

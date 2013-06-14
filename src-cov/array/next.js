@@ -40,41 +40,41 @@ if (typeof _$jscoverage !== 'object') {
 if (! _$jscoverage['array/next.js']) {
   _$jscoverage['array/next.js'] = [];
   _$jscoverage['array/next.js'][13] = 0;
-  _$jscoverage['array/next.js'][18] = 0;
+  _$jscoverage['array/next.js'][15] = 0;
+  _$jscoverage['array/next.js'][19] = 0;
+  _$jscoverage['array/next.js'][20] = 0;
   _$jscoverage['array/next.js'][22] = 0;
   _$jscoverage['array/next.js'][23] = 0;
-  _$jscoverage['array/next.js'][25] = 0;
   _$jscoverage['array/next.js'][26] = 0;
   _$jscoverage['array/next.js'][27] = 0;
-  _$jscoverage['array/next.js'][30] = 0;
+  _$jscoverage['array/next.js'][28] = 0;
   _$jscoverage['array/next.js'][31] = 0;
   _$jscoverage['array/next.js'][34] = 0;
-  _$jscoverage['array/next.js'][37] = 0;
 }
-_$jscoverage['array/next.js'].source = ["/**","* Next","* (c) 2013 Bill, BunKat LLC.","*","* Returns the next valid value in a range of values, wrapping as needed. Assumes","* the array has already been sorted.","*","* Later is freely distributable under the MIT license.","* For all details and documentation:","*     http://github.com/bunkat/later","*/","","later.array.next = function (val, values, extent) {","","  // skip UNDEFINED values...","","","  var cur,","      zeroVal = extent[0] === 0 ? 0 : extent[1],","      next = values[0] || zeroVal;","","  for(var i = values.length-1; i &gt; -1; --i) {","    cur = values[i] || zeroVal;","","    if(cur &gt; val) {","      next = cur;","      continue;","    }","","    if(cur === val) {","      return cur;","    }","","    break;","  }","","  return next &lt;= extent[1] ? next : values[0] || zeroVal;","};"];
+_$jscoverage['array/next.js'].source = ["/**","* Next","* (c) 2013 Bill, BunKat LLC.","*","* Returns the next valid value in a range of values, wrapping as needed. Assumes","* the array has already been sorted.","*","* Later is freely distributable under the MIT license.","* For all details and documentation:","*     http://github.com/bunkat/later","*/","","later.array.next = function (val, values, extent) {","","  var cur,","      zeroIsLargest = extent[0] !== 0,","      nextIdx = 0;","","  for(var i = values.length-1; i &gt; -1; --i) {","    cur = values[i];","","    if(cur === val) {","      return cur;","    }","","    if(cur &gt; val || (cur === 0 &amp;&amp; zeroIsLargest &amp;&amp; extent[1] &gt; val)) {","      nextIdx = i;","      continue;","    }","","    break;","  }","","  return values[nextIdx];","};"];
 _$jscoverage['array/next.js'][13]++;
 later.array.next = (function (val, values, extent) {
-  _$jscoverage['array/next.js'][18]++;
-  var cur, zeroVal = ((extent[0] === 0)? 0: extent[1]), next = (values[0] || zeroVal);
-  _$jscoverage['array/next.js'][22]++;
+  _$jscoverage['array/next.js'][15]++;
+  var cur, zeroIsLargest = (extent[0] !== 0), nextIdx = 0;
+  _$jscoverage['array/next.js'][19]++;
   for (var i = (values.length - 1); (i > -1); (--i)) {
-    _$jscoverage['array/next.js'][23]++;
-    cur = (values[i] || zeroVal);
-    _$jscoverage['array/next.js'][25]++;
-    if ((cur > val)) {
-      _$jscoverage['array/next.js'][26]++;
-      next = cur;
-      _$jscoverage['array/next.js'][27]++;
-      continue;
-    }
-    _$jscoverage['array/next.js'][30]++;
+    _$jscoverage['array/next.js'][20]++;
+    cur = values[i];
+    _$jscoverage['array/next.js'][22]++;
     if ((cur === val)) {
-      _$jscoverage['array/next.js'][31]++;
+      _$jscoverage['array/next.js'][23]++;
       return cur;
     }
-    _$jscoverage['array/next.js'][34]++;
+    _$jscoverage['array/next.js'][26]++;
+    if (((cur > val) || ((cur === 0) && zeroIsLargest && (extent[1] > val)))) {
+      _$jscoverage['array/next.js'][27]++;
+      nextIdx = i;
+      _$jscoverage['array/next.js'][28]++;
+      continue;
+    }
+    _$jscoverage['array/next.js'][31]++;
     break;
 }
-  _$jscoverage['array/next.js'][37]++;
-  return ((next <= extent[1])? next: (values[0] || zeroVal));
+  _$jscoverage['array/next.js'][34]++;
+  return values[nextIdx];
 });

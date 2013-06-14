@@ -31,7 +31,7 @@ describe('Later.array.prev', function() {
     var arr = [0],
         cur = 10,
         extent = [1,5],
-        expected = 5,
+        expected = 0,
         actual = later.array.prev(cur, arr, extent);
 
     actual.should.eql(expected);
@@ -61,7 +61,7 @@ describe('Later.array.prev', function() {
     var arr = [2,3,4,5,0],
         cur = 1,
         extent = [1,10],
-        expected = 10,
+        expected = 0,
         actual = later.array.prev(cur, arr, extent);
 
     actual.should.eql(expected);
@@ -81,7 +81,7 @@ describe('Later.array.prev', function() {
     var arr = [1,2,4,5,0],
         cur = 12,
         extent = [1,10],
-        expected = 10,
+        expected = 0,
         actual = later.array.prev(cur, arr, extent);
 
     actual.should.eql(expected);

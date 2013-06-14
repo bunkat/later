@@ -73,7 +73,7 @@ later.dayOfYear = later.dy = {
     var year = later.date.nextRollover(d, val, later.dy, later.Y),
         dyMax = later.dy.extent(year)[1];
 
-    val = val > dyMax ? 1 : val;
+    val = val > dyMax ? 1 : val || dyMax;
 
     return later.date.next(
       later.Y.val(year),
@@ -93,7 +93,7 @@ later.dayOfYear = later.dy = {
     var year = later.date.prevRollover(d, val, later.dy, later.Y),
         dyMax = later.dy.extent(year)[1];
 
-    val = val > dyMax ? dyMax : val;
+    val = val > dyMax ? dyMax : val || dyMax;
 
     return later.date.prev(
       later.Y.val(year),

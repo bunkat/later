@@ -81,7 +81,7 @@ later.day = later.D = {
     var month = later.date.nextRollover(d, val, later.D, later.M),
         DMax = later.D.extent(month)[1];
 
-    val = val > DMax ? 1 : val;
+    val = val > DMax ? 1 : val || DMax;
 
     return later.date.next(
       later.Y.val(month),
@@ -102,7 +102,7 @@ later.day = later.D = {
     var month = later.date.prevRollover(d, val, later.D, later.M),
         DMax = later.D.extent(month)[1];
 
-    val = val > DMax ? DMax : val;
+    val = val > DMax ? DMax : val || DMax;
 
     return later.date.prev(
       later.Y.val(month),

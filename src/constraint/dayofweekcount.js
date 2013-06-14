@@ -79,7 +79,7 @@ later.dayOfWeekCount = later.dc = {
     var month = later.date.nextRollover(d, val, later.dc, later.M),
         dcMax = later.dc.extent(month)[1];
 
-    val = val > dcMax ? 1 : val;
+    val = val > dcMax ? 1 : val || dcMax;
 
     return later.date.next(
       later.Y.val(month),
@@ -98,7 +98,7 @@ later.dayOfWeekCount = later.dc = {
     var month = later.date.prevRollover(d, val, later.dc, later.M),
         dcMax = later.dc.extent(month)[1];
 
-    val = val > dcMax ? dcMax : val;
+    val = val > dcMax ? dcMax : val || dcMax;
 
     return later.dc.end(later.date.prev(
       later.Y.val(month),

@@ -41,7 +41,7 @@ describe('Later.array.next', function() {
     var arr = [0],
         cur = 30,
         extent = [1,31],
-        expected = 31,
+        expected = 0,
         actual = later.array.next(cur, arr, extent);
 
     actual.should.eql(expected);
@@ -71,7 +71,7 @@ describe('Later.array.next', function() {
     var arr = [1,2,3,4,5,0],
         cur = 6,
         extent = [1,10],
-        expected = 10,
+        expected = 0,
         actual = later.array.next(cur, arr, extent);
 
     actual.should.eql(expected);

@@ -13,23 +13,23 @@
 later.array.prev = function (val, values, extent) {
 
   var cur, len = values.length,
-      zeroVal = extent[0] === 0 ? 0 : extent[1],
-      prev = values[len-1] || zeroVal;
+      zeroIsLargest = extent[0] !== 0,
+      prevIdx = len-1;
 
   for(var i = 0; i < len; i++) {
-    cur = values[i] || zeroVal;
-
-    if(cur < val) {
-      prev = cur;
-      continue;
-    }
+    cur = values[i];
 
     if(cur === val) {
       return cur;
     }
 
+    if(cur < val || (cur === 0 && zeroIsLargest && extent[1] < val)) {
+      prevIdx = i;
+      continue;
+    }
+
     break;
   }
 
-  return prev;
+  return values[prevIdx];
 };
