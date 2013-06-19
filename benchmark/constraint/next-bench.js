@@ -31,7 +31,7 @@ suite
   later.dayOfYear.next(new Date(2012, 4, 15, 20, 15, 13), 1);
 })
 .add('time', function() {
-  later.time.next(new Date(2012, 4, 15, 20, 15, 13), '00:00:00');
+  later.time.next(new Date(2012, 4, 15, 20, 15, 13), 1);
 })
 .add('weekofmonth', function() {
   later.weekOfMonth.next(new Date(2012, 4, 15, 20, 15, 13), 1);
@@ -42,4 +42,4 @@ suite
 .on('cycle', function(event) {
   console.log(String(event.target));
 })
-.run({async: true});
+.run({async: false});

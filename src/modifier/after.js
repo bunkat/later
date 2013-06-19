@@ -16,7 +16,9 @@
 * @param {Constraint} constraint: The constraint to be modified
 * @param {Integer} value: The starting value of the after constraint
 */
-later.modifier.after = later.modifier.a = function(constraint, value) {
+later.modifier.after = later.modifier.a = function(constraint, values) {
+
+  var value = values[0];
 
   return {
 
@@ -28,7 +30,7 @@ later.modifier.after = later.modifier.a = function(constraint, value) {
     /**
     * Pass through to the constraint.
     */
-    range: constraint.range - 1,
+    range: (constraint.extent(new Date())[1] - value) * constraint.range,
 
     /**
     * The value of the specified date. Returns value for any constraint val
@@ -39,6 +41,16 @@ later.modifier.after = later.modifier.a = function(constraint, value) {
     val: function(d) {
       var cVal = constraint.val(d);
       return cVal >= value ? value : cVal;
+    },
+
+    /**
+    * Returns true if the val is valid for the date specified.
+    *
+    * @param {Date} d: The date to check the value on
+    * @param {Integer} val: The value to validate
+    */
+    isValid: function(d, val) {
+      return this.val(d) === val;
     },
 
     /**

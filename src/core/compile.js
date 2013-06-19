@@ -2,14 +2,13 @@
 * Compile
 * (c) 2013 Bill, BunKat LLC.
 *
-* Compiles a schedule definition into a form from which instances can be
+* Compiles a single schedule definition into a form from which instances can be
 * efficiently calculated from.
 *
 * Later is freely distributable under the MIT license.
 * For all details and documentation:
 *     http://github.com/bunkat/later
 */
-
 later.compile = function(schedDef) {
 
   var constraints = [],
@@ -21,7 +20,7 @@ later.compile = function(schedDef) {
         name = nameParts[0],
         mod = nameParts[1],
         vals = schedDef[key],
-        constraint = mod ? later.modifier[mod](later[name], vals[0]) : later[name];
+        constraint = mod ? later.modifier[mod](later[name], vals) : later[name];
 
     constraints.push({constraint: constraint, vals: vals});
     constraintsLen++;
@@ -34,16 +33,9 @@ later.compile = function(schedDef) {
     return a.constraint.range < b.constraint.range;
   });
 
-  console.log(constraints);
-
-  // this is the smallest constraint which we will use to tick this schedule
+  // this is the smallest constraint, we use this one to tick the schedule when
+  // finding multiple instances
   tickConstraint = constraints[constraintsLen-1].constraint;
-
-  function compareFn(dir) {
-    return dir === 'next' ?
-      function(a,b) { return a > b; } :
-      function(a,b) { return b > a; };
-  }
 
   return {
 
@@ -57,10 +49,11 @@ later.compile = function(schedDef) {
     start: function(dir, startDate) {
       var next = startDate,
           nextVal = later.array[dir],
-          done = false;
+          done;
+
+/*      console.log('start ---------------------');*/
 
       while(!done && next) {
-        console.log('start next=' + next.toUTCString());
         done = true;
 
         // verify all of the constraints in order since we want to make the
@@ -68,26 +61,27 @@ later.compile = function(schedDef) {
         for(var i = 0; i < constraintsLen; i++) {
           var constraint = constraints[i].constraint,
               curVal = constraint.val(next),
-              vals = constraints[i].vals,
               extent = constraint.extent(next),
-              newVal = nextVal(curVal, vals, extent),
-              testVal = extent[0] !== 0 ? newVal || extent[1] : newVal;
+              newVal = nextVal(curVal, constraints[i].vals, extent);
 
-          console.log('curVal=' + curVal);
-          console.log('newVal=' + newVal);
+/*          console.log('constraint = ' + constraint.name);
+          console.log('next = ' + next.toUTCString());
+          console.log('curVal = ' + curVal);
+          console.log('extent = ' + extent);
+          console.log('newVal = ' + newVal);
+          console.log('is valid = ' + constraint.isValid(next, newVal));*/
 
-          if(curVal !== testVal) {
+          if(!constraint.isValid(next, newVal)) {
             next = constraint[dir](next, newVal);
             done = false;
-            break;
+            break; // need to retest all constraints with new date
           }
         }
       }
 
-      if(next) {
-        console.log('next=' + next.toUTCString());
-        console.log('next start=' + tickConstraint.start(next).toUTCString());
-      }
+/*      console.log('return = ' + next ? tickConstraint.start(next) : undefined);*/
+
+      // if next, move to start of time period. needed when moving backwards
       return next ? tickConstraint.start(next) : undefined;
     },
 
@@ -96,36 +90,41 @@ later.compile = function(schedDef) {
     * Returns the start time if it is actually invalid. Useful for finding the
     * end of a valid time range.
     *
-    * @param {String} dir: Direction to search in ('next' or 'prev')
     * @param {Date} startDate: The first possible valid occurrence
     */
-    end: function(dir, startDate) {
-      dir = 'next';
+    end: function(startDate) {
 
-      var nextInvalidVal = later.array[dir + 'Invalid'],
-          compare = compareFn(dir),
-          result;
+      var result;
+
+/*      console.log('end ---------------------');*/
 
       for(var i = constraintsLen-1; i >= 0; i--) {
         var constraint = constraints[i].constraint,
             curVal = constraint.val(startDate),
-            vals = constraints[i].vals,
             extent = constraint.extent(startDate),
-            nextVal = nextInvalidVal(curVal, vals, extent),
-            testVal = extent[0] !== 0 ? nextVal || extent[1] : nextVal,
+            nextVal = later.array.nextInvalid(curVal, constraints[i].vals, extent),
             next;
 
-        if(testVal === curVal) { // startDate is invalid, use that
-          next = startDate;
-        }
-        else if(nextVal !== undefined) { // constraint has invalid value, use that
-          next = constraint[dir](startDate, nextVal);
+/*        console.log('constraint = ' + constraint.name);
+        console.log('start = ' + startDate.toUTCString());
+        console.log('curVal = ' + curVal);
+        console.log('extent = ' + extent);
+        console.log('nextVal = ' + nextVal);
+        console.log('is valid = ' + constraint.isValid(startDate, nextVal));*/
+
+        if(constraint.isValid(startDate, nextVal)) {
+          return startDate;
         }
 
-        if(next && (!result || compare(result, next))) {
-          result = next;
+        if(nextVal !== undefined) { // constraint has invalid value, use that
+          next = constraint.next(startDate, nextVal);
+          if(!result || result > next) {
+            result = next;
+          }
         }
       }
+
+/*      console.log('return = ' + result);*/
 
       return result;
     },
@@ -133,10 +132,14 @@ later.compile = function(schedDef) {
     /**
     * Ticks the date by the minimum constraint in this schedule
     *
-    * @param {String} dir: Direction to search in ('next' or 'prev')
+    * @param {String} dir: Direction to tick in ('next' or 'prev')
     * @param {Date} date: The start date to tick from
     */
     tick: function(dir, date) {
+/*      console.log('TICK');
+      console.log('date=' + date);
+      console.log('next=' + new Date(tickConstraint.end(date).getTime() + later.SEC));*/
+
       return new Date(dir === 'next' ?
         tickConstraint.end(date).getTime() + later.SEC :
         tickConstraint.start(date).getTime() - later.SEC);

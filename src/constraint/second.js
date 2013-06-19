@@ -31,6 +31,16 @@ later.second = later.s = {
   },
 
   /**
+  * Returns true if the val is valid for the date specified.
+  *
+  * @param {Date} d: The date to check the value on
+  * @param {Integer} val: The value to validate
+  */
+  isValid: function(d, val) {
+    return later.s.val(d) === val;
+  },
+
+  /**
   * The minimum and maximum valid second values.
   */
   extent: function() {
@@ -62,23 +72,13 @@ later.second = later.s = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
-    var next = later.date.next(
-      later.Y.val(d),
-      later.M.val(d),
-      later.D.val(d),
-      later.h.val(d),
-      later.m.val(d) + (val <= later.s.val(d) ? 1 : 0),
-      val);
+    var s = later.s.val(d),
+        inc = val > 59 ? 60-s : (val <= s ? (60-s) + val : val-s),
+        next = new Date(d.getTime() + (inc * later.SEC));
 
     // correct for passing over a daylight savings boundry
     if(!later.date.isUTC && next.getTime() <= d.getTime()) {
-      next = later.date.next(
-        later.Y.val(next),
-        later.M.val(next),
-        later.D.val(next),
-        later.h.val(next),
-        later.m.val(next),
-        val + 7200);
+      next = new Date(d.getTime() + ((inc + 7200) * later.SEC));
     }
 
     return next;
@@ -91,6 +91,8 @@ later.second = later.s = {
   * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val, cache) {
+    val = val > 59 ? 59 : val;
+
     return later.date.prev(
       later.Y.val(d),
       later.M.val(d),

@@ -20,8 +20,8 @@ module.exports = runner = function (later, constraint) {
   }
 
   function runSweepTest(fn, data, utc) {
-    var min = data.extent[0],
-        max = data.extent[1],
+    var min = data.extent[0] === 1 ? 0 : data.extent[0],
+        max = data.extent[1] + 1,
         inc = Math.ceil((max-min)/200); // max 200 tests per constraint
 
     for(var i = min; i <= max; i = i + inc) { // test for overbounds
@@ -43,7 +43,7 @@ module.exports = runner = function (later, constraint) {
 
       var next = constraint.next(date, amt),
           ex = amt,
-          outOfBounds = ex > constraint.extent(next)[1];
+          outOfBounds = ex > constraint.extent(date)[1] || ex > constraint.extent(next)[1];
 
       // if amt is outside of extent, the constraint should rollover to the
       // first value of the following time period
@@ -61,9 +61,14 @@ module.exports = runner = function (later, constraint) {
         should.not.exist(next);
       }
       else {
-        constraint.val(next).should.eql(ex);
+        constraint.isValid(next, ex).should.eql(true);
         next.getTime().should.be.above(date.getTime());
-        constraint.start(next).getTime().should.eql(next.getTime());
+
+        // need to special case day of week count since the last nth day may
+        // not fall on a week boundary
+        if(constraint.name !== 'day of week count' || amt !== 0) {
+          constraint.start(next).getTime().should.eql(next.getTime());
+        }
       }
 
     });
@@ -91,7 +96,7 @@ module.exports = runner = function (later, constraint) {
         should.not.exist(prev);
       }
       else {
-        constraint.val(prev).should.eql(ex);
+        constraint.isValid(prev, ex).should.eql(true);
         prev.getTime().should.be.below(date.getTime());
         constraint.end(prev).getTime().should.eql(prev.getTime());
       }

@@ -34,7 +34,10 @@ later-cov.js: later.js
 	@chmod a-w $@
 
 benchmark: all
-	@node benchmark/core/instanceof-bench.js
+	@echo 'Constraints --------'
+	@node benchmark/constraint/next-bench.js
+	@echo 'Schedules --------'
+	@node benchmark/core/schedule-bench.js
 
 later.js: $(shell node_modules/.bin/smash --list src/later.js)
 	@rm -f $@

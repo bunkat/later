@@ -109,35 +109,18 @@ later = function() {
     }
     return next;
   };
-  later.array.minIndex = function(arr) {
-    var min = arr[0], minIdx = 0;
-    for (var i = 1; i < arr.length; i++) {
-      if (arr[i] < min) {
-        min = arr[i];
-        minIdx = i;
-      }
-    }
-    return minIdx;
-  };
-  later.array.maxIndex = function(arr) {
-    var max = arr[0], maxIdx = 0;
-    for (var i = 1; i < arr.length; i++) {
-      if (arr[i] > max) {
-        max = arr[i];
-        maxIdx = i;
-      }
-    }
-    return maxIdx;
-  };
   later.day = later.D = {
     name: "day",
     range: 86400,
     val: function(d) {
       return d.D || (d.D = later.date.getDate.call(d));
     },
+    isValid: function(d, val) {
+      return later.D.val(d) === (val || later.D.extent(d)[1]);
+    },
     extent: function(d) {
       if (d.DExtent) return d.DExtent;
-      var month = later.M.val(d), max = later.date.daysInMonth[month];
+      var month = later.M.val(d), max = later.DAYS_IN_MONTH[month - 1];
       if (month === 2 && later.dy.extent(d)[1] === 366) {
         max = max + 1;
       }
@@ -150,14 +133,14 @@ later = function() {
       return d.DEnd || (d.DEnd = later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d)));
     },
     next: function(d, val) {
+      val = val > later.D.extent(d)[1] ? 1 : val;
       var month = later.date.nextRollover(d, val, later.D, later.M), DMax = later.D.extent(month)[1];
       val = val > DMax ? 1 : val || DMax;
       return later.date.next(later.Y.val(month), later.M.val(month), val);
     },
     prev: function(d, val) {
       var month = later.date.prevRollover(d, val, later.D, later.M), DMax = later.D.extent(month)[1];
-      val = val > DMax ? DMax : val || DMax;
-      return later.date.prev(later.Y.val(month), later.M.val(month), val);
+      return later.date.prev(later.Y.val(month), later.M.val(month), val > DMax ? DMax : val || DMax);
     }
   };
   later.dayOfWeekCount = later.dc = {
@@ -165,6 +148,9 @@ later = function() {
     range: 604800,
     val: function(d) {
       return d.dc || (d.dc = Math.floor((later.D.val(d) - 1) / 7) + 1);
+    },
+    isValid: function(d, val) {
+      return later.dc.val(d) === val || val === 0 && later.D.val(d) > later.D.extent(d)[1] - 7;
     },
     extent: function(d) {
       return d.dcExtent || (d.dcExtent = [ 1, Math.ceil(later.D.extent(d)[1] / 7) ]);
@@ -176,9 +162,15 @@ later = function() {
       return d.dcEnd || (d.dcEnd = later.date.prev(later.Y.val(d), later.M.val(d), Math.min(later.dc.val(d) * 7, later.D.extent(d)[1])));
     },
     next: function(d, val) {
+      val = val > later.dc.extent(d)[1] ? 1 : val;
       var month = later.date.nextRollover(d, val, later.dc, later.M), dcMax = later.dc.extent(month)[1];
-      val = val > dcMax ? 1 : val || dcMax;
-      return later.date.next(later.Y.val(month), later.M.val(month), 1 + 7 * (val - 1));
+      val = val > dcMax ? 1 : val;
+      var next = later.date.next(later.Y.val(month), later.M.val(month), val === 0 ? later.D.extent(month)[1] - 6 : 1 + 7 * (val - 1));
+      if (next.getTime() <= d.getTime()) {
+        month = later.M.next(d, later.M.val(d) + 1);
+        return later.date.next(later.Y.val(month), later.M.val(month), val === 0 ? later.D.extent(month)[1] - 6 : 1 + 7 * (val - 1));
+      }
+      return next;
     },
     prev: function(d, val) {
       var month = later.date.prevRollover(d, val, later.dc, later.M), dcMax = later.dc.extent(month)[1];
@@ -192,6 +184,9 @@ later = function() {
     val: function(d) {
       return d.dw || (d.dw = later.date.getDay.call(d) + 1);
     },
+    isValid: function(d, val) {
+      return later.dw.val(d) === (val || 7);
+    },
     extent: function() {
       return [ 1, 7 ];
     },
@@ -202,11 +197,11 @@ later = function() {
       return later.D.end(d);
     },
     next: function(d, val) {
-      val = val || later.dw.extent()[1];
+      val = val > 7 ? 1 : val || 7;
       return later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d) + (val - later.dw.val(d)) + (val <= later.dw.val(d) ? 7 : 0));
     },
     prev: function(d, val) {
-      val = val || later.dw.extent()[1];
+      val = val > 7 ? 7 : val || 7;
       return later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d) + (val - later.dw.val(d)) + (val >= later.dw.val(d) ? -7 : 0));
     }
   };
@@ -215,6 +210,9 @@ later = function() {
     range: 86400,
     val: function(d) {
       return d.dy || (d.dy = Math.ceil(1 + (later.D.start(d).getTime() - later.Y.start(d).getTime()) / later.DAY));
+    },
+    isValid: function(d, val) {
+      return later.dy.val(d) === (val || later.dy.extent(d)[1]);
     },
     extent: function(d) {
       var year = later.Y.val(d);
@@ -227,6 +225,7 @@ later = function() {
       return later.D.end(d);
     },
     next: function(d, val) {
+      val = val > later.dy.extent(d)[1] ? 1 : val;
       var year = later.date.nextRollover(d, val, later.dy, later.Y), dyMax = later.dy.extent(year)[1];
       val = val > dyMax ? 1 : val || dyMax;
       return later.date.next(later.Y.val(year), later.M.val(year), val);
@@ -243,6 +242,9 @@ later = function() {
     val: function(d) {
       return d.h || (d.h = later.date.getHour.call(d));
     },
+    isValid: function(d, val) {
+      return later.h.val(d) === val;
+    },
     extent: function() {
       return [ 0, 23 ];
     },
@@ -253,6 +255,7 @@ later = function() {
       return d.hEnd || (d.hEnd = later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d)));
     },
     next: function(d, val) {
+      val = val > 23 ? 0 : val;
       var next = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d) + (val <= later.h.val(d) ? 1 : 0), val);
       if (!later.date.isUTC && next.getTime() <= d.getTime()) {
         next = later.date.next(later.Y.val(next), later.M.val(next), later.D.val(next), val + 1);
@@ -260,6 +263,7 @@ later = function() {
       return next;
     },
     prev: function(d, val) {
+      val = val > 23 ? 23 : val;
       return later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d) + (val >= later.h.val(d) ? -1 : 0), val);
     }
   };
@@ -268,6 +272,9 @@ later = function() {
     range: 60,
     val: function(d) {
       return d.m || (d.m = later.date.getMin.call(d));
+    },
+    isValid: function(d, val) {
+      return later.m.val(d) === val;
     },
     extent: function(d) {
       return [ 0, 59 ];
@@ -279,13 +286,14 @@ later = function() {
       return d.mEnd || (d.mEnd = later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d), later.m.val(d)));
     },
     next: function(d, val) {
-      var next = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d) + (val <= later.m.val(d) ? 1 : 0), val);
+      var m = later.m.val(d), s = later.s.val(d), inc = val > 59 ? 60 - m : val <= m ? 60 - m + val : val - m, next = new Date(d.getTime() + inc * later.MIN - s * later.SEC);
       if (!later.date.isUTC && next.getTime() <= d.getTime()) {
-        next = later.date.next(later.Y.val(next), later.M.val(next), later.D.val(next), later.h.val(next), val + 120);
+        next = new Date(d.getTime() + (inc + 120) * later.MIN - s * later.SEC);
       }
       return next;
     },
     prev: function(d, val) {
+      val = val > 59 ? 59 : val;
       return later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d) + (val >= later.m.val(d) ? -1 : 0), val);
     }
   };
@@ -294,6 +302,9 @@ later = function() {
     range: 2629740,
     val: function(d) {
       return d.M || (d.M = later.date.getMonth.call(d) + 1);
+    },
+    isValid: function(d, val) {
+      return later.M.val(d) === (val || 12);
     },
     extent: function() {
       return [ 1, 12 ];
@@ -305,11 +316,11 @@ later = function() {
       return d.MEnd || (d.MEnd = later.date.prev(later.Y.val(d), later.M.val(d)));
     },
     next: function(d, val) {
-      val = val || later.M.extent()[1];
-      return later.date.next(later.Y.val(d) + (val <= later.M.val(d) ? 1 : 0), val);
+      val = val > 12 ? 1 : val || 12;
+      return later.date.next(later.Y.val(d) + (val > later.M.val(d) ? 0 : 1), val);
     },
     prev: function(d, val) {
-      val = val || later.M.extent()[1];
+      val = val > 12 ? 12 : val || 12;
       return later.date.prev(later.Y.val(d) - (val >= later.M.val(d) ? 1 : 0), val);
     }
   };
@@ -318,6 +329,9 @@ later = function() {
     range: 1,
     val: function(d) {
       return d.s || (d.s = later.date.getSec.call(d));
+    },
+    isValid: function(d, val) {
+      return later.s.val(d) === val;
     },
     extent: function() {
       return [ 0, 59 ];
@@ -329,13 +343,14 @@ later = function() {
       return d;
     },
     next: function(d, val) {
-      var next = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d), later.m.val(d) + (val <= later.s.val(d) ? 1 : 0), val);
+      var s = later.s.val(d), inc = val > 59 ? 60 - s : val <= s ? 60 - s + val : val - s, next = new Date(d.getTime() + inc * later.SEC);
       if (!later.date.isUTC && next.getTime() <= d.getTime()) {
-        next = later.date.next(later.Y.val(next), later.M.val(next), later.D.val(next), later.h.val(next), later.m.val(next), val + 7200);
+        next = new Date(d.getTime() + (inc + 7200) * later.SEC);
       }
       return next;
     },
     prev: function(d, val, cache) {
+      val = val > 59 ? 59 : val;
       return later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d), later.h.val(d), later.m.val(d) + (val >= later.s.val(d) ? -1 : 0), val);
     }
   };
@@ -344,6 +359,9 @@ later = function() {
     range: 1,
     val: function(d) {
       return d.t || (d.t = later.h.val(d) * 3600 + later.m.val(d) * 60 + later.s.val(d));
+    },
+    isValid: function(d, val) {
+      return later.t.val(d) === val;
     },
     extent: function() {
       return [ 0, 86399 ];
@@ -355,6 +373,7 @@ later = function() {
       return d;
     },
     next: function(d, val) {
+      val = val > 86399 ? 0 : val;
       var next = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d) + (val <= later.t.val(d) ? 1 : 0), 0, 0, val);
       if (!later.date.isUTC && next.getTime() < d.getTime()) {
         next = later.date.next(later.Y.val(next), later.M.val(next), later.D.val(next), later.h.val(next), later.m.val(next), val + 7200);
@@ -362,6 +381,7 @@ later = function() {
       return next;
     },
     prev: function(d, val) {
+      val = val > 86399 ? 86399 : val;
       return later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d) + (val >= later.t.val(d) ? -1 : 0), 0, 0, val);
     }
   };
@@ -370,6 +390,9 @@ later = function() {
     range: 604800,
     val: function(d) {
       return d.wm || (d.wm = (later.D.val(d) + (later.dw.val(later.M.start(d)) - 1) + (7 - later.dw.val(d))) / 7);
+    },
+    isValid: function(d, val) {
+      return later.wm.val(d) === (val || later.wm.extent(d)[1]);
     },
     extent: function(d) {
       return d.wmExtent || (d.wmExtent = [ 1, (later.D.extent(d)[1] + (later.dw.val(later.M.start(d)) - 1) + (7 - later.dw.val(later.M.end(d)))) / 7 ]);
@@ -381,6 +404,7 @@ later = function() {
       return d.wmEnd || (d.wmEnd = later.date.prev(later.Y.val(d), later.M.val(d), Math.min(later.D.val(d) + (7 - later.dw.val(d)), later.D.extent(d)[1])));
     },
     next: function(d, val) {
+      val = val > later.wm.extent(d)[1] ? 1 : val;
       var month = later.date.nextRollover(d, val, later.wm, later.M), wmMax = later.wm.extent(month)[1];
       val = val > wmMax ? 1 : val || wmMax;
       return later.date.next(later.Y.val(month), later.M.val(month), Math.max(1, (val - 1) * 7 - (later.dw.val(month) - 2)));
@@ -399,6 +423,9 @@ later = function() {
       var wThur = later.dw.next(later.wy.start(d), 5), YThur = later.dw.next(later.Y.prev(wThur, later.Y.val(wThur) - 1), 5);
       return d.wy = 1 + Math.ceil((wThur.getTime() - YThur.getTime()) / later.WEEK);
     },
+    isValid: function(d, val) {
+      return later.wy.val(d) === (val || later.wy.extent(d)[1]);
+    },
     extent: function(d) {
       if (d.wyExtent) return d.wyExtent;
       var year = later.dw.next(later.wy.start(d), 5), dwFirst = later.dw.val(later.Y.start(year)), dwLast = later.dw.val(later.Y.end(year));
@@ -411,6 +438,7 @@ later = function() {
       return d.wyEnd || (d.wyEnd = later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d) + (later.dw.val(d) > 1 ? 8 - later.dw.val(d) : 0)));
     },
     next: function(d, val) {
+      val = val > later.wy.extent(d)[1] ? 1 : val;
       var wyThur = later.dw.next(later.wy.start(d), 5), year = later.date.nextRollover(wyThur, val, later.wy, later.Y);
       if (later.wy.val(year) !== 1) {
         year = later.dw.next(year, 2);
@@ -435,6 +463,9 @@ later = function() {
     val: function(d) {
       return d.Y || (d.Y = later.date.getYear.call(d));
     },
+    isValid: function(d, val) {
+      return later.Y.val(d) === val;
+    },
     extent: function() {
       return [ 1970, 2099 ];
     },
@@ -445,22 +476,24 @@ later = function() {
       return d.YEnd || (d.YEnd = later.date.prev(later.Y.val(d)));
     },
     next: function(d, val) {
-      val = val || later.Y.extent()[1];
-      return val > later.Y.val(d) ? later.date.next(val) : undefined;
+      return val > later.Y.val(d) && val <= later.Y.extent()[1] ? later.date.next(val) : undefined;
     },
     prev: function(d, val) {
-      val = val || later.Y.extent()[1];
-      return val < later.Y.val(d) ? later.date.prev(val) : undefined;
+      return val < later.Y.val(d) && val >= later.Y.extent()[0] ? later.date.prev(val) : undefined;
     }
   };
   later.modifier = {};
-  later.modifier.after = later.modifier.a = function(constraint, value) {
+  later.modifier.after = later.modifier.a = function(constraint, values) {
+    var value = values[0];
     return {
       name: "after " + constraint.name,
-      range: constraint.range - 1,
+      range: (constraint.extent(new Date())[1] - value) * constraint.range,
       val: function(d) {
         var cVal = constraint.val(d);
         return cVal >= value ? value : cVal;
+      },
+      isValid: function(d, val) {
+        return this.val(d) === val;
       },
       extent: constraint.extent,
       start: function(d) {
@@ -478,18 +511,22 @@ later = function() {
       }
     };
   };
-  later.modifier.before = later.modifier.b = function(constraint, value) {
+  later.modifier.before = later.modifier.b = function(constraint, values) {
+    var value = values[values.length - 1];
     return {
       name: "before " + constraint.name,
-      range: constraint.range,
+      range: constraint.range * value,
       val: function(d) {
         var cVal = constraint.val(d);
         return cVal <= value ? value : cVal;
       },
+      isValid: function(d, val) {
+        return this.val(d) === val;
+      },
       extent: constraint.extent,
       start: constraint.start,
       end: function(d) {
-        if (constraint.val(d) === d) return d;
+        if (constraint.val(d) === value) return d;
         return constraint.next(d, value);
       },
       next: function(startDate, val) {
@@ -505,7 +542,7 @@ later = function() {
   later.compile = function(schedDef) {
     var constraints = [], constraintsLen = 0, tickConstraint;
     for (var key in schedDef) {
-      var nameParts = key.split("_"), name = nameParts[0], mod = nameParts[1], vals = schedDef[key], constraint = mod ? later.modifier[mod](later[name], vals[0]) : later[name];
+      var nameParts = key.split("_"), name = nameParts[0], mod = nameParts[1], vals = schedDef[key], constraint = mod ? later.modifier[mod](later[name], vals) : later[name];
       constraints.push({
         constraint: constraint,
         vals: vals
@@ -515,50 +552,35 @@ later = function() {
     constraints.sort(function(a, b) {
       return a.constraint.range < b.constraint.range;
     });
-    console.log(constraints);
     tickConstraint = constraints[constraintsLen - 1].constraint;
-    function compareFn(dir) {
-      return dir === "next" ? function(a, b) {
-        return a > b;
-      } : function(a, b) {
-        return b > a;
-      };
-    }
     return {
       start: function(dir, startDate) {
-        var next = startDate, nextVal = later.array[dir], done = false;
+        var next = startDate, nextVal = later.array[dir], done;
         while (!done && next) {
-          console.log("start next=" + next.toUTCString());
           done = true;
           for (var i = 0; i < constraintsLen; i++) {
-            var constraint = constraints[i].constraint, curVal = constraint.val(next), vals = constraints[i].vals, extent = constraint.extent(next), newVal = nextVal(curVal, vals, extent), testVal = extent[0] !== 0 ? newVal || extent[1] : newVal;
-            console.log("curVal=" + curVal);
-            console.log("newVal=" + newVal);
-            if (curVal !== testVal) {
+            var constraint = constraints[i].constraint, curVal = constraint.val(next), extent = constraint.extent(next), newVal = nextVal(curVal, constraints[i].vals, extent);
+            if (!constraint.isValid(next, newVal)) {
               next = constraint[dir](next, newVal);
               done = false;
               break;
             }
           }
         }
-        if (next) {
-          console.log("next=" + next.toUTCString());
-          console.log("next start=" + tickConstraint.start(next).toUTCString());
-        }
         return next ? tickConstraint.start(next) : undefined;
       },
-      end: function(dir, startDate) {
-        dir = "next";
-        var nextInvalidVal = later.array[dir + "Invalid"], compare = compareFn(dir), result;
+      end: function(startDate) {
+        var result;
         for (var i = constraintsLen - 1; i >= 0; i--) {
-          var constraint = constraints[i].constraint, curVal = constraint.val(startDate), vals = constraints[i].vals, extent = constraint.extent(startDate), nextVal = nextInvalidVal(curVal, vals, extent), testVal = extent[0] !== 0 ? nextVal || extent[1] : nextVal, next;
-          if (testVal === curVal) {
-            next = startDate;
-          } else if (nextVal !== undefined) {
-            next = constraint[dir](startDate, nextVal);
+          var constraint = constraints[i].constraint, curVal = constraint.val(startDate), extent = constraint.extent(startDate), nextVal = later.array.nextInvalid(curVal, constraints[i].vals, extent), next;
+          if (constraint.isValid(startDate, nextVal)) {
+            return startDate;
           }
-          if (next && (!result || compare(result, next))) {
-            result = next;
+          if (nextVal !== undefined) {
+            next = constraint.next(startDate, nextVal);
+            if (!result || result > next) {
+              result = next;
+            }
           }
         }
         return result;
@@ -569,6 +591,8 @@ later = function() {
     };
   };
   later.schedule = function(sched) {
+    if (!sched) throw new Error("Missing schedule definition.");
+    if (!sched.schedules) throw new Error("Definition must include at least one schedule.");
     var schedules = [], schedulesLen = sched.schedules.length, exceptions = [], exceptionsLen = sched.exceptions ? sched.exceptions.length : 0;
     for (var i = 0; i < schedulesLen; i++) {
       schedules.push(later.compile(sched.schedules[i]));
@@ -577,100 +601,106 @@ later = function() {
       exceptions.push(later.compile(sched.exceptions[j]));
     }
     function getInstances(dir, count, startDate, endDate, isRange) {
-      var d = startDate ? new Date(startDate) : new Date(), instances = getStart(dir, count, d, endDate, isRange);
-      return instances.length === 0 ? undefined : count === 1 ? instances[0] : instances;
-    }
-    function getStart(dir, count, startDate, endDate, isRange) {
-      var nextIndex = indexFn(dir), compare = compareFn(dir), schedStarts = [], next, results = [];
-      calcSchedStarts(dir, schedStarts, startDate);
-      while (count--) {
-        while (next = schedStarts[nextIndex(schedStarts)]) {
-          if (compare(startDate, next)) {
-            tickSchedStarts(dir, schedStarts, next);
-            continue;
-          }
-          if (endDate && compare(next.getTime(), endDate.getTime())) {
-            next = null;
-            break;
-          }
-          var exceptionEnd = getExceptionEnd(dir, next);
-          if (exceptionEnd) {
-            calcSchedStarts(dir, schedStarts, exceptionEnd);
-            continue;
-          }
-          console.log("before udpate=" + schedStarts);
-          if (isRange) {
-            var end = getEnd(dir, schedStarts, next);
-            results.push([ new Date(next), new Date(end) ]);
-            calcSchedStarts(dir, schedStarts, dir === "next" ? end : new Date(next.getTime() - 1e3));
-          } else {
-            results.push(new Date(next));
-            tickSchedStarts(dir, schedStarts, next);
-          }
-          console.log("after update=" + schedStarts);
+      var compare = compareFn(dir), loopCount = count, schedStarts = [], exceptStarts = [], next, end, results = [];
+      startDate = startDate ? new Date(startDate) : new Date();
+      if (!startDate || !startDate.getTime()) throw new Error("Invalid start date.");
+      updateNextStarts(dir, schedules, schedStarts, startDate);
+      while (loopCount && (next = findNext(schedStarts, compare))) {
+        if (compare(startDate, next)) {
+          tickStarts(dir, schedules, schedStarts, next);
+          continue;
+        }
+        if (endDate && compare(next, endDate)) {
           break;
         }
-        if (!next) {
-          break;
-        }
-      }
-      return results;
-    }
-    function getEnd(dir, schedStarts, next) {
-      var compare = compareFn(dir), end;
-      for (var i = 0; i < schedulesLen; i++) {
-        if (schedStarts[i] && schedStarts[i].getTime() === next.getTime()) {
-          var schedEnd = schedules[i].end(dir, next);
-          if (!end || compare(schedEnd, end)) {
-            end = schedEnd;
+        if (exceptionsLen) {
+          updateRangeStarts(dir, exceptions, exceptStarts, next);
+          if (end = calcRangeOverlap(dir, exceptions, exceptStarts, next)) {
+            updateNextStarts(dir, schedules, schedStarts, end);
+            continue;
           }
         }
+        if (isRange) {
+          end = calcEnd(dir, schedules, schedStarts, next, findNext(exceptStarts, compare));
+          results.push([ new Date(next), new Date(end) ]);
+          end = dir === "next" ? end : new Date(next.getTime() - 1e3);
+          updateNextStarts(dir, schedules, schedStarts, end);
+        } else {
+          results.push(new Date(next));
+          tickStarts(dir, schedules, schedStarts, next);
+        }
+        loopCount--;
       }
-      for (var j = 0; j < exceptionsLen; j++) {
-        var exceptStart = exceptions[j].start(dir, next);
-        if (compare(end, exceptStart)) {
-          end = exceptStart;
+      return results.length === 0 ? undefined : count === 1 ? results[0] : results;
+    }
+    function updateNextStarts(dir, schedArr, startsArr, startDate) {
+      var compare = compareFn(dir);
+      for (var i = 0, len = schedArr.length; i < len; i++) {
+        if (!startsArr[i] || !compare(startsArr[i], startDate)) {
+          startsArr[i] = schedArr[i].start(dir, startDate);
         }
       }
-      return new Date(end);
     }
-    function getExceptionEnd(dir, next) {
+    function updateRangeStarts(dir, schedArr, rangesArr, startDate) {
+      var compare = compareFn(dir);
+      for (var i = 0, len = schedArr.length; i < len; i++) {
+        if (!rangesArr[i] || !compare(rangesArr[i][0], startDate)) {
+          var nextStart = schedArr[i].start(dir, startDate);
+          rangesArr[i] = nextStart ? [ nextStart, schedArr[i].end(nextStart) ] : undefined;
+        }
+      }
+    }
+    function tickStarts(dir, schedArr, startsArr, startDate) {
+      for (var i = 0, len = schedArr.length; i < len; i++) {
+        if (startsArr[i] && startsArr[i].getTime() === startDate.getTime()) {
+          startsArr[i] = schedArr[i].start(dir, schedArr[i].tick(dir, startDate));
+        }
+      }
+    }
+    function calcRangeOverlap(dir, schedArr, rangesArr, startDate) {
       var compare = compareFn(dir), result;
-      if (exceptionsLen) {
-        for (var i = 0; i < exceptionsLen; i++) {
-          var exceptStart = exceptions[i].start(dir, next);
-          if (exceptStart && (exceptStart.getTime() === next.getTime() || compare(next, exceptStart))) {
-            var end = dir === "next" ? exceptions[i].end(dir, next) : new Date(exceptStart.getTime() - 1e3);
-            result = !result || compare(end, result) ? end : result;
+      for (var i = 0, len = schedArr.length; i < len; i++) {
+        var range = rangesArr[i];
+        if (!range) continue;
+        if (startDate.getTime() >= range[0].getTime() && (!range[1] || startDate.getTime() < range[1].getTime())) {
+          var end = dir === "next" ? range[1] : new Date(range[0].getTime() - 1e3);
+          if (!result || compare(end, result)) {
+            result = end;
           }
         }
       }
       return result;
     }
-    function tickSchedStarts(dir, schedStarts, next) {
-      for (var i = 0; i < schedulesLen; i++) {
-        if (schedStarts[i] && schedStarts[i].getTime() === next.getTime()) {
-          schedStarts[i] = schedules[i].start(dir, schedules[i].tick(dir, next));
+    function calcEnd(dir, schedArr, startsArr, startDate, maxEndDate) {
+      var compare = compareFn(dir), result;
+      for (var i = 0, len = schedArr.length; i < len; i++) {
+        var start = startsArr[i];
+        if (!start || start.getTime() !== startDate.getTime()) continue;
+        var end = schedArr[i].end(start);
+        if (maxEndDate && compare(end, maxEndDate)) {
+          return maxEndDate;
+        }
+        if (!result || compare(end, result)) {
+          result = end;
         }
       }
-    }
-    function calcSchedStarts(dir, schedStarts, next) {
-      var compare = compareFn(dir);
-      for (var i = 0; i < schedulesLen; i++) {
-        if (!schedStarts[i] || compare(next, schedStarts[i])) {
-          schedStarts[i] = schedules[i].start(dir, next);
-        }
-      }
+      return result;
     }
     function compareFn(dir) {
       return dir === "next" ? function(a, b) {
-        return a > b;
+        return a.getTime() > b.getTime();
       } : function(a, b) {
-        return b > a;
+        return b.getTime() > a.getTime();
       };
     }
-    function indexFn(dir) {
-      return dir === "next" ? later.array.minIndex : later.array.maxIndex;
+    function findNext(arr, compare) {
+      var next = arr[0];
+      for (var i = 1, len = arr.length; i < len; i++) {
+        if (arr[i] && compare(next, arr[i])) {
+          next = arr[i];
+        }
+      }
+      return next;
     }
     return {
       isValid: function(d) {
@@ -690,48 +720,77 @@ later = function() {
       }
     };
   };
+  later.setTimeout = function(fn, sched) {
+    var s = later.schedule(sched), t;
+    scheduleTimeout();
+    function scheduleTimeout() {
+      var now = Date.now(), next = s.next(2, now), diff = next[0].getTime() - now;
+      if (diff < 1e3) {
+        diff = next[1].getTime() - now;
+      }
+      if (diff < 2147483647) {
+        t = setTimeout(fn, diff);
+      } else {
+        t = setTimeout(scheduleTimeout, 2147483647);
+      }
+    }
+    return {
+      clear: function() {
+        clearTimeout(t);
+      }
+    };
+  };
+  later.setInterval = function(fn, sched) {
+    var t = later.setTimeout(scheduleTimeout, sched), done = false;
+    function scheduleTimeout() {
+      if (!done) {
+        fn();
+        t = later.setTimeout(scheduleTimeout, sched);
+      }
+    }
+    return {
+      clear: function() {
+        done = true;
+        t.clear();
+      }
+    };
+  };
   later.date = {};
-  later.date.UTC = function() {
-    later.date.build = function(Y, M, D, h, m, s) {
+  later.date.timezone = function(useLocalTime) {
+    later.date.build = useLocalTime ? function(Y, M, D, h, m, s) {
+      return new Date(Y, M, D, h, m, s);
+    } : function(Y, M, D, h, m, s) {
       return new Date(Date.UTC(Y, M, D, h, m, s));
     };
-    later.date.isUTC = true;
-    later.date.getYear = Date.prototype.getUTCFullYear;
-    later.date.getMonth = Date.prototype.getUTCMonth;
-    later.date.getDate = Date.prototype.getUTCDate;
-    later.date.getDay = Date.prototype.getUTCDay;
-    later.date.getHour = Date.prototype.getUTCHours;
-    later.date.getMin = Date.prototype.getUTCMinutes;
-    later.date.getSec = Date.prototype.getUTCSeconds;
+    var get = useLocalTime ? "get" : "getUTC", d = Date.prototype;
+    later.date.getYear = d[get + "FullYear"];
+    later.date.getMonth = d[get + "Month"];
+    later.date.getDate = d[get + "Date"];
+    later.date.getDay = d[get + "Day"];
+    later.date.getHour = d[get + "Hours"];
+    later.date.getMin = d[get + "Minutes"];
+    later.date.getSec = d[get + "Seconds"];
+    later.date.isUTC = !useLocalTime;
+  };
+  later.date.UTC = function() {
+    later.date.timezone(false);
   };
   later.date.localTime = function() {
-    later.date.build = function(Y, M, D, h, m, s) {
-      return new Date(Y, M, D, h, m, s);
-    };
-    later.date.isUTC = false;
-    later.date.getYear = Date.prototype.getFullYear;
-    later.date.getMonth = Date.prototype.getMonth;
-    later.date.getDate = Date.prototype.getDate;
-    later.date.getDay = Date.prototype.getDay;
-    later.date.getHour = Date.prototype.getHours;
-    later.date.getMin = Date.prototype.getMinutes;
-    later.date.getSec = Date.prototype.getSeconds;
+    later.date.timezone(true);
   };
   later.date.UTC();
-  later.date.nextRollover = function(d, val, constraint, period) {
-    return val && val <= constraint.val(d) || val > constraint.extent(d)[1] || !val && constraint.val(d) === constraint.extent(d)[1] ? period.next(d, period.val(d) + 1) : period.start(d);
-  };
-  later.date.prevRollover = function(d, val, constraint, period) {
-    return val >= constraint.val(d) || !val ? period.start(period.prev(d, period.val(d) - 1)) : period.start(d);
-  };
-  later.date.daysInMonth = [ 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
   later.SEC = 1e3;
   later.MIN = later.SEC * 60;
   later.HOUR = later.MIN * 60;
   later.DAY = later.HOUR * 24;
   later.WEEK = later.DAY * 7;
+  later.DAYS_IN_MONTH = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
   later.date.next = function(Y, M, D, h, m, s) {
     return later.date.build(Y, M !== undefined ? M - 1 : 0, D !== undefined ? D : 1, h || 0, m || 0, s || 0);
+  };
+  later.date.nextRollover = function(d, val, constraint, period) {
+    var cur = constraint.val(d), max = constraint.extent(d)[1];
+    return (val || max) <= cur || val > max ? new Date(period.end(d).getTime() + later.SEC) : period.start(d);
   };
   later.date.prev = function(Y, M, D, h, m, s) {
     var len = arguments.length;
@@ -742,8 +801,12 @@ later = function() {
     s = len < 6 ? 59 : s;
     return later.date.build(Y, M, D, h, m, s);
   };
+  later.date.prevRollover = function(d, val, constraint, period) {
+    var cur = constraint.val(d);
+    return val >= cur || !val ? period.start(period.prev(d, period.val(d) - 1)) : period.start(d);
+  };
   later.parse = {};
-  later.parse.cron = function() {
+  later.parse.cron = function(expr, hasSeconds) {
     var NAMES = {
       JAN: 1,
       FEB: 2,
@@ -831,7 +894,7 @@ later = function() {
       if (range !== "*" && range !== "0") {
         var rangeSplit = range.split("-");
         min = getValue(rangeSplit[0], offset);
-        max = getValue(rangeSplit[1], offset);
+        max = getValue(rangeSplit[1], offset) || max;
       }
       add(curSched, name, min, max, inc);
     }
@@ -877,12 +940,8 @@ later = function() {
       }
       return schedule;
     }
-    return {
-      parse: function(expr, hasSeconds) {
-        var e = expr.toUpperCase();
-        return parseExpr(hasSeconds ? e : "0 " + e);
-      }
-    };
+    var e = expr.toUpperCase();
+    return parseExpr(hasSeconds ? e : "0 " + e);
   };
   later.parse.recur = function() {
     var schedules = [], exceptions = [], cur, curArr = schedules, curName, values, every, after, before, applyMin, applyMax, i, last;
@@ -927,7 +986,7 @@ later = function() {
         return this;
       },
       every: function(x) {
-        every = x;
+        every = x || 1;
         return this;
       },
       after: function(x) {
@@ -1029,7 +1088,7 @@ later = function() {
       }
     };
   };
-  later.parse.text = function() {
+  later.parse.text = function(str) {
     var recur = later.parse.recur, pos = 0, input = "", error;
     var TOKENTYPES = {
       eof: /^$/,
@@ -1040,6 +1099,7 @@ later = function() {
       yearIndex: /^(\d\d\d\d)\b/,
       every: /^every\b/,
       after: /^after\b/,
+      before: /^before\b/,
       second: /^(s|sec(ond)?(s)?)\b/,
       minute: /^(m|min(ute)?(s)?)\b/,
       hour: /^(h|hour(s)?)\b/,
@@ -1185,15 +1245,30 @@ later = function() {
       error = -1;
       var r = recur();
       while (pos < input.length && error < 0) {
-        var token = parseToken([ TOKENTYPES.every, TOKENTYPES.after, TOKENTYPES.onthe, TOKENTYPES.on, TOKENTYPES.of, TOKENTYPES["in"], TOKENTYPES.at, TOKENTYPES.and, TOKENTYPES.except, TOKENTYPES.also ]);
+        var token = parseToken([ TOKENTYPES.every, TOKENTYPES.after, TOKENTYPES.before, TOKENTYPES.onthe, TOKENTYPES.on, TOKENTYPES.of, TOKENTYPES["in"], TOKENTYPES.at, TOKENTYPES.and, TOKENTYPES.except, TOKENTYPES.also ]);
         switch (token.type) {
          case TOKENTYPES.every:
           parseEvery(r);
           break;
 
          case TOKENTYPES.after:
-          r.after(parseTokenValue(TOKENTYPES.rank));
-          parseTimePeriod(r);
+          if (peek(TOKENTYPES.time).type !== undefined) {
+            r.after(parseTokenValue(TOKENTYPES.time));
+            r.time();
+          } else {
+            r.after(parseTokenValue(TOKENTYPES.rank));
+            parseTimePeriod(r);
+          }
+          break;
+
+         case TOKENTYPES.before:
+          if (peek(TOKENTYPES.time).type !== undefined) {
+            r.before(parseTokenValue(TOKENTYPES.time));
+            r.time();
+          } else {
+            r.before(parseTokenValue(TOKENTYPES.rank));
+            parseTimePeriod(r);
+          }
           break;
 
          case TOKENTYPES.onthe:
@@ -1217,6 +1292,9 @@ later = function() {
           while (checkAndParse(TOKENTYPES.and)) {
             r.on(parseTokenValue(TOKENTYPES.time)).time();
           }
+          break;
+
+         case TOKENTYPES.and:
           break;
 
          case TOKENTYPES.also:
@@ -1312,7 +1390,7 @@ later = function() {
       var output = str;
       switch (tokenType) {
        case TOKENTYPES.time:
-        var parts = str.split(/(:|am|pm)/), hour = parts[3] === "pm" ? parseInt(parts[0], 10) + 12 : parts[0], min = parts[2].trim();
+        var parts = str.split(/(:|am|pm)/), hour = parts[3] === "pm" && parts[0] < 12 ? parseInt(parts[0], 10) + 12 : parts[0], min = parts[2].trim();
         output = (hour.length === 1 ? "0" : "") + hour + ":" + min;
         break;
 
@@ -1327,11 +1405,7 @@ later = function() {
       }
       return output;
     }
-    return {
-      parse: function(str) {
-        return parseScheduleExpr(str.toLowerCase());
-      }
-    };
+    return parseScheduleExpr(str.toLowerCase());
   };
   return later;
 }();

@@ -31,6 +31,16 @@ later.hour = later.h = {
   },
 
   /**
+  * Returns true if the val is valid for the date specified.
+  *
+  * @param {Date} d: The date to check the value on
+  * @param {Integer} val: The value to validate
+  */
+  isValid: function(d, val) {
+    return later.h.val(d) === val;
+  },
+
+  /**
   * The minimum and maximum valid hour values.
   */
   extent: function() {
@@ -64,6 +74,8 @@ later.hour = later.h = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
+    val = val > 23 ? 0 : val;
+
     var next = later.date.next(
       later.Y.val(d),
       later.M.val(d),
@@ -80,7 +92,6 @@ later.hour = later.h = {
     }
 
     return next;
-
   },
 
   /**
@@ -90,6 +101,8 @@ later.hour = later.h = {
   * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
+    val = val > 23 ? 23 : val;
+
     return later.date.prev(
       later.Y.val(d),
       later.M.val(d),

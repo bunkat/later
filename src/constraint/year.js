@@ -31,6 +31,16 @@ later.year = later.Y = {
   },
 
   /**
+  * Returns true if the val is valid for the date specified.
+  *
+  * @param {Date} d: The date to check the value on
+  * @param {Integer} val: The value to validate
+  */
+  isValid: function(d, val) {
+    return later.Y.val(d) === val;
+  },
+
+  /**
   * The minimum and maximum valid values for the year constraint.
   * If max is past 2099, later.D.extent must be fixed to calculate leap years
   * correctly.
@@ -64,8 +74,8 @@ later.year = later.Y = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
-    val = val || later.Y.extent()[1];
-    return val > later.Y.val(d) ? later.date.next(val) : undefined;
+    return val > later.Y.val(d) && val <= later.Y.extent()[1] ?
+      later.date.next(val) : undefined;
   },
 
   /**
@@ -75,8 +85,8 @@ later.year = later.Y = {
   * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
-    val = val || later.Y.extent()[1];
-    return val < later.Y.val(d) ? later.date.prev(val) : undefined;
+    return val < later.Y.val(d) && val >= later.Y.extent()[0] ?
+      later.date.prev(val) : undefined;
   }
 
 };

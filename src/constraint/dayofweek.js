@@ -31,6 +31,16 @@ later.dayOfWeek = later.dw = later.d = {
   },
 
   /**
+  * Returns true if the val is valid for the date specified.
+  *
+  * @param {Date} d: The date to check the value on
+  * @param {Integer} val: The value to validate
+  */
+  isValid: function(d, val) {
+    return later.dw.val(d) === (val || 7);
+  },
+
+  /**
   * The minimum and maximum valid day of week values. Unlike the standard
   * Date object, Later day of week goes from 1 to 7.
   */
@@ -63,7 +73,7 @@ later.dayOfWeek = later.dw = later.d = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
-    val = val || later.dw.extent()[1];
+    val = val > 7 ? 1 : val || 7;
 
     return later.date.next(
       later.Y.val(d),
@@ -78,7 +88,7 @@ later.dayOfWeek = later.dw = later.d = {
   * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
-    val = val || later.dw.extent()[1];
+    val = val > 7 ? 7 : val || 7;
 
     return later.date.prev(
       later.Y.val(d),

@@ -1,9 +1,25 @@
 /**
-* Parses a cron expression and produces a schedule that is compatible
-* with Later.js.  See http://en.wikipedia.org/wiki/Cron for details of
-* the cron format.
+* Cron
+* (c) 2013 Bill, BunKat LLC.
+*
+* Creates a valid Later schedule from a valid cron expression.
+*
+* Later is freely distributable under the MIT license.
+* For all details and documentation:
+*     http://github.com/bunkat/later
 */
-later.parse.cron = function () {
+
+/**
+* Parses a valid cron expression and produces a valid schedule that
+* can then be used with Later.
+*
+* CronParser().parse('* 5 * * * * *', true);
+*
+* @param {String} expr: The cron expression to parse
+* @param {Bool} hasSeconds: True if the expression uses a seconds field
+* @api public
+*/
+later.parse.cron = function (expr, hasSeconds) {
 
   // Constant array to convert valid names to values
   var NAMES = {
@@ -145,7 +161,9 @@ later.parse.cron = function () {
     if (range !== '*' && range !== '0') {
       var rangeSplit = range.split('-');
       min = getValue(rangeSplit[0], offset);
-      max = getValue(rangeSplit[1], offset);
+
+      // fix for issue #13, range may be single digit
+      max = getValue(rangeSplit[1], offset) || max;
     }
     add(curSched, name, min, max, inc);
   }
@@ -237,22 +255,6 @@ later.parse.cron = function () {
     return schedule;
   }
 
-  return {
-
-    /**
-    * Parses a valid cron expression and produces a valid schedule that
-    * can then be used with Later.
-    *
-    * CronParser().parse('* 5 * * * * *', true);
-    *
-    * @param {String} expr: The cron expression to parse
-    * @param {Bool} hasSeconds: True if the expression uses a seconds field
-    * @api public
-    */
-    parse: function (expr, hasSeconds) {
-      var e = expr.toUpperCase();
-      return parseExpr(hasSeconds ? e : '0 ' + e);
-    }
-
-  };
+  var e = expr.toUpperCase();
+  return parseExpr(hasSeconds ? e : '0 ' + e);
 };

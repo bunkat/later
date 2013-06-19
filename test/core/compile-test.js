@@ -45,11 +45,11 @@ describe('Compile', function() {
     describe('next', function() {
 
       it('should return start date if start is invalid', function() {
-        later.compile({Y:[2014]}).end('next', d).should.eql(d);
+        later.compile({Y:[2014]}).end(d).should.eql(d);
       });
 
       it('should return next invalid occurrence if valid', function() {
-        later.compile({Y:[2013,2014]}).end('next', d).should.eql(new Date('2015-01-01T00:00:00Z'));
+        later.compile({Y:[2013,2014]}).end(d).should.eql(new Date('2015-01-01T00:00:00Z'));
       });
 
     });

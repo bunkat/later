@@ -2,11 +2,11 @@ var Benchmark = require('benchmark'),
     later = require('../../index'),
     suite = new Benchmark.Suite('next');
 
-var schedSimple = later.parse.cron().parse('* */5 * * * *'),
-    compiledSimple = later.instancesOf(schedSimple);
+var schedSimple = later.parse.cron('* */5 * * * *'),
+    compiledSimple = later.schedule(schedSimple);
 
-var schedComplex = later.parse.cron().parse('0 5 15W * ?'),
-    compiledComplex = later.instancesOf(schedComplex);
+var schedComplex = later.parse.cron('0 5 15W * ?'),
+    compiledComplex = later.schedule(schedComplex);
 
 suite
 .add('simple next', function() {
@@ -18,4 +18,4 @@ suite
 .on('cycle', function(event) {
   console.log(String(event.target));
 })
-.run({async: true});
+.run({async: false});

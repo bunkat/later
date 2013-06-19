@@ -109,7 +109,7 @@ later.parse.recur = function () {
     * @api public
     */
     every: function (x) {
-      every = x;
+      every = x || 1;
       return this;
     },
 

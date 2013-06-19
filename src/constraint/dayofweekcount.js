@@ -32,6 +32,17 @@ later.dayOfWeekCount = later.dc = {
   },
 
   /**
+  * Returns true if the val is valid for the date specified.
+  *
+  * @param {Date} d: The date to check the value on
+  * @param {Integer} val: The value to validate
+  */
+  isValid: function(d, val) {
+    return (later.dc.val(d) === val) ||
+           (val === 0 && later.D.val(d) > later.D.extent(d)[1] - 7);
+  },
+
+  /**
   * The minimum and maximum valid day values of the month specified.
   * Zero to specify the last day of week count of the month.
   *
@@ -76,16 +87,29 @@ later.dayOfWeekCount = later.dc = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
+    val = val > later.dc.extent(d)[1] ? 1 : val;
     var month = later.date.nextRollover(d, val, later.dc, later.M),
         dcMax = later.dc.extent(month)[1];
 
-    val = val > dcMax ? 1 : val || dcMax;
+    val = val > dcMax ? 1 : val;
 
-    return later.date.next(
+    var next = later.date.next(
       later.Y.val(month),
       later.M.val(month),
-      1 + (7 * (val - 1))
+      val === 0 ? later.D.extent(month)[1] - 6 : 1 + (7 * (val - 1))
     );
+
+    if(next.getTime() <= d.getTime()) {
+      month = later.M.next(d, later.M.val(d)+1);
+
+      return later.date.next(
+        later.Y.val(month),
+        later.M.val(month),
+        val === 0 ? later.D.extent(month)[1] - 6 : 1 + (7 * (val - 1))
+      );
+    }
+
+    return next;
   },
 
   /**

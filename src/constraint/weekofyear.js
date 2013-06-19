@@ -39,6 +39,16 @@ later.weekOfYear = later.wy = {
   },
 
   /**
+  * Returns true if the val is valid for the date specified.
+  *
+  * @param {Date} d: The date to check the value on
+  * @param {Integer} val: The value to validate
+  */
+  isValid: function(d, val) {
+    return later.wy.val(d) === (val || later.wy.extent(d)[1]);
+  },
+
+  /**
   * The minimum and maximum valid ISO week values for the year indicated.
   *
   * @param {Date} d: The date indicating the year to find ISO values for
@@ -89,6 +99,8 @@ later.weekOfYear = later.wy = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
+    val = val > later.wy.extent(d)[1] ? 1 : val;
+
     var wyThur = later.dw.next(later.wy.start(d), 5),
         year = later.date.nextRollover(wyThur, val, later.wy, later.Y);
 

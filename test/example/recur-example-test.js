@@ -25,6 +25,10 @@ describe('Recur Examples', function() {
 
     var prev = later.schedule(sched).prev(7, end, start);
     prev.should.eql(expected.reverse());
+
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
   });
 
 
@@ -50,6 +54,11 @@ describe('Recur Examples', function() {
 
     var prev = later.schedule(sched).prevRange(7, end, start);
     prev.should.eql(expected.reverse());
+
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e[0]).should.eql(true);
+      later.schedule(sched).isValid(e[1]).should.eql(false);
+    });
   });
 
   it('Every weekend between 8AM and 5PM', function() {
@@ -74,6 +83,11 @@ describe('Recur Examples', function() {
 
     var prev = later.schedule(sched).prevRange(7, end, start);
     prev.should.eql(expected.reverse());
+
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e[0]).should.eql(true);
+      later.schedule(sched).isValid(e[1]).should.eql(false);
+    });
   });
 
   it('Every second Tuesday at 4AM and 10PM', function() {
@@ -97,6 +111,97 @@ describe('Recur Examples', function() {
 
     var prev = later.schedule(sched).prev(6, end, start);
     prev.should.eql(expected.reverse());
+
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
+  });
+
+  it('Once a month on the closest weekday to the 15th', function() {
+    later.date.UTC();
+
+    var sched = later.parse.recur()
+                  .on(15).dayOfMonth().onWeekday()
+                .and()
+                  .on(14).dayOfMonth().on(6).dayOfWeek()
+                .and()
+                  .on(16).dayOfMonth().on(2).dayOfWeek();
+
+    var start = new Date('2013-03-01T00:00:00Z'),
+        end = new Date('2013-10-01T00:00:00Z'),
+        expected = [
+          new Date('2013-03-15T00:00:00Z'),
+          new Date('2013-04-15T00:00:00Z'),
+          new Date('2013-05-15T00:00:00Z'),
+          new Date('2013-06-14T00:00:00Z'),
+          new Date('2013-07-15T00:00:00Z'),
+          new Date('2013-08-15T00:00:00Z'),
+          new Date('2013-09-16T00:00:00Z')
+        ];
+
+    var next = later.schedule(sched).next(7, start, end);
+    next.should.eql(expected);
+
+    var prev = later.schedule(sched).prev(7, end, start);
+    prev.should.eql(expected.reverse());
+
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
+  });
+
+  it('Next time Jan 1st is ISO Week #53', function() {
+    later.date.UTC();
+
+    var sched = later.parse.recur()
+                  .first().month()
+                  .first().dayOfMonth()
+                  .last().weekOfYear();
+
+    var start = new Date('2013-03-01T00:00:00Z'),
+        end = new Date('2016-10-01T00:00:00Z'),
+        expected = new Date('2016-01-01T00:00:00Z');
+
+    var next = later.schedule(sched).next(1, start, end);
+    next.should.eql(expected);
+
+    var prev = later.schedule(sched).prev(1, end, start);
+    prev.should.eql(expected);
+
+    later.schedule(sched).isValid(expected).should.eql(true);
+  });
+
+  it('Every minute except multiples of 2 and 3', function() {
+    later.date.UTC();
+
+    var sched = later.parse.recur()
+                  .every().minute()
+                .except()
+                  .every(2).minute().between(2,59)
+                .and()
+                  .every(3).minute().between(3,59);
+
+    var start = new Date('2013-03-01T00:00:00Z'),
+        end = new Date('2013-03-01T00:18:00Z'),
+        expected = [
+          new Date('2013-03-01T00:00:00Z'),
+          new Date('2013-03-01T00:01:00Z'),
+          new Date('2013-03-01T00:05:00Z'),
+          new Date('2013-03-01T00:07:00Z'),
+          new Date('2013-03-01T00:11:00Z'),
+          new Date('2013-03-01T00:13:00Z'),
+          new Date('2013-03-01T00:17:00Z')
+        ];
+
+    var next = later.schedule(sched).next(7, start, end);
+    next.should.eql(expected);
+
+    var prev = later.schedule(sched).prev(7, end, start);
+    prev.should.eql(expected.reverse());
+
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
   });
 
   it('Last day of every month', function() {
@@ -125,21 +230,17 @@ describe('Recur Examples', function() {
     next.should.eql(expected);
 
     var prev = later.schedule(sched).prev(12, end, start);
-    console.log(prev);
     prev.should.eql(expected.reverse());
 
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
   });
 
   it('Last Wednesday of every month', function() {
     later.date.UTC();
 
-    // last wednesday could be the 4th or 5th instance in the month,
-    // exception removes cases where it is the 4th but there is a 5th instance
-    var sched = later.parse
-                .recur()
-                  .after(4).dayOfWeekCount().on(4).dayOfWeek()
-                .except()
-                  .before(25).dayOfMonth();
+    var sched = later.parse.recur().on(0).dayOfWeekCount().on(4).dayOfWeek();
 
     var start = new Date('2012-01-01T00:00:00Z'),
         end = new Date('2013-01-01T00:00:00Z'),
@@ -159,12 +260,14 @@ describe('Recur Examples', function() {
         ];
 
     var next = later.schedule(sched).next(12, start, end);
-    console.log(next);
     next.should.eql(expected);
 
     var prev = later.schedule(sched).prev(12, end, start);
     prev.should.eql(expected.reverse());
 
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
   });
 
   it('All 31st numbered days of the year', function() {
@@ -190,12 +293,17 @@ describe('Recur Examples', function() {
     var prev = later.schedule(sched).prev(7, end, start);
     prev.should.eql(expected.reverse());
 
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
   });
 
-  it('Friday the 13th', function() {
+  it('Every Friday the 13th', function() {
     later.date.UTC();
 
-    var sched = later.parse.recur().on(13).dayOfMonth().on(6).dayOfWeek();
+    var sched = later.parse.recur()
+                  .on(13).dayOfMonth()
+                  .on(6).dayOfWeek();
 
     var start = new Date('2010-01-01T00:00:00Z'),
         end = new Date('2014-01-01T00:00:00Z'),
@@ -215,6 +323,9 @@ describe('Recur Examples', function() {
     var prev = later.schedule(sched).prev(7, end, start);
     prev.should.eql(expected.reverse());
 
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
   });
 
   it('Every hour passing over DST', function() {
@@ -238,6 +349,142 @@ describe('Recur Examples', function() {
     var prev = later.schedule(sched).prev(5, end, start);
     prev.should.eql(expected.reverse());
 
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
+  });
+
+  it('should recur everyday except on weekends', function() {
+    later.date.UTC();
+
+    var sched = later.parse.recur()
+                  .on('08:00:00').time()
+                .except()
+                  .on(1,7).dayOfWeek();
+
+    var start = new Date('2012-01-05T00:00:00Z'),
+        end = new Date('2012-01-11T10:00:00Z'),
+        expected = [
+          new Date('2012-01-05T08:00:00Z'),
+          new Date('2012-01-06T08:00:00Z'),
+          new Date('2012-01-09T08:00:00Z'),
+          new Date('2012-01-10T08:00:00Z'),
+          new Date('2012-01-11T08:00:00Z')
+        ];
+
+    var next = later.schedule(sched).next(5, start, end);
+    next.should.eql(expected);
+
+    var prev = later.schedule(sched).prev(5, end, start);
+    prev.should.eql(expected.reverse());
+
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
+  });
+
+  it('should recur Wednesday every 4 weeks at 8am starting on the 5th week', function() {
+    later.date.UTC();
+
+    var sched = later.parse.recur()
+                  .every(4).weekOfYear().startingOn(5)
+                  .on(4).dayOfWeek()
+                  .on('08:00:00').time();
+
+    var start = new Date('2012-01-01T23:59:15Z'),
+        end = new Date('2012-06-21T08:00:00Z'),
+        expected = [
+          new Date('2012-02-01T08:00:00Z'),
+          new Date('2012-02-29T08:00:00Z'),
+          new Date('2012-03-28T08:00:00Z'),
+          new Date('2012-04-25T08:00:00Z'),
+          new Date('2012-05-23T08:00:00Z'),
+          new Date('2012-06-20T08:00:00Z')
+        ];
+
+    var next = later.schedule(sched).next(6, start, end);
+    next.should.eql(expected);
+
+    var prev = later.schedule(sched).prev(6, end, start);
+    prev.should.eql(expected.reverse());
+
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
+  });
+
+  it('should find the first second of every month', function() {
+    later.date.UTC();
+
+    var sched = later.parse.recur()
+                  .first().dayOfMonth()
+                  .first().hour()
+                  .first().minute()
+                  .first().second();
+
+    var start = new Date('2012-01-01T00:00:00Z'),
+        end = new Date('2012-12-02T00:00:00Z'),
+        expected = [
+          new Date('2012-01-01T00:00:00Z'),
+          new Date('2012-02-01T00:00:00Z'),
+          new Date('2012-03-01T00:00:00Z'),
+          new Date('2012-04-01T00:00:00Z'),
+          new Date('2012-05-01T00:00:00Z'),
+          new Date('2012-06-01T00:00:00Z'),
+          new Date('2012-07-01T00:00:00Z'),
+          new Date('2012-08-01T00:00:00Z'),
+          new Date('2012-09-01T00:00:00Z'),
+          new Date('2012-10-01T00:00:00Z'),
+          new Date('2012-11-01T00:00:00Z'),
+          new Date('2012-12-01T00:00:00Z')
+        ];
+
+    var next = later.schedule(sched).next(12, start, end);
+    next.should.eql(expected);
+
+    var prev = later.schedule(sched).prev(12, end, start);
+    prev.should.eql(expected.reverse());
+
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
+  });
+
+  it('should find the last second of every month', function() {
+    later.date.UTC();
+
+    var sched = later.parse.recur()
+                  .last().dayOfMonth()
+                  .last().hour()
+                  .last().minute()
+                  .last().second();
+
+    var start = new Date('2012-01-01T00:00:00Z'),
+        end = new Date('2013-01-05T23:59:59Z'),
+        expected = [
+          new Date('2012-01-31T23:59:59Z'),
+          new Date('2012-02-29T23:59:59Z'),
+          new Date('2012-03-31T23:59:59Z'),
+          new Date('2012-04-30T23:59:59Z'),
+          new Date('2012-05-31T23:59:59Z'),
+          new Date('2012-06-30T23:59:59Z'),
+          new Date('2012-07-31T23:59:59Z'),
+          new Date('2012-08-31T23:59:59Z'),
+          new Date('2012-09-30T23:59:59Z'),
+          new Date('2012-10-31T23:59:59Z'),
+          new Date('2012-11-30T23:59:59Z'),
+          new Date('2012-12-31T23:59:59Z')
+        ];
+
+    var next = later.schedule(sched).next(12, start, end);
+    next.should.eql(expected);
+
+    var prev = later.schedule(sched).prev(12, end, start);
+    prev.should.eql(expected.reverse());
+
+    expected.forEach(function(e) {
+      later.schedule(sched).isValid(e).should.eql(true);
+    });
   });
 
 });

@@ -15,3 +15,6 @@ later.MIN = later.SEC * 60;
 later.HOUR = later.MIN * 60;
 later.DAY = later.HOUR * 24;
 later.WEEK = later.DAY * 7;
+
+// Array of days in each month, must be corrected for leap years
+later.DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];

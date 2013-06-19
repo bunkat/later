@@ -35,6 +35,16 @@ later.weekOfMonth = later.wm = {
   },
 
   /**
+  * Returns true if the val is valid for the date specified.
+  *
+  * @param {Date} d: The date to check the value on
+  * @param {Integer} val: The value to validate
+  */
+  isValid: function(d, val) {
+    return later.wm.val(d) === (val || later.wm.extent(d)[1]);
+  },
+
+  /**
   * The minimum and maximum valid week of month values for the month indicated.
   * Zero indicates the last week in the month.
   *
@@ -79,6 +89,8 @@ later.weekOfMonth = later.wm = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
+    val = val > later.wm.extent(d)[1] ? 1 : val;
+
     var month = later.date.nextRollover(d, val, later.wm, later.M),
         wmMax = later.wm.extent(month)[1];
 

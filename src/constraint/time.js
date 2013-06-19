@@ -33,6 +33,16 @@ later.time = later.t = {
   },
 
   /**
+  * Returns true if the val is valid for the date specified.
+  *
+  * @param {Date} d: The date to check the value on
+  * @param {Integer} val: The value to validate
+  */
+  isValid: function(d, val) {
+    return later.t.val(d) === val;
+  },
+
+  /**
   * The minimum and maximum valid time values.
   */
   extent: function() {
@@ -64,6 +74,8 @@ later.time = later.t = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
+    val = val > 86399 ? 0 : val;
+
     var next = later.date.next(
       later.Y.val(d),
       later.M.val(d),
@@ -93,6 +105,8 @@ later.time = later.t = {
   * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
+    val = val > 86399 ? 86399 : val;
+
     return later.date.next(
       later.Y.val(d),
       later.M.val(d),

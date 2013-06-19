@@ -9,7 +9,7 @@
 * on the 15-20th day of march-dec
 * every 20 seconds every 5 minutes every 4 hours between the 10th and 20th hour
 */
-later.parse.text = function () {
+later.parse.text = function(str) {
 
   var recur = later.parse.recur,
       pos = 0,
@@ -26,6 +26,7 @@ later.parse.text = function () {
         yearIndex: /^(\d\d\d\d)\b/,
         every: /^every\b/,
         after: /^after\b/,
+        before: /^before\b/,
         second: /^(s|sec(ond)?(s)?)\b/,
         minute: /^(m|min(ute)?(s)?)\b/,
         hour: /^(h|hour(s)?)\b/,
@@ -224,7 +225,7 @@ later.parse.text = function () {
     var r = recur();
     while (pos < input.length && error < 0) {
 
-      var token = parseToken([TOKENTYPES.every, TOKENTYPES.after,
+      var token = parseToken([TOKENTYPES.every, TOKENTYPES.after, TOKENTYPES.before,
             TOKENTYPES.onthe, TOKENTYPES.on, TOKENTYPES.of, TOKENTYPES["in"],
             TOKENTYPES.at, TOKENTYPES.and, TOKENTYPES.except,
             TOKENTYPES.also]);
@@ -234,8 +235,24 @@ later.parse.text = function () {
           parseEvery(r);
           break;
         case TOKENTYPES.after:
-          r.after(parseTokenValue(TOKENTYPES.rank));
-          parseTimePeriod(r);
+          if(peek(TOKENTYPES.time).type !== undefined) {
+            r.after(parseTokenValue(TOKENTYPES.time));
+            r.time();
+          }
+          else {
+            r.after(parseTokenValue(TOKENTYPES.rank));
+            parseTimePeriod(r);
+          }
+          break;
+        case TOKENTYPES.before:
+          if(peek(TOKENTYPES.time).type !== undefined) {
+            r.before(parseTokenValue(TOKENTYPES.time));
+            r.time();
+          }
+          else {
+            r.before(parseTokenValue(TOKENTYPES.rank));
+            parseTimePeriod(r);
+          }
           break;
         case TOKENTYPES.onthe:
           parseOnThe(r);
@@ -254,6 +271,8 @@ later.parse.text = function () {
           while (checkAndParse(TOKENTYPES.and)) {
             r.on(parseTokenValue(TOKENTYPES.time)).time();
           }
+          break;
+        case TOKENTYPES.and:
           break;
         case TOKENTYPES.also:
           r.and();
@@ -374,7 +393,7 @@ later.parse.text = function () {
     switch (tokenType) {
       case TOKENTYPES.time:
         var parts = str.split(/(:|am|pm)/),
-            hour = parts[3] === 'pm' ? parseInt(parts[0],10) + 12 : parts[0],
+            hour = parts[3] === 'pm' && parts[0] < 12 ? parseInt(parts[0],10) + 12 : parts[0],
             min = parts[2].trim();
 
         output = (hour.length === 1 ? '0' : '') + hour + ":" + min;
@@ -393,17 +412,5 @@ later.parse.text = function () {
     return output;
   }
 
-  return {
-
-    /**
-    * Parses a schedule string.  Returns the schedule, exceptions, and
-    * an error position if an error was hit.
-    *
-    * @param {String} str: The schedule string to parse
-    * @api public
-    */
-    parse: function(str) {
-      return parseScheduleExpr(str.toLowerCase());
-    }
-  };
+  return parseScheduleExpr(str.toLowerCase());
 };

@@ -32,6 +32,16 @@ later.dayOfYear = later.dy = {
   },
 
   /**
+  * Returns true if the val is valid for the date specified.
+  *
+  * @param {Date} d: The date to check the value on
+  * @param {Integer} val: The value to validate
+  */
+  isValid: function(d, val) {
+    return later.dy.val(d) === (val || later.dy.extent(d)[1]);
+  },
+
+  /**
   * The minimum and maximum valid day of year values of the month specified.
   * Zero indicates the last day of the year.
   *
@@ -70,6 +80,7 @@ later.dayOfYear = later.dy = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
+    val = val > later.dy.extent(d)[1] ? 1 : val;
     var year = later.date.nextRollover(d, val, later.dy, later.Y),
         dyMax = later.dy.extent(year)[1];
 

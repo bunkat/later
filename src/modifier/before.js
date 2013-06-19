@@ -16,7 +16,9 @@
 * @param {Constraint} constraint: The constraint to be modified
 * @param {Integer} value: The starting value of the before constraint
 */
-later.modifier.before = later.modifier.b = function(constraint, value) {
+later.modifier.before = later.modifier.b = function(constraint, values) {
+
+  var value = values[values.length-1];
 
   return {
 
@@ -28,7 +30,7 @@ later.modifier.before = later.modifier.b = function(constraint, value) {
     /**
     * Pass through to the constraint.
     */
-    range: constraint.range,
+    range: constraint.range * value,
 
     /**
     * The value of the specified date. Returns value for any constraint val
@@ -42,6 +44,16 @@ later.modifier.before = later.modifier.b = function(constraint, value) {
     },
 
     /**
+    * Returns true if the val is valid for the date specified.
+    *
+    * @param {Date} d: The date to check the value on
+    * @param {Integer} val: The value to validate
+    */
+    isValid: function(d, val) {
+      return this.val(d) === val;
+    },
+
+    /**
     * Pass through to the constraint.
     */
     extent: constraint.extent,
@@ -52,27 +64,27 @@ later.modifier.before = later.modifier.b = function(constraint, value) {
     start: constraint.start,
 
     /**
-    * Pass through to the constraint.
+    * Jump to the end of the range.
     */
     end: function(d) {
-        if(constraint.val(d) === d) return d;
-        return constraint.next(d, value);
+      if(constraint.val(d) === value) return d;
+      return constraint.next(d, value);
     },
 
     /**
     * Pass through to the constraint.
     */
     next: function(startDate, val) {
-        if(val <= value) val = constraint.extent(startDate)[0];
-        return constraint.next(startDate, val);
+      if(val <= value) val = constraint.extent(startDate)[0];
+      return constraint.next(startDate, val);
     },
 
     /**
     * Pass through to the constraint.
     */
     prev: function(startDate, val) {
-        if(val < value) val = constraint.extent(startDate)[1];
-        return constraint.prev(startDate, val);
+      if(val < value) val = constraint.extent(startDate)[1];
+      return constraint.prev(startDate, val);
     }
 
   };

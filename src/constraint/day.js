@@ -31,6 +31,16 @@ later.day = later.D = {
   },
 
   /**
+  * Returns true if the val is valid for the date specified.
+  *
+  * @param {Date} d: The date to check the value on
+  * @param {Integer} val: The value to validate
+  */
+  isValid: function(d, val) {
+    return later.D.val(d) === (val || later.D.extent(d)[1]);
+  },
+
+  /**
   * The minimum and maximum valid day values of the month specified.
   * Zero to specify the last day of the month.
   *
@@ -40,7 +50,7 @@ later.day = later.D = {
     if(d.DExtent) return d.DExtent;
 
     var month = later.M.val(d),
-        max = later.date.daysInMonth[month];
+        max = later.DAYS_IN_MONTH[month-1];
 
     if(month === 2 && later.dy.extent(d)[1] === 366) {
       max = max+1;
@@ -78,6 +88,7 @@ later.day = later.D = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
+    val = val > later.D.extent(d)[1] ? 1 : val;
     var month = later.date.nextRollover(d, val, later.D, later.M),
         DMax = later.D.extent(month)[1];
 
@@ -102,12 +113,10 @@ later.day = later.D = {
     var month = later.date.prevRollover(d, val, later.D, later.M),
         DMax = later.D.extent(month)[1];
 
-    val = val > DMax ? DMax : val || DMax;
-
     return later.date.prev(
       later.Y.val(month),
       later.M.val(month),
-      val
+      val > DMax ? DMax : val || DMax
     );
   }
 

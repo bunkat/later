@@ -31,6 +31,16 @@ later.month = later.M = {
   },
 
   /**
+  * Returns true if the val is valid for the date specified.
+  *
+  * @param {Date} d: The date to check the value on
+  * @param {Integer} val: The value to validate
+  */
+  isValid: function(d, val) {
+    return later.M.val(d) === (val || 12);
+  },
+
+  /**
   * The minimum and maximum valid month values. Unlike the native date object,
   * month values in later are 1 based.
   */
@@ -63,10 +73,10 @@ later.month = later.M = {
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
-    val = val || later.M.extent()[1];
+    val = val > 12 ? 1 : val || 12;
 
     return later.date.next(
-      later.Y.val(d) + (val <= later.M.val(d) ? 1 : 0),
+      later.Y.val(d) + (val > later.M.val(d) ? 0 : 1),
       val);
   },
 
@@ -77,7 +87,7 @@ later.month = later.M = {
   * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
-    val = val || later.M.extent()[1];
+    val = val > 12 ? 12 : val || 12;
 
     return later.date.prev(
       later.Y.val(d) - (val >= later.M.val(d) ? 1 : 0),
