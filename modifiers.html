@@ -41,7 +41,7 @@
               <li class="">
                 <a href="./time-periods.html">Time periods</a>
               </li>
-              <li class="">
+              <li class="active">
                 <a href="./modifiers.html">Modifiers</a>
               </li>
               <li class="">
@@ -53,7 +53,7 @@
               <li class="">
                 <a href="./occurrences.html">Occurrences</a>
               </li>
-              <li class="active">
+              <li class=>
                 <a href="./execute.html">Execute</a>
               </li>
             </ul>
@@ -80,9 +80,9 @@
       <div class="span3 later-sidebar">
         <ul class="nav nav-list later-sidenav">
           <li><a href="#overview"><i class="icon-chevron-right"></i> Overview</a></li>
-          <li><a href="#before"><i class="icon-chevron-right"></i> before</a></li>
           <li><a href="#after"><i class="icon-chevron-right"></i> after</a></li>
-          <li><a href="#after"><i class="icon-chevron-right"></i> Custom</a></li>
+          <li><a href="#before"><i class="icon-chevron-right"></i> before</a></li>
+          <li><a href="#custom"><i class="icon-chevron-right"></i> Custom</a></li>
         </ul>
       </div>
       <div class="span9">
@@ -101,28 +101,8 @@
             the results that are returned by the time period.</p>
           <br/>
           <p>Modifies are specified by attaching <code>_(modifier-id)</code> to the
-            time period that you want to modify. The same time period can be used
+            time period id that you want to modify. The same time period can be used
             with different modifiers within the same schedule.</p>
-        </section>
-
-        <!-- before
-        ================================================== -->
-        <section id="before">
-          <div>
-            <h2>before <small>(_b)</small></h2>
-          </div>
-          <p>Modifies the corresponding time period such that all values
-            before the specified value is considered valid. This modifier can
-            be used with any time period. Useful for creating more compact
-            schedules when a time period has a lot of consecutive valid values.</p>
-<pre>
-  // all hours before 5:00pm will be valid
-  var sched = {h_b: [17]};
-
-  // equivalent to
-  var sched = {h: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]};
-</pre>
-
         </section>
 
         <!-- after
@@ -145,20 +125,35 @@
 
         </section>
 
+        <!-- before
+        ================================================== -->
+        <section id="before">
+          <div>
+            <h2>before <small>(_b)</small></h2>
+          </div>
+          <p>Modifies the corresponding time period such that all values
+            before (but not including) the specified value is considered valid. This modifier can
+            be used with any time period. Useful for creating more compact
+            schedules when a time period has a lot of consecutive valid values.</p>
+<pre>
+  // all hours before 5:00pm will be valid
+  var sched = {h_b: [17]};
+
+  // equivalent to
+  var sched = {h: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]};
+</pre>
+
+        </section>
+
         <!-- custom
         ================================================== -->
         <section id="custom">
           <div>
             <h2>Writing a custom modifier</h2>
           </div>
-          <p>Custom modifiers are very similar to custom time periods; however,
-            more care must be taken when a modifier should work with all time
-            periods.</p>
-
-          <p>To keep things simple, we'll walk through creating a modifier
-            to change the month period to work with values 0-11 instead of 1-12.
-            For a more complicated example, check the source for the <code>after</code>
-            and <code>before</code> constraints.</p>
+          <p>Custom modifiers are very similar to custom time periods and share
+            the same interface. To keep things simple, we'll walk through creating a modifier
+            to change the <code>month</code> period to work with values 0-11 instead of 1-12.</p>
           <br/>
           <p>The first step is to create a name and id for the modifier and add
             it to the <i>modifier</i> namespace. Modifiers take the time period
@@ -171,9 +166,10 @@
 
     return {
       // interface implementation goes here
-    }
-  }
+    };
+  };
 </pre>
+          <br/>
           <p>Next, we need to implement the same interface that time periods
             implement and modify them to work with the new set of values.
             First we will just modify the <i>name</i> to include a reference to
@@ -181,36 +177,39 @@
 <pre>
   name: 'reIndexed ' + period.name,
 </pre>
+          <br/>
           <p>The <i>range</i> is the same, so we just pass it through.</p>
 <pre>
   range: period.range,
 </pre>
-
-          <p>We then modify the <i>val</i> returned by subtracting 1.</p>
+          <br/>
+          <p>We then modify the <i>val</i> returned by subtracting 1 since our
+            new indicies are one less than the original ones.</p>
 <pre>
   val: function(d) { return period.val(d) - 1; },
 </pre>
-
+          <br/>
           <p>Next, <i>isValid</i> is modified by tweaking the value that is passed
             in so that it is in the range that the month time period expects.</p>
 <pre>
   isValid: function(d, val) { return period.isValid(d, val+1); },
 </pre>
-
+          <br/>
           <p>The <i>extent</i> also needs to be modified to reflect the new extent that
             goes from 0-11. Now that the extent starts at 0, the schedule engine
-            will no longer assume that a 0 value means 'last'.</p>
+            will no longer assume that a 0 value means 'last'. There is nothing else
+            that we need to do to correct for that behavior.</p>
 <pre>
   extent: function(d) { return [0, 11]; },
 </pre>
-
+          <br/>
           <p>The <i>start</i> and <i>end</i> dates for the month will be the same, so we can
-            just pass those through to time period without modification.</p>
+            just pass those through to the time period without modification.</p>
 <pre>
   start: period.start,
   end: period.end,
 </pre>
-
+          <br/>
           <p>Finally, the values passed into <i>next</i> and <i>prev</i> need to
            be updated to be in the range that the month time period expects.</p>
 <pre>
@@ -219,6 +218,9 @@
 </pre>
         <br/>
         <h4>Full implementation</h4>
+        <p>Here is the code for the completed example. To use the modifier, just
+          add this code after including Later into your project and before you
+          use it in any schedules.</p>
 <pre>
   later.modifier.month = later.modifier.m = function(period, values) {
     if(period.name !== 'month') {
@@ -235,17 +237,21 @@
       end:      period.end,
       next:     function(d, val) { return period.next(d, val+1); },
       prev:     function(d, val) { return period.prev(d, val+1); }
-    }
-  }
+    };
+  };
 </pre>
         <br/>
         <h4>Usage</h4>
+        <p>Using the custom modifier is exactly the same as using a built-in
+          modifier.</p>
 <pre>
-  var sched = {schedules: [{M_m: [0]}]},
+  // use our new modifier so that 2 now means March
+  // instead of February
+  var sched = {schedules: [{M_m: [2]}]},
       next = later.schedule(sched).next(1, new Date(2013, 3, 21));
 
-  console.log(next);
-  --> January 1, 2014
+  console.log(next.toUTCString());
+  --> Sat, 01 Mar 2014 00:00:00 GMT
 </pre>
 
         </section>

@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Occurrences</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BunKat">
+
+    <!-- Le styles -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/docs.css" rel="stylesheet">
+    <link href="assets/css/bootstrap-responsive.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="assets/js/html5shiv.js"></script>
+    <![endif]-->
+
+  </head>
+
+  <body data-spy="scroll" data-target=".later-sidebar">
+
+    <!-- Navbar
+    ================================================== -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="./index.html">Later</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="">
+                <a href="./getting-started.html">Getting started</a>
+              </li>
+              <li class="">
+                <a href="./time-periods.html">Time periods</a>
+              </li>
+              <li class="">
+                <a href="./modifiers.html">Modifiers</a>
+              </li>
+              <li class="">
+                <a href="./schedules.html">Schedules</a>
+              </li>
+              <li class="">
+                <a href="./parsers.html">Parsers</a>
+              </li>
+              <li class="active">
+                <a href="./occurrences.html">Occurrences</a>
+              </li>
+              <li class="">
+                <a href="./execute.html">Execute</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Subhead
+================================================== -->
+<header class="jumbotron subhead" id="overview">
+  <div class="container">
+    <h1>Occurrences</h1>
+    <p class="lead">Calculating occurrences from a schedule definition.</p>
+  </div>
+</header>
+
+
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span3 later-sidebar">
+        <ul class="nav nav-list later-sidenav">
+          <li><a href="#overview"><i class="icon-chevron-right"></i> Overview</a></li>
+          <li><a href="#is-valid"><i class="icon-chevron-right"></i> isValid</a></li>
+          <li><a href="#instances"><i class="icon-chevron-right"></i> Instances</a></li>
+          <li><a href="#ranges"><i class="icon-chevron-right"></i> Ranges</a></li>
+        </ul>
+      </div>
+      <div class="span9">
+
+
+        <!-- Overview
+        ================================================== -->
+        <section id="overview">
+          <div>
+            <h2>Overview</h2>
+          </div>
+          <p>Once a schedule has been defined, it can be used to calculate future
+            and past occurrences of that schedule. An occurrence is a date that
+            meets all of the constraints imposed by the schedule.</p>
+          <p>In order to improve performance, schedules are first compiled prior
+            to occurrences being calculated. The compiled version of the schedule
+            can be reused to find additional occurrences as needed.<p/>
+          <br/>
+          <p>To compile a schedule, pass the schedule definition to <code>later.schedule</code>.</p>
+
+<pre>
+  var sched = later.schedule(<i>schedule</i>);
+</pre>
+
+        </section>
+
+        <!-- is valid
+        ================================================== -->
+        <section id="is-valid">
+          <div>
+            <h2>isValid</h2>
+          </div>
+          <p>Returns true if the date passed in is a valid occurrence of the
+            schedule, false otherwise.</p>
+<pre>
+  var valid = later.schedule(<i>schedule</i>).isValid(<i>date</i>);
+</pre>
+        <br/>
+        <h4>Examples</h4>
+
+<pre>
+  var sched = later.schedule(later.parse.recur().on(1,2,3).minute());
+
+  sched.isValid(new Date('2013-03-22T10:02:00Z'));
+  --> true
+
+  sched.isValid(new Date('2013-03-22T10:22:00Z'));
+  --> false
+
+  sched.isValid(new Date('2013-03-22T10:02:05Z'));
+  --> false
+</pre>
+
+        </section>
+
+        <!-- Instances
+        ================================================== -->
+        <section id="instances">
+          <div>
+            <h2>Calculating instances</h2>
+          </div>
+          <p>Instances are individual dates that meet all of the constraints
+            that are imposed by the schedule. Instances can be calculated both
+            forwards and backwards, in any quantity, and optionally between a
+            start and end date. When calculating multiple instances, the minimum time between
+            instances is based on the smallest ranged time period.</p>
+          <br/>
+          <h4>Calculating future instances</h4>
+          <ul>
+            <li><strong>Count</strong>: the number of instances to return. Count of 1 will return
+              a single value, otherwise an array will be returned. Set to 1 by
+              default.</li>
+            <li><strong>Start</strong>: the starting date to calculate instances from. Must be
+              smaller than any end date. Set as Date.now() by default. </li>
+            <li><strong>End</strong>: the last date to consider when calculating instances. Null
+              by default.</li>
+          </ul>
+
+<pre>
+  later.schedule(<i>schedule</i>).next(<i>count</i>, <i>start</i>, <i>end</i>);
+</pre>
+
+          <br/>
+          <h4>Calculating previous instances</h4>
+          <ul>
+            <li><strong>Count</strong>: the number of instances to return. Count of 1 will return
+              a single value, otherwise an array will be returned. Set to 1 by
+              default.</li>
+            <li><strong>Start</strong>: the starting date to calculate instances from. Must be
+              larger than any end date. Set as Date.now() by default. </li>
+            <li><strong>End</strong>: the last date to consider when calculating instances. Null
+              by default.</li>
+          </ul>
+
+<pre>
+  later.schedule(<i>schedule</i>).prev(<i>count</i>, <i>start</i>, <i>end</i>);
+</pre>
+
+          <br/>
+          <h4>Examples</h4>
+<pre>
+  // sched for minute equal to 1,2, or 3
+  var sched = later.schedule(later.recur().on(1,2,3).minute()),
+      start = new Date('2013-05-22T10:22:00Z');
+
+  // get the next instance
+  sched.next(1, start);
+  --> Mon, 22 May 2013 11:01:00 GMT
+
+  // get the next 5 instances
+  sched.next(5, start);
+  --> [ 'Mon, 22 May 2013 11:01:00 GMT',
+        'Mon, 22 May 2013 11:02:00 GMT',
+        'Mon, 22 May 2013 11:03:00 GMT',
+        'Mon, 22 May 2013 12:01:00 GMT',
+        'Mon, 22 May 2013 12:02:00 GMT' ]
+
+  // get the previous instance
+  sched.prev(1, start);
+  --> Mon, 22 May 2013 10:03:00 GMT
+</pre>
+
+        </section>
+
+        <!-- Ranges
+        ================================================== -->
+        <section id="ranges">
+          <div>
+            <h2>Calculating ranges</h2>
+          </div>
+          <p>Ranges combine consecutively valid instances into a single start and
+            end block of time. The start time is the first valid instance of the
+            block of time. The end time is the first invalid time after the block.</p>
+          <p>Ranges are useful when scheduling blocks of time such as a meeting or
+            activity. The schedule definition defines the start and end time of the
+            activity and then ranges are used to find their occurrences.</p>
+          <br/>
+          <h4>Calculating future ranges</h4>
+          <ul>
+            <li><strong>Count</strong>: the number of ranges to return. Count of 1 will return
+              a single value, otherwise an array will be returned. Set to 1 by
+              default.</li>
+            <li><strong>Start</strong>: the starting date to calculate ranges from. Must be
+              smaller than any end date. Set as Date.now() by default. </li>
+            <li><strong>End</strong>: the last date to consider when calculating ranges. Null
+              by default.</li>
+          </ul>
+
+<pre>
+  later.schedule(<i>schedule</i>).nextRange(<i>count</i>, <i>start</i>, <i>end</i>);
+</pre>
+
+          <br/>
+          <h4>Calculating previous ranges</h4>
+          <ul>
+            <li><strong>Count</strong>: the number of ranges to return. Count of 1 will return
+              a single value, otherwise an array will be returned. Set to 1 by
+              default.</li>
+            <li><strong>Start</strong>: the starting date to calculate ranges from. Must be
+              larger than any end date. Set as Date.now() by default. </li>
+            <li><strong>End</strong>: the last date to consider when calculating ranges. Null
+              by default.</li>
+          </ul>
+
+<pre>
+  later.schedule(<i>schedule</i>).prevRange(<i>count</i>, <i>start</i>, <i>end</i>);
+</pre>
+
+          <br/>
+          <h4>Examples</h4>
+<pre>
+  // sched for minute equal to 1,2, or 3
+  var sched = later.schedule(later.recur().on(1,2,3).minute()),
+      start = new Date('2013-05-22T10:22:00Z');
+
+  // get the next range
+  sched.next(1, start);
+  --> ['Mon, 22 May 2013 11:01:00 GMT', 'Mon, 22 May 2013 11:04:00 GMT']
+
+  // get the next 5 ranges
+  sched.next(5, start);
+  --> [
+        ['Mon, 22 May 2013 11:01:00 GMT', 'Mon, 22 May 2013 11:04:00 GMT']
+        ['Mon, 22 May 2013 12:01:00 GMT', 'Mon, 22 May 2013 12:04:00 GMT']
+        ['Mon, 22 May 2013 13:01:00 GMT', 'Mon, 22 May 2013 13:04:00 GMT']
+        ['Mon, 22 May 2013 14:01:00 GMT', 'Mon, 22 May 2013 14:04:00 GMT']
+        ['Mon, 22 May 2013 15:01:00 GMT', 'Mon, 22 May 2013 15:04:00 GMT']
+      ]
+
+  // get the previous range
+  sched.prev(1, start);
+  --> ['Mon, 22 May 2013 10:01:00 GMT', 'Mon, 22 May 2013 10:04:00 GMT']
+</pre>
+
+        </section>
+
+
+      </div>
+    </div>
+
+  </div>
+
+
+
+    <!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2013 BunKat &nbsp; Later is licensed under the
+          <a href="http://opensource.org/licenses/MIT">MIT license</a>.</p>
+      </div>
+    </footer>
+
+
+
+    <!-- Javascript
+    ================================================== -->
+    <script src="assets/js/jquery-1.10.1.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script>
+      // side bar
+      setTimeout(function () {
+        $('.later-sidenav').affix({
+          offset: {
+            top: function () { return $(window).width() <= 980 ? 230 : 150 }
+          , bottom: 270
+          }
+        })
+      }, 100);
+    </script>
+
+  </body>
+</html>
