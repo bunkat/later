@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Modifiers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BunKat">
+
+    <!-- Le styles -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/docs.css" rel="stylesheet">
+    <link href="assets/css/bootstrap-responsive.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="assets/js/html5shiv.js"></script>
+    <![endif]-->
+
+  </head>
+
+  <body data-spy="scroll" data-target=".later-sidebar">
+
+    <!-- Navbar
+    ================================================== -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="./index.html">Later</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="">
+                <a href="./getting-started.html">Getting started</a>
+              </li>
+              <li class="">
+                <a href="./time-periods.html">Time periods</a>
+              </li>
+              <li class="">
+                <a href="./modifiers.html">Modifiers</a>
+              </li>
+              <li class="">
+                <a href="./schedules.html">Schedules</a>
+              </li>
+              <li class="">
+                <a href="./parsers.html">Parsers</a>
+              </li>
+              <li class="">
+                <a href="./occurrences.html">Occurrences</a>
+              </li>
+              <li class="active">
+                <a href="./execute.html">Execute</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Subhead
+================================================== -->
+<header class="jumbotron subhead" id="overview">
+  <div class="container">
+    <h1>Modifiers</h1>
+    <p class="lead">Augment existing time periods with new behaviors.</p>
+  </div>
+</header>
+
+
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span3 later-sidebar">
+        <ul class="nav nav-list later-sidenav">
+          <li><a href="#overview"><i class="icon-chevron-right"></i> Overview</a></li>
+          <li><a href="#before"><i class="icon-chevron-right"></i> before</a></li>
+          <li><a href="#after"><i class="icon-chevron-right"></i> after</a></li>
+          <li><a href="#after"><i class="icon-chevron-right"></i> Custom</a></li>
+        </ul>
+      </div>
+      <div class="span9">
+
+
+        <!-- Overview
+        ================================================== -->
+        <section id="overview">
+          <div>
+            <h2>Overview</h2>
+          </div>
+          <p>With Later, not only can you write your own custom time periods, you
+            can also write custom modifiers that can change the behavior of
+            existing time periods. The modifiers sit in between the scheduling
+            engine and the time period allowing you to intercept and modify
+            the results that are returned by the time period.</p>
+          <br/>
+          <p>Modifies are specified by attaching <code>_(modifier-id)</code> to the
+            time period that you want to modify. The same time period can be used
+            with different modifiers within the same schedule.</p>
+        </section>
+
+        <!-- before
+        ================================================== -->
+        <section id="before">
+          <div>
+            <h2>before <small>(_b)</small></h2>
+          </div>
+          <p>Modifies the corresponding time period such that all values
+            before the specified value is considered valid. This modifier can
+            be used with any time period. Useful for creating more compact
+            schedules when a time period has a lot of consecutive valid values.</p>
+<pre>
+  // all hours before 5:00pm will be valid
+  var sched = {h_b: [17]};
+
+  // equivalent to
+  var sched = {h: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]};
+</pre>
+
+        </section>
+
+        <!-- after
+        ================================================== -->
+        <section id="after">
+          <div>
+            <h2>after <small>(_a)</small></h2>
+          </div>
+          <p>Modifies the corresponding time period such that all values
+            after and including the specified value is considered valid. This modifier can
+            be used with any time period. Useful for creating more compact
+            schedules when a time period has a lot of consecutive valid values.</p>
+<pre>
+  // all hours after 5:00pm will be valid
+  var sched = {h_a: [17]};
+
+  // equivalent to
+  var sched = {h: [17,18,19,20,21,22,23]};
+</pre>
+
+        </section>
+
+        <!-- custom
+        ================================================== -->
+        <section id="custom">
+          <div>
+            <h2>Writing a custom modifier</h2>
+          </div>
+          <p>Custom modifiers are very similar to custom time periods; however,
+            more care must be taken when a modifier should work with all time
+            periods.</p>
+
+          <p>To keep things simple, we'll walk through creating a modifier
+            to change the month period to work with values 0-11 instead of 1-12.
+            For a more complicated example, check the source for the <code>after</code>
+            and <code>before</code> constraints.</p>
+          <br/>
+          <p>The first step is to create a name and id for the modifier and add
+            it to the <i>modifier</i> namespace. Modifiers take the time period
+            that is being modified along with the specified values as arguments.</p>
+<pre>
+  later.modifier.month = later.modifier.m = function(period, values) {
+    if(period.name !== 'month') {
+      throw new Error('Month modifier only works with months!');
+    }
+
+    return {
+      // interface implementation goes here
+    }
+  }
+</pre>
+          <p>Next, we need to implement the same interface that time periods
+            implement and modify them to work with the new set of values.
+            First we will just modify the <i>name</i> to include a reference to
+            the modifier.</p>
+<pre>
+  name: 'reIndexed ' + period.name,
+</pre>
+          <p>The <i>range</i> is the same, so we just pass it through.</p>
+<pre>
+  range: period.range,
+</pre>
+
+          <p>We then modify the <i>val</i> returned by subtracting 1.</p>
+<pre>
+  val: function(d) { return period.val(d) - 1; },
+</pre>
+
+          <p>Next, <i>isValid</i> is modified by tweaking the value that is passed
+            in so that it is in the range that the month time period expects.</p>
+<pre>
+  isValid: function(d, val) { return period.isValid(d, val+1); },
+</pre>
+
+          <p>The <i>extent</i> also needs to be modified to reflect the new extent that
+            goes from 0-11. Now that the extent starts at 0, the schedule engine
+            will no longer assume that a 0 value means 'last'.</p>
+<pre>
+  extent: function(d) { return [0, 11]; },
+</pre>
+
+          <p>The <i>start</i> and <i>end</i> dates for the month will be the same, so we can
+            just pass those through to time period without modification.</p>
+<pre>
+  start: period.start,
+  end: period.end,
+</pre>
+
+          <p>Finally, the values passed into <i>next</i> and <i>prev</i> need to
+           be updated to be in the range that the month time period expects.</p>
+<pre>
+  next: function(d, val) { return period.next(d, val+1); },
+  prev: function(d, val) { return period.prev(d, val+1); }
+</pre>
+        <br/>
+        <h4>Full implementation</h4>
+<pre>
+  later.modifier.month = later.modifier.m = function(period, values) {
+    if(period.name !== 'month') {
+      throw new Error('Month modifier only works with months!');
+    }
+
+    return {
+      name:     'reIndexed ' + period.name,
+      range:    period.range,
+      val:      function(d) { return period.val(d) - 1; },
+      isValid:  function(d, val) { return period.isValid(d, val+1); },
+      extent:   function(d) { return [0, 11]; },
+      start:    period.start,
+      end:      period.end,
+      next:     function(d, val) { return period.next(d, val+1); },
+      prev:     function(d, val) { return period.prev(d, val+1); }
+    }
+  }
+</pre>
+        <br/>
+        <h4>Usage</h4>
+<pre>
+  var sched = {schedules: [{M_m: [0]}]},
+      next = later.schedule(sched).next(1, new Date(2013, 3, 21));
+
+  console.log(next);
+  --> January 1, 2014
+</pre>
+
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+
+
+    <!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2013 BunKat &nbsp; Later is licensed under the
+          <a href="http://opensource.org/licenses/MIT">MIT license</a>.</p>
+      </div>
+    </footer>
+
+
+
+    <!-- Javascript
+    ================================================== -->
+    <script src="assets/js/jquery-1.10.1.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script>
+      // side bar
+      setTimeout(function () {
+        $('.later-sidenav').affix({
+          offset: {
+            top: function () { return $(window).width() <= 980 ? 230 : 150 }
+          , bottom: 270
+          }
+        })
+      }, 100);
+    </script>
+
+  </body>
+</html>
