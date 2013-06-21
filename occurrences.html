@@ -67,7 +67,7 @@
 <header class="jumbotron subhead" id="overview">
   <div class="container">
     <h1>Occurrences</h1>
-    <p class="lead">Calculating occurrences from a schedule definition.</p>
+    <p class="lead">Calculating future and past occurrences from a schedule definition.</p>
   </div>
 </header>
 
@@ -185,7 +185,7 @@
           <h4>Examples</h4>
 <pre>
   // sched for minute equal to 1,2, or 3
-  var sched = later.schedule(later.recur().on(1,2,3).minute()),
+  var sched = later.schedule(later.parse.recur().on(1,2,3).minute()),
       start = new Date('2013-05-22T10:22:00Z');
 
   // get the next instance
@@ -255,15 +255,15 @@
           <h4>Examples</h4>
 <pre>
   // sched for minute equal to 1,2, or 3
-  var sched = later.schedule(later.recur().on(1,2,3).minute()),
+  var sched = later.schedule(later.parse.recur().on(1,2,3).minute()),
       start = new Date('2013-05-22T10:22:00Z');
 
   // get the next range
-  sched.next(1, start);
+  sched.nextRange(1, start);
   --> ['Mon, 22 May 2013 11:01:00 GMT', 'Mon, 22 May 2013 11:04:00 GMT']
 
   // get the next 5 ranges
-  sched.next(5, start);
+  sched.nextRange(5, start);
   --> [
         ['Mon, 22 May 2013 11:01:00 GMT', 'Mon, 22 May 2013 11:04:00 GMT']
         ['Mon, 22 May 2013 12:01:00 GMT', 'Mon, 22 May 2013 12:04:00 GMT']
@@ -273,7 +273,7 @@
       ]
 
   // get the previous range
-  sched.prev(1, start);
+  sched.prevRange(1, start);
   --> ['Mon, 22 May 2013 10:01:00 GMT', 'Mon, 22 May 2013 10:04:00 GMT']
 </pre>
 

@@ -15,6 +15,11 @@ body {
   padding-top: 40px;
 }
 
+dd {
+  padding-bottom: 10px;
+
+}
+
 /* Code in headings */
 /* h3 code {
   font-size: 14px;
