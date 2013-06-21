@@ -142,7 +142,7 @@
           <dt>extent(<i>date</i>)</dt>
           <dd>The minimum and maximum valid values for the time period for the
             specified date. If the minimum value is not 0, 0 can be specified
-            to mean the maximum value. This makes working with non-constant
+            in schedules to indicate the maximum value. This makes working with non-constant
             extents (like days in a month) easier.</dd>
 
           <dt>start(<i>date</i>)</dt>
@@ -548,10 +548,100 @@
 </pre>
 
 
+        <!-- week of month
+        ================================================== -->
+        <section id="week-of-month">
+          <div>
+            <h2>Week of month <small>(weekOfMonth, wm)</small></h2>
+          </div>
+          <p>Weeks in a month where the 1st of the month is week 1 and following
+            weeks start on Sunday. From 1 to max weeks in the month. Specify 0 for last
+            week of the month.</p>
+          <br/>
+          <p>Using weeks of month in a schedule:</p>
+<pre>
+  var sched = {schedules: [{wm: [1, 2]}]};
+</pre>
+          <br/>
+          <p>Performing week of month based calculations:</p>
+<pre>
+  var d = new Date('2013-03-22T10:02:05Z');
+
+  later.weekOfMonth.name;
+  --> 'week of month'
+
+  later.weekOfMonth.range;
+  --> 604800
+
+  later.weekOfMonth.val(d);
+  --> 4
+
+  later.weekOfMonth.isValid(d, 4);
+  --> true
+
+  later.weekOfMonth.extent(d);
+  --> [1, 6]
+
+  later.weekOfMonth.start(d);
+  --> 'Sun, 17 Mar 2013 00:00:00 GMT'
+
+  later.weekOfMonth.end(d);
+  --> 'Sat, 23 Mar 2013 23:59:59 GMT'
+
+  later.weekOfMonth.next(d, 1);
+  --> 'Mon, 01 Apr 2013 00:00:00 GMT'
+
+  later.weekOfMonth.prev(d, 2);
+  --> 'Sat, 09 Mar 2013 23:59:59 GMT'
+</pre>
 
 
+        <!-- ISO week of year
+        ================================================== -->
+        <section id="iso-week-of-year">
+          <div>
+            <h2>ISO Week of year <small>(weekOfYear, wy)</small></h2>
+          </div>
+          <p>The <a href="http://en.wikipedia.org/wiki/ISO_week_date">ISO 8601</a>
+            week of the year. From 1 to max ISO week in the year. Specify 0 for last
+            ISO week of the year.</p>
+          <br/>
+          <p>Using weeks of year in a schedule:</p>
+<pre>
+  var sched = {schedules: [{wy: [13,26,39,0]}]};
+</pre>
+          <br/>
+          <p>Performing week of year based calculations:</p>
+<pre>
+  var d = new Date('2013-03-22T10:02:05Z');
 
+  later.weekOfYear.name;
+  --> 'week of year'
 
+  later.weekOfYear.range;
+  --> 604800
+
+  later.weekOfYear.val(d);
+  --> 12
+
+  later.weekOfYear.isValid(d, 21);
+  --> false
+
+  later.weekOfYear.extent(d);
+  --> [1, 52]
+
+  later.weekOfYear.start(d);
+  --> 'Mon, 18 Mar 2013 00:00:00 GMT'
+
+  later.weekOfYear.end(d);
+  --> 'Sun, 24 Mar 2013 23:59:59 GMT'
+
+  later.weekOfYear.next(d, 47);
+  --> 'Mon, 18 Nov 2013 00:00:00 GMT'
+
+  later.weekOfYear.prev(d, 52);
+  --> 'Sun, 30 Dec 2012 23:59:59 GMT'
+</pre>
 
 
 
@@ -663,107 +753,210 @@
           <div>
             <h2>Writing a custom time period</h2>
           </div>
-          <p>Custom modifiers are very similar to custom time periods and share
-            the same interface. To keep things simple, we'll walk through creating a modifier
-            to change the <code>month</code> period to work with values 0-11 instead of 1-12.</p>
+          <p>Later is fully extensible and it is easy to create your own custom
+            time periods that can be used to define new schedules. To keep things
+            simple, we'll walk through creating a new time period for indicating
+            morning, afternoon, and evening. For our purposes, morning will be
+            before noon and have a value of 0, afternoon will be before 6pm
+            and have a value of 1, and evening will be before midnight and have
+            a value of 2.</p>
           <br/>
           <p>The first step is to create a name and id for the modifier and add
-            it to the <i>modifier</i> namespace. Modifiers take the time period
-            that is being modified along with the specified values as arguments.</p>
+            it to the <i>later</i> namespace.</p>
 <pre>
-  later.modifier.month = later.modifier.m = function(period, values) {
-    if(period.name !== 'month') {
-      throw new Error('Month modifier only works with months!');
-    }
-
-    return {
-      // interface implementation goes here
-    };
+  later.partOfDay = later.pd = {
+    // interface implementation goes here
   };
 </pre>
           <br/>
-          <p>Next, we need to implement the same interface that time periods
-            implement and modify them to work with the new set of values.
-            First we will just modify the <i>name</i> to include a reference to
-            the modifier.</p>
+          <p>Next, we need to implement the time period interface.
+            First we will just specify the <i>name</i> of this time period.</p>
 <pre>
-  name: 'reIndexed ' + period.name,
+  name: 'part of day',
 </pre>
           <br/>
-          <p>The <i>range</i> is the same, so we just pass it through.</p>
+          <p>The <i>range</i> is approximately 6 hours. Though some of our periods
+            are longer and some shorter, we'll use the shortest range which is
+            afternoon at 6 hours.</p>
 <pre>
-  range: period.range,
+  range: later.D.range * 6,
 </pre>
           <br/>
-          <p>We then modify the <i>val</i> returned by subtracting 1 since our
-            new indicies are one less than the original ones.</p>
+          <p>We then implement <i>val</i> to return the appropriate value based on the
+            definition described previously.</p>
 <pre>
-  val: function(d) { return period.val(d) - 1; },
+  val: function(d) {
+    return later.h.val(d) &lt; 12 ? 0 :
+           later.h.val(d) &lt; 6 ? 1 :
+           2;
+  },
 </pre>
           <br/>
-          <p>Next, <i>isValid</i> is modified by tweaking the value that is passed
-            in so that it is in the range that the month time period expects.</p>
+          <p>Then we can use our new <i>val</i> function to implement <i>isValid</i>.</p>
 <pre>
-  isValid: function(d, val) { return period.isValid(d, val+1); },
+  isValid: function(d, val) {
+    return later.pd.val(d) === val;
+  },
 </pre>
           <br/>
-          <p>The <i>extent</i> also needs to be modified to reflect the new extent that
-            goes from 0-11. Now that the extent starts at 0, the schedule engine
-            will no longer assume that a 0 value means 'last'. There is nothing else
-            that we need to do to correct for that behavior.</p>
+          <p>The <i>extent</i> is always going to be the same for every day so
+            we can just return a constant array here.</p>
 <pre>
-  extent: function(d) { return [0, 11]; },
+  extent: function(d) { return [0, 2]; },
 </pre>
           <br/>
-          <p>The <i>start</i> and <i>end</i> dates for the month will be the same, so we can
-            just pass those through to the time period without modification.</p>
+          <p>Next we need to implement <i>start</i> and <i>end</i> based on
+            the current time period.</p>
 <pre>
-  start: period.start,
-  end: period.end,
+  start: function(d) {
+    var hour = later.pd.val(d) === 0 ? 0 :
+                  later.pd.val(d) === 1 ? 12 :
+                  6;
+
+    return later.date.next(
+      later.Y.val(d),
+      later.M.val(d),
+      later.D.val(d),
+      hour;
+    );
+  },
+
+  end: function(d) {
+    var hour = later.pd.val(d) === 0 ? 11 :
+                  later.pd.val(d) === 1 ? 5 :
+                  23;
+
+    return later.date.prev(
+      later.Y.val(d),
+      later.M.val(d),
+      later.D.val(d),
+      hour;
+    );
+  },
 </pre>
           <br/>
-          <p>Finally, the values passed into <i>next</i> and <i>prev</i> need to
-           be updated to be in the range that the month time period expects.</p>
+          <p>Finally, we need to implement <i>next</i> and <i>prev</i> so that
+            you can move to different parts of the day. We need to make sure
+            to increment and decrement the day appropriately.</p>
 <pre>
-  next: function(d, val) { return period.next(d, val+1); },
-  prev: function(d, val) { return period.prev(d, val+1); }
+  next: function(d, val) {
+    var hour = later.pd.val(d) === 0 ? 0 :
+                  later.pd.val(d) === 1 ? 12 :
+                  6;
+
+    return later.date.next(
+      later.Y.val(d),
+      later.M.val(d),
+      // increment the day if we already passed the desired time period
+      later.D.val(d) + hour &lt; later.pd.val(d) ? 1 : 0,
+      hour;
+    );
+  },
+
+  prev: function(d, val) {
+    var hour = later.pd.val(d) === 0 ? 11 :
+                  later.pd.val(d) === 1 ? 5 :
+                  23;
+
+    return later.date.prev(
+      later.Y.val(d),
+      later.M.val(d),
+      // decrement the day if we already passed the desired time period
+      later.D.val(d) + hour &gt; later.pd.val(d) ? -1 : 0,
+      hour;
+    );
+  }
 </pre>
         <br/>
         <h4>Full implementation</h4>
-        <p>Here is the code for the completed example. To use the modifier, just
+        <p>Here is the code for the completed example. To use the time period, just
           add this code after including Later into your project and before you
           use it in any schedules.</p>
 <pre>
-  later.modifier.month = later.modifier.m = function(period, values) {
-    if(period.name !== 'month') {
-      throw new Error('Month modifier only works with months!');
-    }
+  later.partOfDay = later.pd = {
 
-    return {
-      name:     'reIndexed ' + period.name,
-      range:    period.range,
-      val:      function(d) { return period.val(d) - 1; },
-      isValid:  function(d, val) { return period.isValid(d, val+1); },
-      extent:   function(d) { return [0, 11]; },
-      start:    period.start,
-      end:      period.end,
-      next:     function(d, val) { return period.next(d, val+1); },
-      prev:     function(d, val) { return period.prev(d, val+1); }
-    };
+    name: 'part of day',
+
+    range: later.D.range * 6,
+
+    val: function(d) {
+      return later.h.val(d) &lt; 12 ? 0 :
+             later.h.val(d) &lt; 6 ? 1 :
+             2;
+    },
+
+    isValid: function(d, val) {
+      return later.pd.val(d) === val;
+    },
+
+    extent: function(d) { return [0, 2]; },
+
+    start: function(d) {
+      var hour = later.pd.val(d) === 0 ? 0 :
+                    later.pd.val(d) === 1 ? 12 :
+                    6;
+
+      return later.date.next(
+        later.Y.val(d),
+        later.M.val(d),
+        later.D.val(d),
+        hour;
+      );
+    },
+
+    end: function(d) {
+      var hour = later.pd.val(d) === 0 ? 11 :
+                    later.pd.val(d) === 1 ? 5 :
+                    23;
+
+      return later.date.prev(
+        later.Y.val(d),
+        later.M.val(d),
+        later.D.val(d),
+        hour;
+      );
+    },
+
+    next: function(d, val) {
+      var hour = later.pd.val(d) === 0 ? 0 :
+                    later.pd.val(d) === 1 ? 12 :
+                    6;
+
+      return later.date.next(
+        later.Y.val(d),
+        later.M.val(d),
+        // increment the day if we already passed the desired time period
+        later.D.val(d) + hour &lt; later.pd.val(d) ? 1 : 0,
+        hour;
+      );
+    },
+
+    prev: function(d, val) {
+      var hour = later.pd.val(d) === 0 ? 11 :
+                    later.pd.val(d) === 1 ? 5 :
+                    23;
+
+      return later.date.prev(
+        later.Y.val(d),
+        later.M.val(d),
+        // decrement the day if we already passed the desired time period
+        later.D.val(d) + hour &gt; later.pd.val(d) ? -1 : 0,
+        hour;
+      );
+    }
   };
 </pre>
         <br/>
         <h4>Usage</h4>
-        <p>Using the custom modifier is exactly the same as using a built-in
-          modifier.</p>
+        <p>Using the custom time period is exactly the same as using a built-in
+          time period.</p>
 <pre>
-  // use our new modifier so that 2 now means March
-  // instead of February
-  var sched = {schedules: [{M_m: [2]}]},
+  // use our new time period to specify every 15 mins at night
+  var sched = {schedules: [{m: [0,15,30,45], pd: [2]}]},
       next = later.schedule(sched).next(1, new Date(2013, 3, 21));
 
   console.log(next.toUTCString());
-  --> Sat, 01 Mar 2014 00:00:00 GMT
+  --> Sat, 21 Apr 2013 18:00:00 GMT
 </pre>
 
         </section>
