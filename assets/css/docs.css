@@ -20,6 +20,10 @@ dd {
 
 }
 
+img {
+  padding: 20px 0;
+}
+
 /* Code in headings */
 /* h3 code {
   font-size: 14px;

@@ -39,13 +39,14 @@
                 <a href="./getting-started.html">Getting started</a>
               </li>
               <li class="">
+                <a href="./schedules.html">Schedules</a>
+              </li>
+              <li class="">
                 <a href="./time-periods.html">Time periods</a>
               </li>
               <li class="">
-                <a href="./modifiers.html">Modifiers</a>
-              </li>
               <li class="">
-                <a href="./schedules.html">Schedules</a>
+                <a href="./modifiers.html">Modifiers</a>
               </li>
               <li class="active">
                 <a href="./parsers.html">Parsers</a>
@@ -96,7 +97,7 @@
           </div>
           <p>While schedules can always be manually created, it is usually
             easier to use one of the following parsers that are included with
-            Later. Each of the parsers simply generates a valid schedule
+            Later. Each of the parsers generates a valid schedule
             definition that can then be used when calculating occurrences.</p>
 
         </section>
@@ -118,7 +119,7 @@
             before serializing.</p>
 
 <pre>
-  // every hour on the 2nd minute
+  // fires on the 2nd minute every hour
   var sched = later.parse.recur().on(2).minute();
 
   // works perfectly
@@ -158,13 +159,13 @@
             used.</p>
 
 <pre>
-  // every hour on the 2nd minute
+  // fires on the 2nd minute every hour
   later.parse.recur().on(2).minute();
 
-  // every day at 8am and 8pm
+  // fires every day at 8am and 8pm
   later.parse.recur().on(8,20).hour();
 
-  // every day at 8am
+  // fires every day at 8am
   later.parse.recur().on('08:00:00').time();
 </pre>
 
@@ -174,7 +175,7 @@
             value of a time period.</p>
 
 <pre>
-  // on the 0th minute of every hour
+  // fires on the 0th minute of every hour
   later.parse.recur().first().minute();
 </pre>
 
@@ -185,7 +186,7 @@
             a time period that has different max values such as days of the month.</p>
 
 <pre>
-  // on the last day of every month at 5am
+  // fires on the last day of every month at 5am
   later.parse.recur().on(5).hour().last().dayOfMonth();
 </pre>
 
@@ -194,7 +195,7 @@
           <p>Shorthand for <code>on(1,7).dayOfWeek()</code></p>
 
 <pre>
-  // on the 5th minute of every hour during Sat and Sun
+  // fires on the 5th minute of every hour during Sat and Sun
   later.parse.recur().on(5).minute().onWeekend();
 </pre>
 
@@ -203,7 +204,7 @@
           <p>Shorthand for <code>on(2,3,4,5,6).dayOfWeek()</code></p>
 
 <pre>
-  // on the 5th minute of every hour during Mon,Tues,Wed,Thur,Fri
+  // fires on the 5th minute of every hour during Mon,Tues,Wed,Thur,Fri
   later.parse.recur().on(5).minute().onWeekday();
 </pre>
 
@@ -214,10 +215,10 @@
             period and go until the maximum value of the time period.</p>
 
 <pre>
-  // on the 0th, 10th, 20th, 30th, 40th, and 50th min of every hour
+  // fires on the 0th, 10th, 20th, 30th, 40th, and 50th min of every hour
   later.parse.recur().every(10).minute();
 
-  // on first second of Jan, Apr, July, Oct
+  // fires on first second of Jan, Apr, July, Oct
   later.parse.recur().every(3).month();
 </pre>
 
@@ -227,10 +228,10 @@
             are considered valid.</p>
 
 <pre>
-  // on the 55th, 56th, 57th, 58th, and 59th minute
+  // fires on the 55th, 56th, 57th, 58th, and 59th minute
   later.parse.recur().after(55).minute();
 
-  // at 12 noon and 6pm
+  // fires at 12 noon and 6pm
   later.parse.recur().every(6).hour().after('09:00').time();
 </pre>
 
@@ -240,13 +241,13 @@
             are considered valid.</p>
 
 <pre>
-  // on the first second of January and February
+  // fires on the first second of January and February
   later.parse.recur().before(3).month();
 
-  // at 6am every day
+  // fires at 6am every day
   later.parse.recur().every(6).hour().before('09:00').time();
 
-  // between 9am and 6pm every day
+  // fires between 9am and 6pm every day
   later.parse.recur().after('09:00').time().before('18:00').time();
   later.parse.recur().after(9).hour().before(18).hour();
 </pre>
@@ -258,7 +259,7 @@
             offset values from the default minimum value.</p>
 
 <pre>
-  // on the 10th, 25th, 40th, and 55th minute of every hour
+  // fires on the 10th, 25th, 40th, and 55th minute of every hour
   later.parse.recur().every(15).minute().startingOn(10);
 </pre>
 
@@ -268,7 +269,7 @@
             time period. Must be chained after an <code>every</code> call.</p>
 
 <pre>
-  // on the 10th, 25th, 40th minute of every hour
+  // fires on the 10th, 25th, 40th minute of every hour
   later.parse.recur().every(15).minute().between(10,40);
 </pre>
 
@@ -325,13 +326,145 @@
             must be set to true.</p>
 
 <pre>
-  // Fire at 10:15am every day
+  // fires at 10:15am every day
   var cron1 = later.parse.cron('15 10 ? * *');
 
-  // Fire every 5 minutes starting at 2pm and ending at 2:55pm, every day
+  // fires every 5 minutes starting at 2pm and ending at 2:55pm, every day
   var cron2 = later.parse.cron('0 0/5 14 * * ?', true);
 </pre>
 
+
+        </section>
+
+
+        </section>
+
+        <!-- Text
+        ================================================== -->
+        <section id="text">
+          <div>
+            <h2>Text Parser</h2>
+          </div>
+          <p>A valid schedule can be generated simple text expressions.</p>
+
+          <br/>
+          <h4>later.parse.text(<i>expr</i>, <i>hasSeconds</i>)</h4>
+          <p>Parses the text expression <code>expr</code> and returns a valid schedule that
+            can be used with Later.</p>
+
+<pre>
+  // fires at 10:15am every day
+  var text1 = later.parse.text('at 10:15 am');
+
+  // fires every 5 minutes every day
+  var text2 = later.parse.text('every 5 mins');
+</pre>
+          <br/>
+          <p><span class='label label-info'>Tip</span> If there is an error parsing
+            the text expression, the character position that the error occurred
+            in will be returned in the <code>error</code> property. If the
+            expression was parsed correctly, <code>error</code> will be <code>undefined</code>.</p>
+
+<pre>
+  var sched = later.parse.text('at 30:15 am');
+  sched.error
+  --> 3
+</pre>
+
+          <br/>
+
+
+          <h4>Defining a schedule</h4>
+          <p>A composite schedule combines multiple basic schedules. The keyword
+            <code>also</code> is used to create the composite, while the
+            <code>exception</code> keyword starts an exception schedule.</p>
+          <img src='./assets/img/Composite.png'>
+          <br/>
+
+<pre>
+  // fires at 10:15am and 5:15pm every day except on Tuesday
+  later.parse.text('at 10:15 am also at 5:15pm except on Tuesday');
+</pre>
+          <br/>
+
+          <h4>Specifying the constraints</h4>
+          <p>A schedule defines the set of constraints that must be met. Any
+            number of constraints can be added to a single schedule. The following
+            values are valid when defining a constraint.</p>
+
+          <dl>
+          <dt>Periods</dt>
+          <dd>s, sec, seconds, m, min, minutes, h, hours, day,
+            day of the month, day instance, day of the week, day of the year,
+            week, week of the year, month, year</dd>
+
+          <dt>Numbers</dt>
+          <dd>1, 2, 3, ..., 1st, 2nd, 3rd, ...</dd>
+
+          <dt>Times</dt>
+          <dd>8:00 am, 13:15, 6:00pm, ...</dd>
+
+          <dt>Days</dt>
+          <dd>Sun, Sunday, Mon, Monday, ..., Sat, Saturday</dd>
+
+          <dt>Months</dt>
+          <dd>Jan, January, Feb, February, ..., Dec, December</dd>
+
+          <dt>Years</dt>
+          <dd>1970, 1971, ..., 2099</dd>
+          </dl>
+
+          <img src='./assets/img/Schedule.png'>
+          <br/>
+
+<pre>
+  // fires every Sunday
+  later.parse.text('on the first day of the week');
+
+  // fires on the last day of every month
+  later.parse.text('on the last day of the month');
+
+  // fires every day between the 15th and 20th day every month
+  later.parse.text('on the 15th through 20th day of the month');
+
+  // fires every 5 minutes on Saturday and Sunday
+  later.parse.text('every 5 mins every weekend');
+
+  // fires on the 7th, 27th, and 47th minute every hour
+  later.parse.text('every 20 mins starting on the 7th min');
+
+  // fires every hour after noon every day
+  later.parse.text('after 12th hour');
+
+  // fires every hour before noon every day
+  later.parse.text('before 12th hour');
+
+  // fires at 5:00pm every day
+  later.parse.text('at 5:00 pm');
+
+  // fires at 5:00pm on Wednesday, Thursday, and Friday
+  later.parse.text('at 5:00 pm on Weds,Thurs and Fri');
+
+  // fires at 5:00pm every day of March in 2014
+  later.parse.text('at 5:00 pm every 1 day of March in 2014');
+</pre>
+          <br/>
+
+
+          <h4>Using ranges</h4>
+          <p>Ranges are used to specifiy multiple values for a particular
+            constraint.</p>
+          <img src='./assets/img/Range.png'>
+          <br/>
+
+<pre>
+  // fires every day between the 15th and 20th day every month
+  later.parse.text('on the 15th through 20th day of the month');
+
+  // fires at 5:00pm on Wednesday, Thursday, and Friday
+  later.parse.text('at 5:00 pm on Weds,Thurs and Fri');
+</pre>
+          <br/>
 
         </section>
 

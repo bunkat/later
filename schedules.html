@@ -38,14 +38,14 @@
               <li class="">
                 <a href="./getting-started.html">Getting started</a>
               </li>
+              <li class="active">
+                <a href="./schedules.html">Schedules</a>
+              </li>
               <li class="">
                 <a href="./time-periods.html">Time periods</a>
               </li>
               <li class="">
                 <a href="./modifiers.html">Modifiers</a>
-              </li>
-              <li class="active">
-                <a href="./schedules.html">Schedules</a>
               </li>
               <li class="">
                 <a href="./parsers.html">Parsers</a>
@@ -129,7 +129,13 @@
   // a basic schedule that is valid every day at 10:15am and 10:45am
   var basic = {h: [10], m: [15,45]};
 </pre>
+          <p>Here we can see a schedule is made up of objects with properties
+            that correspond to the various <a href="./time-periods.html">time periods</a>.
+            In this case <code>h</code> is the hour time period and <code>m</code>
+            is the minute time period. The values to consider valid are always
+            stored in an array as the value of the property.</p>
 
+          <br/>
 <p><span class="label label-info">Note</span> Basic schedules are only valid as part of a complete
   schedule definition.</p>
 
@@ -142,13 +148,16 @@
             <h2>Composite schedules</h2>
           </div>
           <p>Multiple basic schedules can be combined into a single composite
-            schedule. A date is considered valid if any of the basic schedules
+            schedule by placing them into an array. A date is considered valid if any of the basic schedules
             are valid (basically an OR of all of the basic schedules). A composite
             schedule can contain as many basic schedules as needed.</p>
 <pre>
   // a composite schedule that is valid every day at 10:15am and 10:45am
   // and every day at 5:30pm
-  var composite = [{h: [10], m: [15,45]}, {h: [17], m: [30]}];
+  var composite = [
+    {h: [10], m: [15,45]},
+    {h: [17], m: [30]}
+  ];
 </pre>
 <p><span class="label label-info">Note</span> Composite schedules are only valid as part of a complete
   schedule definition.</p>
@@ -167,7 +176,10 @@
 <pre>
   // an exception schedule that makes any date in March as
   // well as any Monday of any month invalid
-  var exception = [{M: [3]}, {dw: [2]}];
+  var exception = [
+    {M: [3]},
+    {dw: [2]}
+  ];
 </pre>
 <p><span class="label label-info">Note</span> Exception schedules are only valid as part of a complete
   schedule definition.</p>
@@ -185,7 +197,10 @@
             also include an <code>exceptions</code> property that defines a
             composite exception schedule.</p>
           <br/>
-          <p>A valid schedule that fires every 10 minutes:</p>
+          <p>A valid schedule that fires every 10 minutes. The composite schedule is always
+            placed in an object under a property named <code>schedules</code>. Even if
+            you only have a basic schedule, the <code>schedules</code> property
+            must be an array.</p>
 <pre>
   var schedule = {
     schedules:
@@ -196,7 +211,10 @@
 </pre>
 
           <br/>
-          <p>A valid schedule definition that includes exceptions with modifiers:</p>
+          <p>A valid schedule definition that includes exceptions with modifiers. Here we see the composite
+            exception schedule is always placed in an object under a property named <code>exceptions</code>.
+            Even if you only have a basic exception schedule, the <code>exceptions</code> property
+            must be an array.</p>
 <pre>
   var schedule = {
     schedules:

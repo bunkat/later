@@ -39,13 +39,13 @@
                 <a href="./getting-started.html">Getting started</a>
               </li>
               <li class="">
+                <a href="./schedules.html">Schedules</a>
+              </li>
+              <li class="">
                 <a href="./time-periods.html">Time periods</a>
               </li>
               <li class="">
                 <a href="./modifiers.html">Modifiers</a>
-              </li>
-              <li class="">
-                <a href="./schedules.html">Schedules</a>
               </li>
               <li class="">
                 <a href="./parsers.html">Parsers</a>
@@ -107,7 +107,7 @@
   var sched = later.schedule(<i>schedule</i>);
 </pre>
           <br/>
-          <p class="text-info">Note: All schedule definitions are timezone agnostic. When
+          <p><span class="label label-info">Tip</span> All schedule definitions are timezone agnostic. When
             you need to calculate occurrences, you can decide to perform the
             calculation using local time or UTC.</p>
 
@@ -125,9 +125,9 @@
         ================================================== -->
         <section id="is-valid">
           <div>
-            <h2>isValid</h2>
+            <h2>isValid(<i>date</i>)</h2>
           </div>
-          <p>Returns true if the date passed in is a valid occurrence of the
+          <p>Returns true if the <code>date</code> passed in is a valid occurrence of the
             schedule, false otherwise.</p>
 <pre>
   var valid = later.schedule(<i>schedule</i>).isValid(<i>date</i>);
@@ -162,35 +162,24 @@
             start and end date. When calculating multiple instances, the minimum time between
             instances is based on the smallest ranged time period.</p>
           <br/>
-          <h4>Calculating future instances</h4>
-          <ul>
-            <li><strong>Count</strong>: the number of instances to return. Count of 1 will return
-              a single value, otherwise an array will be returned. Set to 1 by
-              default.</li>
-            <li><strong>Start</strong>: the starting date to calculate instances from. Must be
-              smaller than any end date. Set as Date.now() by default. </li>
-            <li><strong>End</strong>: the last date to consider when calculating instances. Null
-              by default.</li>
-          </ul>
+          <h4>later.schedule(<i>schedule</i>).next(<i>count</i>, <i>start</i>, <i>end</i>)</h4>
+          <p>Calculates the next <code>count</code> occurrences of <code>schedule</code>,
+            optionally starting from the <code>start</code> date and ending before the
+            <code>end</code> date.</p>
 
 <pre>
-  later.schedule(<i>schedule</i>).next(<i>count</i>, <i>start</i>, <i>end</i>);
+  later.schedule({schedules: [{m: [5]}]}).next(2);
 </pre>
 
           <br/>
-          <h4>Calculating previous instances</h4>
-          <ul>
-            <li><strong>Count</strong>: the number of instances to return. Count of 1 will return
-              a single value, otherwise an array will be returned. Set to 1 by
-              default.</li>
-            <li><strong>Start</strong>: the starting date to calculate instances from. Must be
-              larger than any end date. Set as Date.now() by default. </li>
-            <li><strong>End</strong>: the last date to consider when calculating instances. Null
-              by default.</li>
-          </ul>
+          <h4>later.schedule(<i>schedule</i>).prev(<i>count</i>, <i>start</i>, <i>end</i>)</h4>
+          <p>Calculates the previous <code>count</code> occurrences of <code>schedule</code>,
+            optionally starting from the <code>start</code> date and ending before the
+            <code>end</code> date. When using previous, the <code>start</code>
+            date must be greater than the <code>end</code> date.</p>
 
 <pre>
-  later.schedule(<i>schedule</i>).prev(<i>count</i>, <i>start</i>, <i>end</i>);
+  later.schedule({schedules: [{m: [5]}]}).prev(2);
 </pre>
 
           <br/>
@@ -232,35 +221,23 @@
             activity. The schedule definition defines the start and end time of the
             activity and then ranges are used to find their occurrences.</p>
           <br/>
-          <h4>Calculating future ranges</h4>
-          <ul>
-            <li><strong>Count</strong>: the number of ranges to return. Count of 1 will return
-              a single value, otherwise an array will be returned. Set to 1 by
-              default.</li>
-            <li><strong>Start</strong>: the starting date to calculate ranges from. Must be
-              smaller than any end date. Set as Date.now() by default. </li>
-            <li><strong>End</strong>: the last date to consider when calculating ranges. Null
-              by default.</li>
-          </ul>
+          <h4>later.schedule(<i>schedule</i>).nextRange(<i>count</i>, <i>start</i>, <i>end</i>)</h4>
+          <p>Calculates the next <code>count</code> ranges of <code>schedule</code>,
+            optionally starting from the <code>start</code> date and ending before the
+            <code>end</code> date.</p>
 
 <pre>
-  later.schedule(<i>schedule</i>).nextRange(<i>count</i>, <i>start</i>, <i>end</i>);
+  later.schedule({schedules: [{m:[5,6,7]}]}).nextRange(2);
 </pre>
 
           <br/>
-          <h4>Calculating previous ranges</h4>
-          <ul>
-            <li><strong>Count</strong>: the number of ranges to return. Count of 1 will return
-              a single value, otherwise an array will be returned. Set to 1 by
-              default.</li>
-            <li><strong>Start</strong>: the starting date to calculate ranges from. Must be
-              larger than any end date. Set as Date.now() by default. </li>
-            <li><strong>End</strong>: the last date to consider when calculating ranges. Null
-              by default.</li>
-          </ul>
+          <h4>later.schedule(<i>schedule</i>).prevRange(<i>count</i>, <i>start</i>, <i>end</i>)</h4>
+          <p>Calculates the previous <code>count</code> ranges of <code>schedule</code>,
+            optionally starting from the <code>start</code> date and ending before the
+            <code>end</code> date.</p>
 
 <pre>
-  later.schedule(<i>schedule</i>).prevRange(<i>count</i>, <i>start</i>, <i>end</i>);
+  later.schedule({schedules: [{m:[5,6,7]}]}).prevRange(2);
 </pre>
 
           <br/>
