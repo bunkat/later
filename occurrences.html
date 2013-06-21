@@ -106,6 +106,18 @@
 <pre>
   var sched = later.schedule(<i>schedule</i>);
 </pre>
+          <br/>
+          <p class="text-info">Note: All schedule definitions are timezone agnostic. When
+            you need to calculate occurrences, you can decide to perform the
+            calculation using local time or UTC.</p>
+
+<pre>
+  // set later to use UTC time (the default)
+  later.date.UTC();
+
+  // set later to use local time
+  later.date.localTime();
+</pre>
 
         </section>
 

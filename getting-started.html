@@ -98,7 +98,8 @@
           </div>
           <p>Later is available through both <code>npm</code> and <code>bower</code> for easy
             installation. The installation includes all of the files that you
-            will need to use the library.</p>
+            will need to use the library. <code>Node.js</code> is required for
+            building, testing, and benchmarking the library.</p>
           <br/>
           <p>Using npm:
 <pre>
@@ -110,12 +111,11 @@
   $ bower install later
 </pre>
           <br/>
-          <p>If you would prefer, you can also download a compiled and minified
-            version of the library. Later is bundled as a single javascript file
-            making it easy to incorporate into your project. This download
-            does not include any documentation or original source files.</p>
-
-            <a class="btn btn-large btn-primary" href="assets/bootstrap.zip" >Download</a></p>
+          <p>If you would prefer, you can also download the source along with
+            compiled versions of the library in a single zip file. Note that
+            you will need to have Node.js and NPM installed in order to
+            make builds, run tests, or run benchmarks.</p>
+            <a class="btn btn-large btn-primary" href="https://github.com/bunkat/later/archive/master.zip" >Download</a></p>
         </section>
 
         <!-- Example
@@ -187,10 +187,9 @@
           </div>
           <p>Later includes over 40,000 unit and scenario tests that currently
             cover over 97% of the codebase. The suite takes approximately 20
-            seconds to run on modern hardware. Later usese <code>mocha</code> for
+            seconds to run on modern hardware. Later uses <code>mocha</code> for
             testing which must be installed prior to running tests.</p>
 <pre>
-  $ npm install
   $ make test
 </pre>
 
@@ -202,7 +201,8 @@
           <div>
             <h2>Benchmarks</h2>
           </div>
-          <p>There are some basic benchmarks included in the installation that
+          <p>There are some basic benchmarks (using <code>benchmarkjs</code>) included
+            in the installation that
             test the performance of the various time periods and a basic and complex
             schedule. The benchmarks will provide you with an idea of how the
             library will perform on your hardware.</p>

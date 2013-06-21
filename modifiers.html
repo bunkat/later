@@ -117,10 +117,10 @@
             schedules when a time period has a lot of consecutive valid values.</p>
 <pre>
   // all hours after 5:00pm will be valid
-  var sched = {h_a: [17]};
+  var sched = {schedules: [{h_a: [17]}]};
 
   // equivalent to
-  var sched = {h: [17,18,19,20,21,22,23]};
+  var sched = {schedules: [{h: [17,18,19,20,21,22,23]}]};
 </pre>
 
         </section>
@@ -137,10 +137,10 @@
             schedules when a time period has a lot of consecutive valid values.</p>
 <pre>
   // all hours before 5:00pm will be valid
-  var sched = {h_b: [17]};
+  var sched = {schedules: [{h_b: [17]}]};
 
   // equivalent to
-  var sched = {h: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]};
+  var sched = {schedules: [{h: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}]};
 </pre>
 
         </section>
@@ -245,12 +245,16 @@
         <p>Using the custom modifier is exactly the same as using a built-in
           modifier.</p>
 <pre>
-  // use our new modifier so that 2 now means March
-  // instead of February
-  var sched = {schedules: [{M_m: [2]}]},
-      next = later.schedule(sched).next(1, new Date(2013, 3, 21));
+  // wihtout our modifier, 2 means February
+  var sched1 = {schedules: [{M: [2]}]};
 
-  console.log(next.toUTCString());
+  later.schedule(sched1).next(1, new Date(2013, 3, 21));
+  --> Sat, 01 Feb 2014 00:00:00 GMT
+
+  // use our new modifier so that 2 now means March
+  var sched2 = {schedules: [{M_m: [2]}]};
+
+  next = later.schedule(sched2).next(1, new Date(2013, 3, 21));
   --> Sat, 01 Mar 2014 00:00:00 GMT
 </pre>
 

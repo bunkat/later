@@ -115,6 +115,9 @@
             calculations. Calculating values such as ISO week number, moving
             between days of the year, or figuring out how many days are in a month are
             all possible using the time period interface.</p>
+          <p>If you don't see the time period that you need for your schedule,
+            Later is fully extensible and it is easy to write your own. See the
+            custom time period at the bottom of this page for an example.</p>
         </section>
 
         <!-- Interface
@@ -806,18 +809,21 @@
 </pre>
           <br/>
           <p>Next we need to implement <i>start</i> and <i>end</i> based on
-            the current time period.</p>
+            the current time period. This will be the start and end of each
+            part of the day that we've defined.</p>
 <pre>
   start: function(d) {
     var hour = later.pd.val(d) === 0 ? 0 :
                   later.pd.val(d) === 1 ? 12 :
                   6;
 
+    // later.date.next is a helper function for creating the date in UTC or
+    // localTime as appropriate
     return later.date.next(
       later.Y.val(d),
       later.M.val(d),
       later.D.val(d),
-      hour;
+      hour
     );
   },
 
@@ -826,44 +832,44 @@
                   later.pd.val(d) === 1 ? 5 :
                   23;
 
+    // later.date.prev is a helper function for creating the date in UTC or
+    // localTime as appropriate, and automatically adjusts the date to be at
+    // the last second of the specified time
     return later.date.prev(
       later.Y.val(d),
       later.M.val(d),
       later.D.val(d),
-      hour;
+      hour
     );
   },
 </pre>
           <br/>
           <p>Finally, we need to implement <i>next</i> and <i>prev</i> so that
             you can move to different parts of the day. We need to make sure
-            to increment and decrement the day appropriately.</p>
+            to increment and decrement the day appropriately if we've already
+            passed the specified value.</p>
 <pre>
   next: function(d, val) {
-    var hour = later.pd.val(d) === 0 ? 0 :
-                  later.pd.val(d) === 1 ? 12 :
-                  6;
+    var hour = val === 0 ? 0 : val === 1 ? 12 : 18;
 
     return later.date.next(
       later.Y.val(d),
       later.M.val(d),
       // increment the day if we already passed the desired time period
-      later.D.val(d) + hour &lt; later.pd.val(d) ? 1 : 0,
-      hour;
+      later.D.val(d) + (hour &lt; later.h.val(d) ? 1 : 0),
+      hour
     );
   },
 
   prev: function(d, val) {
-    var hour = later.pd.val(d) === 0 ? 11 :
-                  later.pd.val(d) === 1 ? 5 :
-                  23;
+    var hour = val === 0 ? 11 : val === 1 ? 5 : 23;
 
     return later.date.prev(
       later.Y.val(d),
       later.M.val(d),
       // decrement the day if we already passed the desired time period
-      later.D.val(d) + hour &gt; later.pd.val(d) ? -1 : 0,
-      hour;
+      later.D.val(d) + (hour &gt; later.h.val(d) ? -1 : 0),
+      hour
     );
   }
 </pre>
@@ -881,7 +887,7 @@
 
     val: function(d) {
       return later.h.val(d) &lt; 12 ? 0 :
-             later.h.val(d) &lt; 6 ? 1 :
+             later.h.val(d) &lt; 18 ? 1 :
              2;
     },
 
@@ -894,13 +900,13 @@
     start: function(d) {
       var hour = later.pd.val(d) === 0 ? 0 :
                     later.pd.val(d) === 1 ? 12 :
-                    6;
+                    18;
 
       return later.date.next(
         later.Y.val(d),
         later.M.val(d),
         later.D.val(d),
-        hour;
+        hour
       );
     },
 
@@ -913,35 +919,31 @@
         later.Y.val(d),
         later.M.val(d),
         later.D.val(d),
-        hour;
+        hour
       );
     },
 
     next: function(d, val) {
-      var hour = later.pd.val(d) === 0 ? 0 :
-                    later.pd.val(d) === 1 ? 12 :
-                    6;
+      var hour = val === 0 ? 0 : val === 1 ? 12 : 18;
 
       return later.date.next(
         later.Y.val(d),
         later.M.val(d),
         // increment the day if we already passed the desired time period
-        later.D.val(d) + hour &lt; later.pd.val(d) ? 1 : 0,
-        hour;
+        later.D.val(d) + (hour &lt; later.h.val(d) ? 1 : 0),
+        hour
       );
     },
 
     prev: function(d, val) {
-      var hour = later.pd.val(d) === 0 ? 11 :
-                    later.pd.val(d) === 1 ? 5 :
-                    23;
+      var hour = val === 0 ? 11 : val === 1 ? 5 : 23;
 
       return later.date.prev(
         later.Y.val(d),
         later.M.val(d),
         // decrement the day if we already passed the desired time period
-        later.D.val(d) + hour &gt; later.pd.val(d) ? -1 : 0,
-        hour;
+        later.D.val(d) + (hour &gt; later.h.val(d) ? -1 : 0),
+        hour
       );
     }
   };
@@ -956,7 +958,7 @@
       next = later.schedule(sched).next(1, new Date(2013, 3, 21));
 
   console.log(next.toUTCString());
-  --> Sat, 21 Apr 2013 18:00:00 GMT
+  --> Sun, 21 Apr 2013 18:00:00 GMT
 </pre>
 
         </section>

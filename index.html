@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Template &middot; Bootstrap</title>
+    <title>Later.js</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -74,45 +74,91 @@
 
       <div class="jumbotron">
         <h1>The simplest way to work with recurring schedules.</h1>
-        <p class="lead">Easily define complex schedules and then quickly calculate
+        <p class="lead">Easily define complex schedules then quickly calculate
           future or previous schedule occurrences. Works in Node and in the
           browser.</p>
-        <a class="btn btn-large" href="#"><i class="icon-folder-open"></i> View on GitHub</a>
-        <a class="btn btn-large btn-primary" href="#">Download</a>
+        <a class="btn btn-large" href="https://github.com/bunkat/later"><i class="icon-folder-open"></i> View on GitHub</a>
+        <a class="btn btn-large btn-primary" href="./getting-started.html">Get Started</a>
       </div>
 
-      <hr>
+      <div class="row-fluid">
+
+        <div class="span12">
+          <h4>Use the chainable <code>recur</code> api to build up complex schedules</h4>
+<pre>
+  // fires every 2 hours on the first day of every month
+  // and 8:00am and 8:00pm on the last day of every month
+  // except in December
+  var sched = later.parse.recur()
+                .every(2).hour().first().dayOfMonth()
+              .and()
+                .on(8,20).hour().last().dayOfMonth()
+              .except()
+                .on(12).month();
+
+  // get the next 10 valid occurrences
+  later.schedule(sched).next(10);
+</pre>
+        </div>
+      </div>
+
+      <div class="row-fluid">
+        <div class="span6">
+          <h4>...or use any valid Cron expression</h4>
+<pre>
+  // fires at 10:15am every day
+  var cron = '15 10 * * ? *';
+  var s = later.parse.cron(cron);
+
+  later.schedule(s).next(10);
+</pre>
+        </div>
+
+        <div class="span6">
+          <h4>...or a simple text expression</h4>
+<pre>
+  // fires every 5 minutes
+  var text = 'every 5 mins';
+  var s = later.parse.text(text);
+
+  later.schedule(s).prev(10);
+</pre>
+        </div>
+
+
+      </div>
+
 
       <div class="row-fluid marketing">
 
         <div class="span6">
+          <h4>No dependencies</h4>
+          <p>Later has exactly zero dependencies which, along with its compact
+          size (about 8kb compressed), makes incorporating it into your application a piece of cake.</p>
+
+          <h4>Serializable</h4>
+          <p>Schedules are simple json objects that are fully serializable. Easy
+            and efficient to store in databases and in caches.</p>
+
           <h4>Large library of time periods</h4>
           <p>Schedules can be produced with all common time periods (seconds,
             minutes, etc) as well as ISO weeks, day of year, nth week of
             month, and others.</p>
-
-          <h4>Zero dependencies</h4>
-          <p>Later has exactly zero dependencies which, along with its compact
-          size (about 8kb compressed), makes incorporating it into your application a piece of cake.</p>
-
-          <h4>Full Cron support</h4>
-          <p>Create a Later schedule from any valid Cron expression and easily
-            calculate future occurrences.</p>
         </div>
 
         <div class="span6">
-          <h4>Fully extensible</h4>
-          <p>Create your own time periods that can then be used in any schedule.
-            Write modifiers to add additional functionality to existing time periods.</p>
-
           <h4>Well tested</h4>
           <p>Supported by a test suite of over 40,000 unit and scenario tests
             to help ensure it produces correct results.</p>
 
-          <h4>Support for English expressions</h4>
-          <p>All schedules can be defined using intuitive English phrases such
-            as 'every 5 mins' making it easy for non-technical people to define
-            schedules.</p>
+          <h4>Deterministic</h4>
+          <p>All schedules are completely deterministic, meaning that they always
+          produce the same set of valid occurrences regardless of when you
+          calculate them.</p>
+
+          <h4>Fully extensible</h4>
+          <p>Create your own time periods that can then be used in any schedule.
+            Write modifiers to add additional functionality to existing time periods.</p>
         </div>
 
       </div>
@@ -121,7 +167,36 @@
         <div class="span12">
           <h3>Quick start</h3>
 
-          <h4>Step 1: Define a schedule</h4>
+          <h4>Step 1: Install</h4>
+          <p>Later is available through both <code>npm</code> and <code>bower</code>.
+            After installing, Later is available in the <code>later</code> namespace.</p>
+
+          <p>Using npm and Node.js:
+<pre>
+  $ npm install later
+</pre>
+
+<pre>
+  var later = require('later');
+</pre>
+
+          <p>Using bower and a browser:
+<pre>
+  $ bower install later
+</pre>
+
+<pre>
+  &lt;script src="later.min.js" type="text/javascript">&lt;/script&gt;
+  &lt;script type="text/javascript"&gt;
+    // later namespace is available
+  &lt;/script&gt;
+</pre>
+          <small>More information on
+            <a href="./getting-started.html#building">building</a>,
+            <a href="./getting-started.html#running-tests">running tests</a>, and
+            <a href="./getting-started.html#benchmarks">running benchmarks</a>.</small>
+
+          <h4>Step 2: Define a schedule</h4>
           <p>The first step is to create a new schedule definition. There are a
             bunch of different ways to define a schedule, but at the end of the
             day they are just simple json objects that can easily be serialized
@@ -150,9 +225,13 @@
                   .on(3).month();
 </pre>
 
+          <small>More information on
+            <a href="./time-periods.html">supported time periods</a>,
+            <a href="./schedules.html">creating schedules</a>, and
+            <a href="./parsers.html">using parsers</a>.</small>
 
 
-          <h4>Step 2: Configure timezone</h4>
+          <h4>Step 3: Configure timezone</h4>
           <p>All schedule definitions are completely timezone agnostic. When
             you need to calculate occurrences, you can decide to perform the
             calculation using local time or UTC.</p>
@@ -165,10 +244,12 @@
   later.date.localTime();
 </pre>
 
-          <h4>Step 3: Calculate occurrences</h4>
+          <h4>Step 4: Calculate occurrences</h4>
           <p>Once a schedule has been defined, calculating future (or past)
             occurrences is very straightforward. You can calculate as many
-            occurrences as you need in either a forward or backward direction.</p>
+            occurrences as you need in either a forward or backward direction. You
+            can even calculate ranges with start and end dates which allows scheduling
+            of appointments or events.</p>
 
 <pre>
   // calculate the next 10 occurrences of the text schedule
@@ -178,7 +259,11 @@
   var next = later.schedule(text).prev(1, new Date(2013, 2, 21));
 </pre>
 
-          <h4>Step 4: Execute code using a Later schedule</h4>
+          <small>More information on calculating
+            <a href="./occurrences.html#instances">individual instances</a> and
+            <a href="./occurrences.html#ranges">ranges</a>.</small>
+
+          <h4>Step 5: Execute code using a Later schedule</h4>
           <p>Later includes implementations of <code>setTimeout()</code> and
             <code>setInterval()</code> that work with Later schedules instead
             of milliseconds. This makes it extremely easy to execute code based
@@ -194,6 +279,11 @@
   // clear the schedule when you are done
   timer2.clear();
 </pre>
+        <small>More information on
+          <a href="./execute.html#set-timeout">setTimeout</a> and
+          <a href="./execute.html#set-interval">setInterval</a>.</small>
+
+        <br/>
         <br/>
         <a class="btn btn-large btn-inverse" href="./getting-started.html">View full documentation</a>
         </div>

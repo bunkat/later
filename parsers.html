@@ -1,0 +1,375 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Parsers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="BunKat">
+
+    <!-- Le styles -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/docs.css" rel="stylesheet">
+    <link href="assets/css/bootstrap-responsive.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="assets/js/html5shiv.js"></script>
+    <![endif]-->
+
+  </head>
+
+  <body data-spy="scroll" data-target=".later-sidebar">
+
+    <!-- Navbar
+    ================================================== -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="./index.html">Later</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="">
+                <a href="./getting-started.html">Getting started</a>
+              </li>
+              <li class="">
+                <a href="./time-periods.html">Time periods</a>
+              </li>
+              <li class="">
+                <a href="./modifiers.html">Modifiers</a>
+              </li>
+              <li class="">
+                <a href="./schedules.html">Schedules</a>
+              </li>
+              <li class="active">
+                <a href="./parsers.html">Parsers</a>
+              </li>
+              <li class="">
+                <a href="./occurrences.html">Occurrences</a>
+              </li>
+              <li class="">
+                <a href="./execute.html">Execute</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Subhead
+================================================== -->
+<header class="jumbotron subhead" id="overview">
+  <div class="container">
+    <h1>Parsers</h1>
+    <p class="lead">Easily generate valid schedule definitions.</p>
+  </div>
+</header>
+
+
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span3 later-sidebar">
+        <ul class="nav nav-list later-sidenav">
+          <li><a href="#overview"><i class="icon-chevron-right"></i> Overview</a></li>
+          <li><a href="#recur"><i class="icon-chevron-right"></i> Recur</a></li>
+          <li><a href="#cron"><i class="icon-chevron-right"></i> Cron parser</a></li>
+          <li><a href="#text"><i class="icon-chevron-right"></i> Text parser</a></li>
+        </ul>
+      </div>
+      <div class="span9">
+
+
+        <!-- Overview
+        ================================================== -->
+        <section id="overview">
+          <div>
+            <h2>Overview</h2>
+          </div>
+          <p>While schedules can always be manually created, it is usually
+            easier to use one of the following parsers that are included with
+            Later. Each of the parsers simply generates a valid schedule
+            definition that can then be used when calculating occurrences.</p>
+
+        </section>
+
+        <!-- Recur
+        ================================================== -->
+        <section id="recur">
+          <div>
+            <h2>Recur</h2>
+          </div>
+          <p><code>later.parse.recur()</code> provides a simple, chainable API for creating schedules. All
+            valid schedules can be produced using this API.</p>
+
+          <br/>
+          <p><span class="label label-info">Important</span> Schedules produced by
+            <code>recur</code> have additional methods attached so that they can
+            be chained. While the schedules can be used with other Later functions
+            directly without a problem, you may want to strip the extra methods
+            before serializing.</p>
+
+<pre>
+  // every hour on the 2nd minute
+  var sched = later.parse.recur().on(2).minute();
+
+  // works perfectly
+  later.schedule(sched).next();
+
+  // strip methods before serializing
+  var s = {schedules: sched.schedules, exceptions: sched.exceptions};
+</pre>
+
+
+
+
+          <br/>
+          <h4>Time periods</h4>
+          <p>Recur uses the following to specify the various time periods. These
+            time periods are chained after the various ways to specify valid
+            values.</p>
+
+<pre>
+  second();
+  minute();
+  hour();
+  time();
+  dayOfWeek();
+  dayOfWeekCount();
+  dayOfMonth();
+  dayOfYear();
+  weekOfMonth();
+  weekOfYear();
+  month();
+  year();
+</pre>
+          <br/>
+          <h4>on(<i>vals</i>)</h4>
+          <p>Specifies one or more specific <code>vals</code> of a time period. When
+            used to specify a time, a string indicating the 24-hour time may be
+            used.</p>
+
+<pre>
+  // every hour on the 2nd minute
+  later.parse.recur().on(2).minute();
+
+  // every day at 8am and 8pm
+  later.parse.recur().on(8,20).hour();
+
+  // every day at 8am
+  later.parse.recur().on('08:00:00').time();
+</pre>
+
+          <br/>
+          <h4>first()</h4>
+          <p>Shorthand for <code>on(<i>min</i>)</code>. Specifies the minimum
+            value of a time period.</p>
+
+<pre>
+  // on the 0th minute of every hour
+  later.parse.recur().first().minute();
+</pre>
+
+          <br/>
+          <h4>last()</h4>
+          <p>Shorthand for <code>on(<i>max</i>)</code>. Specifies the maximum
+            value of a time period. Useful when specifying the last value on
+            a time period that has different max values such as days of the month.</p>
+
+<pre>
+  // on the last day of every month at 5am
+  later.parse.recur().on(5).hour().last().dayOfMonth();
+</pre>
+
+          <br/>
+          <h4>onWeekend()</h4>
+          <p>Shorthand for <code>on(1,7).dayOfWeek()</code></p>
+
+<pre>
+  // on the 5th minute of every hour during Sat and Sun
+  later.parse.recur().on(5).minute().onWeekend();
+</pre>
+
+          <br/>
+          <h4>onWeekday()</h4>
+          <p>Shorthand for <code>on(2,3,4,5,6).dayOfWeek()</code></p>
+
+<pre>
+  // on the 5th minute of every hour during Mon,Tues,Wed,Thur,Fri
+  later.parse.recur().on(5).minute().onWeekday();
+</pre>
+
+          <br/>
+          <h4>every(<i>val</i>)</h4>
+          <p>Specifies an interval <code>val</code> of occurrences of a time
+            period. By default, intervals start at the minimum value of the time
+            period and go until the maximum value of the time period.</p>
+
+<pre>
+  // on the 0th, 10th, 20th, 30th, 40th, and 50th min of every hour
+  later.parse.recur().every(10).minute();
+
+  // on first second of Jan, Apr, July, Oct
+  later.parse.recur().every(3).month();
+</pre>
+
+          <br/>
+          <h4>after(<i>val</i>)</h4>
+          <p>Specifies the first valid <code>val</code> after which all values
+            are considered valid.</p>
+
+<pre>
+  // on the 55th, 56th, 57th, 58th, and 59th minute
+  later.parse.recur().after(55).minute();
+
+  // at 12 noon and 6pm
+  later.parse.recur().every(6).hour().after('09:00').time();
+</pre>
+
+          <br/>
+          <h4>before(<i>val</i>)</h4>
+          <p>Specifies the first invalid <code>val</code> before which all values
+            are considered valid.</p>
+
+<pre>
+  // on the first second of January and February
+  later.parse.recur().before(3).month();
+
+  // at 6am every day
+  later.parse.recur().every(6).hour().before('09:00').time();
+
+  // between 9am and 6pm every day
+  later.parse.recur().after('09:00').time().before('18:00').time();
+  later.parse.recur().after(9).hour().before(18).hour();
+</pre>
+
+          <br/>
+          <h4>startingOn(<i>val</i>)</h4>
+          <p>Specifies the starting occurrence <code>val</code> of of a time
+            period. Must be chained after an <code>every</code> call. Used to
+            offset values from the default minimum value.</p>
+
+<pre>
+  // on the 10th, 25th, 40th, and 55th minute of every hour
+  later.parse.recur().every(15).minute().startingOn(10);
+</pre>
+
+          <br/>
+          <h4>between(<i>start</i>, <i>end</i>)</h4>
+          <p>Specifies the <code>start</code> and <code>end</code> value of a
+            time period. Must be chained after an <code>every</code> call.</p>
+
+<pre>
+  // on the 10th, 25th, 40th minute of every hour
+  later.parse.recur().every(15).minute().between(10,40);
+</pre>
+
+          <br/>
+          <h4>and()</h4>
+          <p>Creates a <a href='./schedules.html#composite'>composite schedule</a>.
+            Can be chained to create multiple composite schedules or composite
+            exception schedules.</p>
+
+<pre>
+  // fires every 2 hours on the first day of every month
+  // and 8:00am and 8:00pm on the last day of every month
+  var sched = later.parse.recur()
+                .every(2).hour().first().dayOfMonth()
+              .and()
+                .on(8,20).hour().last().dayOfMonth()
+</pre>
+
+          <br/>
+          <h4>except()</h4>
+          <p>Creates an <a href='./schedules.html#exceptions'>exception schedule</a>.
+            Can be chained with <code>and</code> to create a composite exception
+            schedule.</p>
+
+<pre>
+  // fires every minute of every hour except on multiples of 2 and 3
+  var sched = later.parse.recur()
+                .every().minute()
+              .except()
+                .every(2).minute().between(2,59)
+              .and()
+                .every(3).minute().between(3,59);
+</pre>
+
+        </section>
+
+        <!-- Cron
+        ================================================== -->
+        <section id="cron">
+          <div>
+            <h2>Cron Parser</h2>
+          </div>
+          <p>A valid schedule can be generated from any valid Cron expression.
+            For more information on the Cron expression format, see
+            <a href="http://en.wikipedia.org/wiki/Cron">Wikipedia</a>. Currently Cron expressions are
+            the most compact way to describe a schedule, but are slightly less
+            flexible (no direct support for composite or exception schedules)
+            and can be harder to read.</p>
+          <br/>
+          <h4>later.parse.cron(<i>expr</i>, <i>hasSeconds</i>)</h4>
+          <p>Parses the Cron expression <code>expr</code> and returns a valid schedule that
+            can be used with Later. If <code>expr</code> contains the seconds component
+            (optionally appears before the minutes component), then <code>hasSeconds</code>
+            must be set to true.</p>
+
+<pre>
+  // Fire at 10:15am every day
+  var cron1 = later.parse.cron('15 10 ? * *');
+
+  // Fire every 5 minutes starting at 2pm and ending at 2:55pm, every day
+  var cron2 = later.parse.cron('0 0/5 14 * * ?', true);
+</pre>
+
+
+        </section>
+
+
+
+      </div>
+    </div>
+
+  </div>
+
+
+
+    <!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2013 BunKat &nbsp; Later is licensed under the
+          <a href="http://opensource.org/licenses/MIT">MIT license</a>.</p>
+      </div>
+    </footer>
+
+
+
+    <!-- Javascript
+    ================================================== -->
+    <script src="assets/js/jquery-1.10.1.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script>
+      // side bar
+      setTimeout(function () {
+        $('.later-sidenav').affix({
+          offset: {
+            top: function () { return $(window).width() <= 980 ? 230 : 150 }
+          , bottom: 270
+          }
+        })
+      }, 100);
+    </script>
+
+  </body>
+</html>
