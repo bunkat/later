@@ -4,6 +4,8 @@ TESTS ?= $(shell find test -name "*-test.js")
 all: \
 	later.js \
 	later.min.js \
+	later-core.js \
+	later-core.min.js \
 	component.json \
 	package.json
 
@@ -45,6 +47,15 @@ later.js: $(shell node_modules/.bin/smash --list src/later.js)
 	@chmod a-w $@
 
 later.min.js: later.js
+	@rm -f $@
+	node_modules/.bin/uglifyjs $< -c -m -o $@
+
+later-core.js: $(shell node_modules/.bin/smash --list src/later-core.js)
+	@rm -f $@
+	node_modules/.bin/smash src/later-core.js | node_modules/.bin/uglifyjs - -b indent-level=2 -o $@
+	@chmod a-w $@
+
+later-core.min.js: later-core.js
 	@rm -f $@
 	node_modules/.bin/uglifyjs $< -c -m -o $@
 

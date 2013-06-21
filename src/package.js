@@ -25,8 +25,5 @@ console.log(JSON.stringify({
     "jslint": "*",
     "uglify-js": "*",
     "benchmark": "*"
-  },
-  "scripts": {
-    "test": "node_modules/.bin/vows; echo"
   }
 }, null, 2));
