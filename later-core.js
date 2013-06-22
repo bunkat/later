@@ -496,10 +496,7 @@ later = function() {
         return this.val(d) === val;
       },
       extent: constraint.extent,
-      start: function(d) {
-        if (constraint.val(d) === value) return d;
-        return constraint.start(constraint.prev(d, value));
-      },
+      start: constraint.start,
       end: constraint.end,
       next: function(startDate, val) {
         if (val > value) val = constraint.extent(startDate)[0];
@@ -525,10 +522,7 @@ later = function() {
       },
       extent: constraint.extent,
       start: constraint.start,
-      end: function(d) {
-        if (constraint.val(d) === value) return d;
-        return constraint.next(d, value);
-      },
+      end: constraint.end,
       next: function(startDate, val) {
         if (val <= value) val = constraint.extent(startDate)[0];
         return constraint.next(startDate, val);
@@ -556,10 +550,17 @@ later = function() {
     return {
       start: function(dir, startDate) {
         var next = startDate, nextVal = later.array[dir], done;
+        console.log("start ---------------------");
         while (!done && next) {
           done = true;
           for (var i = 0; i < constraintsLen; i++) {
             var constraint = constraints[i].constraint, curVal = constraint.val(next), extent = constraint.extent(next), newVal = nextVal(curVal, constraints[i].vals, extent);
+            console.log("constraint = " + constraint.name);
+            console.log("next = " + next.toUTCString());
+            console.log("curVal = " + curVal);
+            console.log("extent = " + extent);
+            console.log("newVal = " + newVal);
+            console.log("is valid = " + constraint.isValid(next, newVal));
             if (!constraint.isValid(next, newVal)) {
               next = constraint[dir](next, newVal);
               done = false;
@@ -567,6 +568,7 @@ later = function() {
             }
           }
         }
+        console.log("return = " + (next ? tickConstraint.start(next) : undefined));
         return next ? tickConstraint.start(next) : undefined;
       },
       end: function(startDate) {
@@ -586,6 +588,9 @@ later = function() {
         return result;
       },
       tick: function(dir, date) {
+        console.log("TICK");
+        console.log("date=" + date);
+        console.log("next=" + new Date(tickConstraint.end(date).getTime() + later.SEC));
         return new Date(dir === "next" ? tickConstraint.end(date).getTime() + later.SEC : tickConstraint.start(date).getTime() - later.SEC);
       }
     };

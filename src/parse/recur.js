@@ -17,7 +17,7 @@ later.parse.recur = function () {
       cur,
       curArr = schedules,
       curName,
-      values, every, after, before, applyMin, applyMax, i, last;
+      values, every, modifier, applyMin, applyMax, i, last;
 
   /**
   * Adds values to the specified constraint in the current schedule.
@@ -27,8 +27,7 @@ later.parse.recur = function () {
   * @param {Int} max: Maximum value for this constraint
   */
   function add(name, min, max) {
-    name = after ? name + '_a' : name;
-    name = before ? name + '_b' : name;
+    name = modifier ? name + '_' + modifier : name;
 
     if (!cur) {
       curArr.push({});
@@ -54,14 +53,15 @@ later.parse.recur = function () {
     values = applyMin ? [min] : applyMax ? [max] : values;
     var length = values.length;
     for (i = 0; i < length; i += 1) {
-      var val = values[i] - (before ? 1 : 0);
+      // need to special case the before modifier to make it easier to work with
+      var val = values[i] - (modifier === 'b' ? 1 : 0);
       if (curName.indexOf(val) < 0) {
         curName.push(val);
       }
     }
 
     // reset the built up state
-    values = every = after = before = applyMin = applyMax = 0;
+    values = every = modifier = applyMin = applyMax = 0;
   }
 
   return {
@@ -123,7 +123,7 @@ later.parse.recur = function () {
     * @api public
     */
     after: function (x) {
-      after = true;
+      modifier = 'a';
       values = [x];
       return this;
     },
@@ -138,7 +138,7 @@ later.parse.recur = function () {
     * @api public
     */
     before: function (x) {
-      before = true;
+      modifier = 'b';
       values = [x];
       return this;
     },
@@ -389,6 +389,37 @@ later.parse.recur = function () {
     */
     year: function () {
       add('Y', 1970, 2450);
+      return this;
+    },
+
+    /**
+    * Custom modifier.
+    *
+    * recur().on(2011, 2012, 2013).custom('partOfDay');
+    *
+    * @api public
+    */
+    customModifier: function (id, vals) {
+      var custom = later.modifier[id];
+      if(!custom) throw new Error('Custom modifier ' + id + ' not recognized!');
+
+      modifier = id;
+      values = arguments[1] instanceof Array ? arguments[1] : [arguments[1]];
+      return this;
+    },
+
+    /**
+    * Custom time period.
+    *
+    * recur().on(2011, 2012, 2013).customPeriod('partOfDay');
+    *
+    * @api public
+    */
+    customPeriod: function (id) {
+      var custom = later[id];
+      if(!custom) throw new Error('Custom time period ' + id + ' not recognized!');
+
+      add(id, custom.extent(new Date())[0], custom.extent(new Date())[1]);
       return this;
     },
 

@@ -79,7 +79,7 @@ later.compile = function(schedDef) {
         }
       }
 
-/*      console.log('return = ' + next ? tickConstraint.start(next) : undefined);*/
+/*      console.log('return = ' + (next ? tickConstraint.start(next) : undefined));*/
 
       // if next, move to start of time period. needed when moving backwards
       return next ? tickConstraint.start(next) : undefined;

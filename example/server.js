@@ -1,4 +1,4 @@
-var later = require('../index');
+var later = require('../index'); // require('later') if installed via npm
 
 
 // create the desired schedule

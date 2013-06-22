@@ -61,10 +61,7 @@ later.modifier.after = later.modifier.a = function(constraint, values) {
     /**
     * Pass through to the constraint.
     */
-    start: function(d) {
-        if(constraint.val(d) === value) return d;
-        return constraint.start(constraint.prev(d, value));
-    },
+    start: constraint.start,
 
     /**
     * Pass through to the constraint.

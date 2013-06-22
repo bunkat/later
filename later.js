@@ -356,7 +356,7 @@ later = function() {
   };
   later.time = later.t = {
     name: "time",
-    range: 1,
+    range: 60,
     val: function(d) {
       return d.t || (d.t = later.h.val(d) * 3600 + later.m.val(d) * 60 + later.s.val(d));
     },
@@ -496,10 +496,7 @@ later = function() {
         return this.val(d) === val;
       },
       extent: constraint.extent,
-      start: function(d) {
-        if (constraint.val(d) === value) return d;
-        return constraint.start(constraint.prev(d, value));
-      },
+      start: constraint.start,
       end: constraint.end,
       next: function(startDate, val) {
         if (val > value) val = constraint.extent(startDate)[0];
@@ -525,10 +522,7 @@ later = function() {
       },
       extent: constraint.extent,
       start: constraint.start,
-      end: function(d) {
-        if (constraint.val(d) === value) return d;
-        return constraint.next(d, value);
-      },
+      end: constraint.end,
       next: function(startDate, val) {
         if (val <= value) val = constraint.extent(startDate)[0];
         return constraint.next(startDate, val);
@@ -944,10 +938,9 @@ later = function() {
     return parseExpr(hasSeconds ? e : "0 " + e);
   };
   later.parse.recur = function() {
-    var schedules = [], exceptions = [], cur, curArr = schedules, curName, values, every, after, before, applyMin, applyMax, i, last;
+    var schedules = [], exceptions = [], cur, curArr = schedules, curName, values, every, modifier, applyMin, applyMax, i, last;
     function add(name, min, max) {
-      name = after ? name + "_a" : name;
-      name = before ? name + "_b" : name;
+      name = modifier ? name + "_" + modifier : name;
       if (!cur) {
         curArr.push({});
         cur = curArr[0];
@@ -971,12 +964,12 @@ later = function() {
       values = applyMin ? [ min ] : applyMax ? [ max ] : values;
       var length = values.length;
       for (i = 0; i < length; i += 1) {
-        var val = values[i] - (before ? 1 : 0);
+        var val = values[i] - (modifier === "b" ? 1 : 0);
         if (curName.indexOf(val) < 0) {
           curName.push(val);
         }
       }
-      values = every = after = before = applyMin = applyMax = 0;
+      values = every = modifier = applyMin = applyMax = 0;
     }
     return {
       schedules: schedules,
@@ -990,12 +983,12 @@ later = function() {
         return this;
       },
       after: function(x) {
-        after = true;
+        modifier = "a";
         values = [ x ];
         return this;
       },
       before: function(x) {
-        before = true;
+        modifier = "b";
         values = [ x ];
         return this;
       },
@@ -1066,6 +1059,19 @@ later = function() {
       },
       year: function() {
         add("Y", 1970, 2450);
+        return this;
+      },
+      customModifier: function(id, vals) {
+        var custom = later.modifier[id];
+        if (!custom) throw new Error("Custom modifier " + id + " not recognized!");
+        modifier = id;
+        values = arguments[1] instanceof Array ? arguments[1] : [ arguments[1] ];
+        return this;
+      },
+      customPeriod: function(id) {
+        var custom = later[id];
+        if (!custom) throw new Error("Custom time period " + id + " not recognized!");
+        add(id, custom.extent(new Date())[0], custom.extent(new Date())[1]);
         return this;
       },
       startingOn: function(start) {

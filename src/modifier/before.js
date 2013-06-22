@@ -66,10 +66,7 @@ later.modifier.before = later.modifier.b = function(constraint, values) {
     /**
     * Jump to the end of the range.
     */
-    end: function(d) {
-      if(constraint.val(d) === value) return d;
-      return constraint.next(d, value);
-    },
+    end: constraint.end,
 
     /**
     * Pass through to the constraint.
