@@ -25,5 +25,8 @@ console.log(JSON.stringify({
     "jslint": "*",
     "uglify-js": "*",
     "benchmark": "*"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha test/**/*-test.js"
   }
 }, null, 2));

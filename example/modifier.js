@@ -1,3 +1,15 @@
+/**
+* Modifier
+* (c) 2013 Bill, BunKat LLC.
+*
+* Example of creating a custom modifier. See
+* http://bunkat.github.io/later/modifiers.html#custom for more details.
+*
+* Later is freely distributable under the MIT license.
+* For all details and documentation:
+*     http://github.com/bunkat/later
+*/
+
 var later = require('../index');
 
 // create the new modifier
