@@ -9,6 +9,9 @@ Types of schedules supported by _Later_:
 * Gather CPU metrics every 10 mins Mon - Fri and every 30 mins Sat - Sun
 * Send out a scary e-mail at 13:13:13 every Friday the 13th
 
+####For complete documentation visit [http://bunkat.github.io/later/](http://bunkat.github.io/later/).
+
+
 ## Installation
 Using npm:
 
@@ -52,7 +55,19 @@ Have a bug or a feature request? [Please open a new issue](https://github.com/bu
 
 ### Later v1.0.0
 
-* No more resolutions!
+* Refactored core engine so that it could be better tested
+    - Added over 41,500 tests and fixed hundreds of edge cases that were unfortunately broken in v0.0.20
+
+* Core engine is now extensible via custom time periods and custom modifiers
+    - Full examples included in the documentation
+
+* Added support for finding valid ranges as well as valid instances of schedules
+    - _Later_ can now be used to schedule activities and meetings as well as point in time occurrences
+
+* Improved support for finding past ranges and instances
+    - Searching forward or backward now produces the same valid occurrences
+
+* No more need to specify a resolution!
     - _Later_ now automatically handles this internally, you no longer need to specify your desired resolution. 'Every 5 minutes' now does exactly what you would expect it to :)
 
 * Changing between UTC and local time has changed.

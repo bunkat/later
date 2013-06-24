@@ -21,6 +21,7 @@ later-cov.js: later.js
 	@rm -f $@
 	@jscoverage --no-highlight src src-cov \
 		--no-instrument=later.js \
+		--no-instrument=later-core.js \
 		--no-instrument=modifier/index.js \
 		--no-instrument=array/index.js \
 		--no-instrument=date/index.js \
