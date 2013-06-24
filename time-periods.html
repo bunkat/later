@@ -782,7 +782,7 @@
             are longer and some shorter, we'll use the shortest range which is
             afternoon at 6 hours.</p>
 <pre>
-  range: later.D.range * 6,
+  range: later.h.range * 6,
 </pre>
           <br/>
           <p>We then implement <i>val</i> to return the appropriate value based on the
@@ -883,7 +883,7 @@
 
     name: 'part of day',
 
-    range: later.D.range * 6,
+    range: later.h.range * 6,
 
     val: function(d) {
       return later.h.val(d) &lt; 12 ? 0 :
@@ -954,7 +954,7 @@
           time period.</p>
 <pre>
   // use our new time period to specify every 15 mins at night
-  var sched = {schedules: [{m: [0,15,30,45], pd: [2]}]},
+  var sched = later.parse.recur().every(15).minute().on(2).customPeriod('pd'),
       next = later.schedule(sched).next(1, new Date(2013, 3, 21));
 
   console.log(next.toUTCString());

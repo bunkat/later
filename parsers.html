@@ -303,9 +303,27 @@
               .and()
                 .every(3).minute().between(3,59);
 </pre>
+          <br/>
+          <h4>customPeriod(<i>id</i>)</h4>
+          <p>Used to specify a <a href='./time-periods.html#custom'>custom time period</a>
+            using the <code>id</code> of the time period.</p>
+
+<pre>
+  // specifying a custom modifier
+  var sched = later.parse.recur().every(2).customPeriod('pd');;
+</pre>
+
+          <br/>
+          <h4>customModifier(<i>id</i>, <i>vals</i>)</h4>
+          <p>Used to specify a <a href='./modifiers.html#custom'>custom modifier</a>
+            using the <code>id</code> of the modifier and the desired <code>vals</code>.</p>
+
+<pre>
+  // specifying a custom modifier
+  var sched = later.parse.recur().customModifier('m', 2).month();;
+</pre>
 
         </section>
-
         <!-- Cron
         ================================================== -->
         <section id="cron">
@@ -374,7 +392,7 @@
           <br/>
 
 
-          <h4>Defining a schedule</h4>
+          <h4>Defining a composite schedule with optional exceptions</h4>
           <p>A composite schedule combines multiple basic schedules. The keyword
             <code>also</code> is used to create the composite, while the
             <code>exception</code> keyword starts an exception schedule.</p>
@@ -390,7 +408,7 @@
 </pre>
           <br/>
 
-          <h4>Specifying the constraints</h4>
+          <h4>Specifying the schedules</h4>
           <p>A schedule defines the set of constraints that must be met. Any
             number of constraints can be added to a single schedule. The following
             values are valid when defining a constraint.</p>

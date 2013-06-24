@@ -252,7 +252,7 @@
   --> Sat, 01 Feb 2014 00:00:00 GMT
 
   // use our new modifier so that 2 now means March
-  var sched2 = {schedules: [{M_m: [2]}]};
+  var sched = later.parse.recur().customModifier('m', 2).month();
 
   next = later.schedule(sched2).next(1, new Date(2013, 3, 21));
   --> Sat, 01 Mar 2014 00:00:00 GMT
