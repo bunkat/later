@@ -180,87 +180,87 @@ describe('Parse Text', function() {
 		it('should parse before second restriction', function() {
 			var p = parse('before 15 s');
 			p.schedules[0].should.have.ownProperty('s_b');
-			p.schedules[0].s_b.should.eql([14]);
+			p.schedules[0].s_b.should.eql([15]);
 		});
 
 		it('should parse before minute restriction', function() {
 			var p = parse('before 15 minutes');
 			p.schedules[0].should.have.ownProperty('m_b');
-			p.schedules[0].m_b.should.eql([14]);
+			p.schedules[0].m_b.should.eql([15]);
 		});
 
 		it('should parse before hour restriction', function() {
 			var p = parse('before 5 hours');
 			p.schedules[0].should.have.ownProperty('h_b');
-			p.schedules[0].h_b.should.eql([4]);
+			p.schedules[0].h_b.should.eql([5]);
 		});
 
 		it('should parse before day of week restriction', function() {
 			var p = parse('before 2nd day of the week');
 			p.schedules[0].should.have.ownProperty('d_b');
-			p.schedules[0].d_b.should.eql([1]);
+			p.schedules[0].d_b.should.eql([2]);
 		});
 
 		it('should parse before day of month restriction', function() {
 			var p = parse('before 5 days of the month');
 			p.schedules[0].should.have.ownProperty('D_b');
-			p.schedules[0].D_b.should.eql([4]);
+			p.schedules[0].D_b.should.eql([5]);
 		});
 
 		it('should parse before day restriction', function() {
 			var p = parse('before 5 days');
 			p.schedules[0].should.have.ownProperty('D_b');
-			p.schedules[0].D_b.should.eql([4]);
+			p.schedules[0].D_b.should.eql([5]);
 		});
 
 		it('should parse before day of year restriction', function() {
 			var p = parse('before 5 days of the year');
 			p.schedules[0].should.have.ownProperty('dy_b');
-			p.schedules[0].dy_b.should.eql([4]);
+			p.schedules[0].dy_b.should.eql([5]);
 		});
 
 		it('should parse before week restriction', function() {
 			var p = parse('before 2 weeks');
 			p.schedules[0].should.have.ownProperty('wy_b');
-			p.schedules[0].wy_b.should.eql([1]);
+			p.schedules[0].wy_b.should.eql([2]);
 		});
 
 		it('should parse before week of month restriction', function() {
 			var p = parse('before 2 weeks of the month');
 			p.schedules[0].should.have.ownProperty('wm_b');
-			p.schedules[0].wm_b.should.eql([1]);
+			p.schedules[0].wm_b.should.eql([2]);
 		});
 
 		it('should parse before month restriction', function() {
 			var p = parse('before 5 month');
 			p.schedules[0].should.have.ownProperty('M_b');
-			p.schedules[0].M_b.should.eql([4]);
+			p.schedules[0].M_b.should.eql([5]);
 		});
 
 		it('should parse before week of year restriction', function() {
 			var p = parse('before 10 weeks of the year');
 			p.schedules[0].should.have.ownProperty('wy_b');
-			p.schedules[0].wy_b.should.eql([9]);
+			p.schedules[0].wy_b.should.eql([10]);
 		});
 
 		it('should parse before year restriction', function() {
 			var p = parse('before 10 years');
 			p.schedules[0].should.have.ownProperty('Y_b');
-			p.schedules[0].Y_b.should.eql([9]);
+			p.schedules[0].Y_b.should.eql([10]);
 		});
 
 		it('should parse before time restriction', function() {
 			var p = parse('before 11:11pm');
 			p.schedules[0].should.have.ownProperty('t_b');
-			p.schedules[0].t_b.should.eql([83459]);
+			p.schedules[0].t_b.should.eql([83460]);
 		});
 
 		it('should parse multiple restrictions', function() {
 			var p = parse('before 30th m before 5 months');
 			p.schedules[0].should.have.ownProperty('m_b');
-			p.schedules[0].m_b.should.eql([29]);
+			p.schedules[0].m_b.should.eql([30]);
 			p.schedules[0].should.have.ownProperty('M_b');
-			p.schedules[0].M_b.should.eql([4]);
+			p.schedules[0].M_b.should.eql([5]);
 		});
 	});
 

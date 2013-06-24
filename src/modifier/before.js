@@ -30,7 +30,7 @@ later.modifier.before = later.modifier.b = function(constraint, values) {
     /**
     * Pass through to the constraint.
     */
-    range: constraint.range * value,
+    range: constraint.range * (value-1),
 
     /**
     * The value of the specified date. Returns value for any constraint val
@@ -38,10 +38,7 @@ later.modifier.before = later.modifier.b = function(constraint, values) {
     *
     * @param {Date} d: The date to calculate the value of
     */
-    val: function(d) {
-      var cVal = constraint.val(d);
-      return cVal <= value ? value : cVal;
-    },
+    val: constraint.val,
 
     /**
     * Returns true if the val is valid for the date specified.
@@ -50,7 +47,7 @@ later.modifier.before = later.modifier.b = function(constraint, values) {
     * @param {Integer} val: The value to validate
     */
     isValid: function(d, val) {
-      return this.val(d) === val;
+      return this.val(d) < value;
     },
 
     /**
@@ -72,7 +69,7 @@ later.modifier.before = later.modifier.b = function(constraint, values) {
     * Pass through to the constraint.
     */
     next: function(startDate, val) {
-      if(val <= value) val = constraint.extent(startDate)[0];
+      val = val === value ? constraint.extent(startDate)[0] : value;
       return constraint.next(startDate, val);
     },
 
@@ -80,7 +77,7 @@ later.modifier.before = later.modifier.b = function(constraint, values) {
     * Pass through to the constraint.
     */
     prev: function(startDate, val) {
-      if(val < value) val = constraint.extent(startDate)[1];
+      val = val === value ? value - 1 : constraint.extent(startDate)[1];
       return constraint.prev(startDate, val);
     }
 

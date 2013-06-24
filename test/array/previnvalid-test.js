@@ -56,4 +56,12 @@ describe('Later.array.prevInvalid', function() {
 
     actual.should.eql(expected);
   });
+
+  it('should return undefined if there is no invalid value', function() {
+    var arr = [0,1,2,3,4,5],
+        extent = [0,5],
+        cur = 4;
+
+    should.not.exist(later.array.prevInvalid(cur, arr, extent));
+  });
 });

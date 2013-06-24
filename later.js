@@ -96,7 +96,7 @@ later = function() {
     return values[prevIdx];
   };
   later.array.prevInvalid = function(val, values, extent) {
-    var min = extent[0], max = extent[1], len = values.length, zeroVal = values[len - 1] === 0 && min !== 0 ? max : 0, next = val, i = values.indexOf(val);
+    var min = extent[0], max = extent[1], len = values.length, zeroVal = values[len - 1] === 0 && min !== 0 ? max : 0, next = val, i = values.indexOf(val), start = next;
     while (next === (values[i] || zeroVal)) {
       next--;
       if (next < min) {
@@ -105,6 +105,9 @@ later = function() {
       i--;
       if (i === -1) {
         i = len - 1;
+      }
+      if (next === start) {
+        return undefined;
       }
     }
     return next;
@@ -356,7 +359,7 @@ later = function() {
   };
   later.time = later.t = {
     name: "time",
-    range: 60,
+    range: 1,
     val: function(d) {
       return d.t || (d.t = later.h.val(d) * 3600 + later.m.val(d) * 60 + later.s.val(d));
     },
@@ -488,22 +491,19 @@ later = function() {
     return {
       name: "after " + constraint.name,
       range: (constraint.extent(new Date())[1] - value) * constraint.range,
-      val: function(d) {
-        var cVal = constraint.val(d);
-        return cVal >= value ? value : cVal;
-      },
+      val: constraint.val,
       isValid: function(d, val) {
-        return this.val(d) === val;
+        return this.val(d) >= value;
       },
       extent: constraint.extent,
       start: constraint.start,
       end: constraint.end,
       next: function(startDate, val) {
-        if (val > value) val = constraint.extent(startDate)[0];
+        if (val != value) val = constraint.extent(startDate)[0];
         return constraint.next(startDate, val);
       },
       prev: function(startDate, val) {
-        if (val >= value) val = constraint.extent(startDate)[1];
+        val = val === value ? constraint.extent(startDate)[1] : value - 1;
         return constraint.prev(startDate, val);
       }
     };
@@ -512,23 +512,20 @@ later = function() {
     var value = values[values.length - 1];
     return {
       name: "before " + constraint.name,
-      range: constraint.range * value,
-      val: function(d) {
-        var cVal = constraint.val(d);
-        return cVal <= value ? value : cVal;
-      },
+      range: constraint.range * (value - 1),
+      val: constraint.val,
       isValid: function(d, val) {
-        return this.val(d) === val;
+        return this.val(d) < value;
       },
       extent: constraint.extent,
       start: constraint.start,
       end: constraint.end,
       next: function(startDate, val) {
-        if (val <= value) val = constraint.extent(startDate)[0];
+        val = val === value ? constraint.extent(startDate)[0] : value;
         return constraint.next(startDate, val);
       },
       prev: function(startDate, val) {
-        if (val < value) val = constraint.extent(startDate)[1];
+        val = val === value ? value - 1 : constraint.extent(startDate)[1];
         return constraint.prev(startDate, val);
       }
     };
@@ -547,10 +544,17 @@ later = function() {
       return a.constraint.range < b.constraint.range;
     });
     tickConstraint = constraints[constraintsLen - 1].constraint;
+    function compareFn(dir) {
+      return dir === "next" ? function(a, b) {
+        return a.getTime() > b.getTime();
+      } : function(a, b) {
+        return b.getTime() > a.getTime();
+      };
+    }
     return {
       start: function(dir, startDate) {
-        var next = startDate, nextVal = later.array[dir], done;
-        while (!done && next) {
+        var next = startDate, nextVal = later.array[dir], maxAttempts = 1e3, done;
+        while (maxAttempts-- && !done && next) {
           done = true;
           for (var i = 0; i < constraintsLen; i++) {
             var constraint = constraints[i].constraint, curVal = constraint.val(next), extent = constraint.extent(next), newVal = nextVal(curVal, constraints[i].vals, extent);
@@ -561,18 +565,16 @@ later = function() {
             }
           }
         }
-        return next ? tickConstraint.start(next) : undefined;
+        if (!next) return undefined;
+        return dir === "next" ? tickConstraint.start(next) : tickConstraint.end(next);
       },
-      end: function(startDate) {
-        var result;
+      end: function(dir, startDate) {
+        var result, nextVal = later.array[dir + "Invalid"], compare = compareFn(dir);
         for (var i = constraintsLen - 1; i >= 0; i--) {
-          var constraint = constraints[i].constraint, curVal = constraint.val(startDate), extent = constraint.extent(startDate), nextVal = later.array.nextInvalid(curVal, constraints[i].vals, extent), next;
-          if (constraint.isValid(startDate, nextVal)) {
-            return startDate;
-          }
-          if (nextVal !== undefined) {
-            next = constraint.next(startDate, nextVal);
-            if (!result || result > next) {
+          var constraint = constraints[i].constraint, curVal = constraint.val(startDate), extent = constraint.extent(startDate), newVal = nextVal(curVal, constraints[i].vals, extent), next;
+          if (newVal !== undefined) {
+            next = constraint[dir](startDate, newVal);
+            if (!result || compare(result, next)) {
               result = next;
             }
           }
@@ -581,6 +583,9 @@ later = function() {
       },
       tick: function(dir, date) {
         return new Date(dir === "next" ? tickConstraint.end(date).getTime() + later.SEC : tickConstraint.start(date).getTime() - later.SEC);
+      },
+      tickStart: function(date) {
+        return tickConstraint.start(date);
       }
     };
   };
@@ -594,33 +599,46 @@ later = function() {
     for (var j = 0; j < exceptionsLen; j++) {
       exceptions.push(later.compile(sched.exceptions[j]));
     }
+    function print(msg, arr) {
+      console.log("------- " + msg + " -------");
+      for (var i = 0, len = arr.length; i < len; i++) {
+        var val = arr[i], txt = "";
+        if (val instanceof Array) {
+          txt = "Schedule " + i + ": ";
+          txt += val[0] ? val[0].toUTCString() : "undefined";
+          txt += val[0] ? " to " : "";
+          txt += val[0] && val[1] ? val[1].toUTCString() : "";
+        } else {
+          txt = "Schedule " + i + ": ";
+          txt += val ? val.toUTCString() : "undefined";
+        }
+        console.log(txt);
+      }
+      console.log("++++++++++++++++++++++");
+    }
     function getInstances(dir, count, startDate, endDate, isRange) {
-      var compare = compareFn(dir), loopCount = count, schedStarts = [], exceptStarts = [], next, end, results = [];
+      var compare = compareFn(dir), loopCount = count, maxAttempts = 1e3, schedStarts = [], exceptStarts = [], next, end, results = [];
       startDate = startDate ? new Date(startDate) : new Date();
       if (!startDate || !startDate.getTime()) throw new Error("Invalid start date.");
       updateNextStarts(dir, schedules, schedStarts, startDate);
-      while (loopCount && (next = findNext(schedStarts, compare))) {
-        if (compare(startDate, next)) {
-          tickStarts(dir, schedules, schedStarts, next);
-          continue;
-        }
+      while (maxAttempts-- && loopCount && (next = findNext(schedStarts, compare))) {
         if (endDate && compare(next, endDate)) {
           break;
         }
         if (exceptionsLen) {
           updateRangeStarts(dir, exceptions, exceptStarts, next);
-          if (end = calcRangeOverlap(dir, exceptions, exceptStarts, next)) {
+          if (end = calcRangeOverlap(dir, exceptStarts, next)) {
             updateNextStarts(dir, schedules, schedStarts, end);
             continue;
           }
         }
         if (isRange) {
-          end = calcEnd(dir, schedules, schedStarts, next, findNext(exceptStarts, compare));
-          results.push([ new Date(next), new Date(end) ]);
-          end = dir === "next" ? end : new Date(next.getTime() - 1e3);
+          var maxEndDate = calcMaxEndDate(exceptStarts, compare);
+          end = calcEnd(dir, schedules, schedStarts, next, maxEndDate);
+          results.push(dir === "next" ? [ new Date(Math.max(startDate, next)), new Date(endDate ? Math.min(end, endDate) : end) ] : [ new Date(endDate ? Math.max(endDate, end.getTime() + later.SEC) : end.getTime() + later.SEC), new Date(Math.min(startDate, next.getTime() + later.SEC)) ]);
           updateNextStarts(dir, schedules, schedStarts, end);
         } else {
-          results.push(new Date(next));
+          results.push(dir === "next" ? new Date(Math.max(startDate, next)) : getStart(schedules, schedStarts, next, endDate));
           tickStarts(dir, schedules, schedStarts, next);
         }
         loopCount--;
@@ -640,7 +658,11 @@ later = function() {
       for (var i = 0, len = schedArr.length; i < len; i++) {
         if (!rangesArr[i] || !compare(rangesArr[i][0], startDate)) {
           var nextStart = schedArr[i].start(dir, startDate);
-          rangesArr[i] = nextStart ? [ nextStart, schedArr[i].end(nextStart) ] : undefined;
+          if (!nextStart) {
+            rangesArr[i] = undefined;
+          } else {
+            rangesArr[i] = [ nextStart, schedArr[i].end(dir, nextStart) ];
+          }
         }
       }
     }
@@ -651,16 +673,39 @@ later = function() {
         }
       }
     }
-    function calcRangeOverlap(dir, schedArr, rangesArr, startDate) {
+    function getStart(schedArr, startsArr, startDate, minEndDate) {
+      var result;
+      for (var i = 0, len = startsArr.length; i < len; i++) {
+        if (startsArr[i].getTime() !== startDate.getTime()) continue;
+        var start = schedArr[i].tickStart(startDate);
+        if (minEndDate && start < minEndDate) {
+          return minEndDate;
+        }
+        if (!result || start > result) {
+          result = start;
+        }
+      }
+      return result;
+    }
+    function calcRangeOverlap(dir, rangesArr, startDate) {
       var compare = compareFn(dir), result;
-      for (var i = 0, len = schedArr.length; i < len; i++) {
+      for (var i = 0, len = rangesArr.length; i < len; i++) {
         var range = rangesArr[i];
         if (!range) continue;
-        if (startDate.getTime() >= range[0].getTime() && (!range[1] || startDate.getTime() < range[1].getTime())) {
-          var end = dir === "next" ? range[1] : new Date(range[0].getTime() - 1e3);
-          if (!result || compare(end, result)) {
-            result = end;
+        if (!compare(range[0], startDate) && compare(range[1], startDate)) {
+          if (!result || compare(range[1], result)) {
+            result = range[1];
           }
+        }
+      }
+      return result;
+    }
+    function calcMaxEndDate(exceptsArr, compare) {
+      var result;
+      for (var i = 0, len = exceptsArr.length; i < len; i++) {
+        if (!exceptsArr[i]) continue;
+        if (!result || compare(result, exceptsArr[i][0])) {
+          result = exceptsArr[i][0];
         }
       }
       return result;
@@ -670,7 +715,7 @@ later = function() {
       for (var i = 0, len = schedArr.length; i < len; i++) {
         var start = startsArr[i];
         if (!start || start.getTime() !== startDate.getTime()) continue;
-        var end = schedArr[i].end(start);
+        var end = schedArr[i].end(dir, start);
         if (maxEndDate && compare(end, maxEndDate)) {
           return maxEndDate;
         }
@@ -964,7 +1009,7 @@ later = function() {
       values = applyMin ? [ min ] : applyMax ? [ max ] : values;
       var length = values.length;
       for (i = 0; i < length; i += 1) {
-        var val = values[i] - (modifier === "b" ? 1 : 0);
+        var val = values[i];
         if (curName.indexOf(val) < 0) {
           curName.push(val);
         }

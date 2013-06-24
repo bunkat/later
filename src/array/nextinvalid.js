@@ -19,6 +19,7 @@ later.array.nextInvalid = function (val, values, extent) {
       start = next;
 
   while(next === (values[i] || zeroVal)) {
+
     next++;
     if(next > max) {
       next = min;

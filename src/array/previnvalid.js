@@ -15,10 +15,12 @@ later.array.prevInvalid = function (val, values, extent) {
   var min = extent[0], max = extent[1], len = values.length,
       zeroVal = values[len-1] === 0 && min !== 0 ? max : 0,
       next = val,
-      i = values.indexOf(val);
+      i = values.indexOf(val),
+      start = next;
 
   while(next === (values[i] || zeroVal)) {
     next--;
+
     if(next < min) {
       next = max;
     }
@@ -26,6 +28,10 @@ later.array.prevInvalid = function (val, values, extent) {
     i--;
     if(i === -1) {
       i = len-1;
+    }
+
+    if(next === start) {
+      return undefined;
     }
   }
 

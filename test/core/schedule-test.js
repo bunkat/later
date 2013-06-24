@@ -126,7 +126,7 @@ describe('Schedule', function() {
     it('should return next valid range if one exists', function() {
       var s = {schedules: [{Y:[2011,2012]}]};
       schedule(s).prevRange(1, d).should.eql([
-        new Date('2012-01-01T00:00:00Z'),
+        new Date('2011-01-01T00:00:00Z'),
         new Date('2013-01-01T00:00:00Z')
       ]);
     });

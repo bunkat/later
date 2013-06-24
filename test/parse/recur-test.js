@@ -113,17 +113,17 @@ describe('Parse Recur', function() {
 
 		it('should store the appropriate minute constraint', function() {
 			var r = recur().before(15).minute();
-			r.schedules[0].m_b.should.eql([14]);
+			r.schedules[0].m_b.should.eql([15]);
 		});
 
 		it('should store the appropriate week of year constraint', function() {
 			var r = recur().before(10).weekOfYear();
-			r.schedules[0].wy_b.should.eql([9]);
+			r.schedules[0].wy_b.should.eql([10]);
 		});
 
 		it('should store the appropriate year constraint', function() {
 			var r = recur().before(10).year();
-			r.schedules[0].Y_b.should.eql([9]);
+			r.schedules[0].Y_b.should.eql([10]);
 		});
 
 	});
@@ -151,7 +151,7 @@ describe('Parse Recur', function() {
 
 		it('should store a single before time constraint', function() {
 			var r = recur().before('08:30:00').time();
-			r.schedules[0].t_b.should.eql([30599]);
+			r.schedules[0].t_b.should.eql([30600]);
 		});
 
 	});

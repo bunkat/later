@@ -164,7 +164,7 @@ describe('Text Examples', function() {
 
     var sched = later.parse.text('every 5 mins after 2:00pm and before 2:55pm');
 
-    var start = new Date('2013-03-21T14:05:23Z'),
+    var start = new Date('2013-03-21T14:06:23Z'),
         end = new Date('2013-03-21T14:32:10Z'),
         expected = [
           new Date('2013-03-21T14:10:00Z'),
@@ -193,6 +193,7 @@ describe('Text Examples', function() {
     var start = new Date('2013-03-21T14:45:23Z'),
         end = new Date('2013-03-21T18:12:10Z'),
         expected = [
+          new Date('2013-03-21T14:45:23Z'),
           new Date('2013-03-21T14:50:00Z'),
           new Date('2013-03-21T14:55:00Z'),
           new Date('2013-03-21T18:00:00Z'),
@@ -200,10 +201,10 @@ describe('Text Examples', function() {
           new Date('2013-03-21T18:10:00Z')
         ];
 
-    var next = later.schedule(sched).next(5, start, end);
+    var next = later.schedule(sched).next(6, start, end);
     next.should.eql(expected);
 
-    var prev = later.schedule(sched).prev(5, end, start);
+    var prev = later.schedule(sched).prev(6, end, start);
     prev.should.eql(expected.reverse());
 
     expected.forEach(function(e) {
@@ -219,6 +220,7 @@ describe('Text Examples', function() {
     var start = new Date('2013-03-21T14:03:23Z'),
         end = new Date('2013-03-22T14:02:10Z'),
         expected = [
+          new Date('2013-03-21T14:03:23Z'),
           new Date('2013-03-21T14:04:00Z'),
           new Date('2013-03-21T14:05:00Z'),
           new Date('2013-03-22T14:00:00Z'),
@@ -226,10 +228,10 @@ describe('Text Examples', function() {
           new Date('2013-03-22T14:02:00Z')
         ];
 
-    var next = later.schedule(sched).next(5, start, end);
+    var next = later.schedule(sched).next(6, start, end);
     next.should.eql(expected);
 
-    var prev = later.schedule(sched).prev(5, end, start);
+    var prev = later.schedule(sched).prev(6, end, start);
     prev.should.eql(expected.reverse());
 
     expected.forEach(function(e) {

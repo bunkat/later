@@ -53,8 +53,7 @@ later.parse.recur = function () {
     values = applyMin ? [min] : applyMax ? [max] : values;
     var length = values.length;
     for (i = 0; i < length; i += 1) {
-      // need to special case the before modifier to make it easier to work with
-      var val = values[i] - (modifier === 'b' ? 1 : 0);
+      var val = values[i];
       if (curName.indexOf(val) < 0) {
         curName.push(val);
       }

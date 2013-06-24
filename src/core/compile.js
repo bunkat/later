@@ -37,6 +37,19 @@ later.compile = function(schedDef) {
   // finding multiple instances
   tickConstraint = constraints[constraintsLen-1].constraint;
 
+  /**
+  * Returns a function to use when comparing two dates. Encapsulates the
+  * difference between searching for instances forward and backwards so that
+  * the same code can be completely reused for both directions.
+  *
+  * @param {String} dir: The direction to use, either 'next' or 'prev'
+  */
+  function compareFn(dir) {
+    return dir === 'next' ?
+      function(a,b) { return a.getTime() > b.getTime(); } :
+      function(a,b) { return b.getTime() > a.getTime(); };
+  }
+
   return {
 
     /**
@@ -49,11 +62,13 @@ later.compile = function(schedDef) {
     start: function(dir, startDate) {
       var next = startDate,
           nextVal = later.array[dir],
+          maxAttempts = 1000,
           done;
 
-/*      console.log('start ---------------------');*/
+/*      console.log('start ---------------------');
+      console.log('dir = ' + dir);*/
 
-      while(!done && next) {
+      while(maxAttempts-- && !done && next) {
         done = true;
 
         // verify all of the constraints in order since we want to make the
@@ -79,52 +94,60 @@ later.compile = function(schedDef) {
         }
       }
 
-/*      console.log('return = ' + (next ? tickConstraint.start(next) : undefined));*/
+      if(!next) return undefined;
+
+/*      console.log('return = ' + (dir === 'next' ? tickConstraint.start(next) : tickConstraint.end(next)));*/
+
+      //return dir === 'prev' && isRange ? tickConstraint.end(next) : tickConstraint.start(next);
+      //return dir === 'next' ? tickConstraint.start(next) : tickConstraint.end(next);
 
       // if next, move to start of time period. needed when moving backwards
-      return next ? tickConstraint.start(next) : undefined;
+      return dir === 'next' ? tickConstraint.start(next) : tickConstraint.end(next);
     },
 
     /**
     * Given a valid start time, finds the next schedule that is invalid.
-    * Returns the start time if it is actually invalid. Useful for finding the
-    * end of a valid time range.
+    * Useful for finding the end of a valid time range.
     *
     * @param {Date} startDate: The first possible valid occurrence
     */
-    end: function(startDate) {
+    end: function(dir, startDate) {
 
-      var result;
+      var result,
+          nextVal = later.array[dir + 'Invalid'],
+          compare = compareFn(dir);
 
-/*      console.log('end ---------------------');*/
+      //console.log('end ---------------------');
+      //console.log('dir = ' + dir);
 
       for(var i = constraintsLen-1; i >= 0; i--) {
         var constraint = constraints[i].constraint,
             curVal = constraint.val(startDate),
             extent = constraint.extent(startDate),
-            nextVal = later.array.nextInvalid(curVal, constraints[i].vals, extent),
+            newVal = nextVal(curVal, constraints[i].vals, extent),
             next;
 
 /*        console.log('constraint = ' + constraint.name);
         console.log('start = ' + startDate.toUTCString());
         console.log('curVal = ' + curVal);
         console.log('extent = ' + extent);
-        console.log('nextVal = ' + nextVal);
+        console.log('vals = ' + constraints[i].vals);
+        console.log('newVal = ' + newVal);
         console.log('is valid = ' + constraint.isValid(startDate, nextVal));*/
 
-        if(constraint.isValid(startDate, nextVal)) {
-          return startDate;
-        }
+        //if(constraint.isValid(startDate, nextVal)) {
+        //  return startDate;
+       // }
 
-        if(nextVal !== undefined) { // constraint has invalid value, use that
-          next = constraint.next(startDate, nextVal);
-          if(!result || result > next) {
+        if(newVal !== undefined) { // constraint has invalid value, use that
+          next = constraint[dir](startDate, newVal);
+          if(!result || compare(result, next)) {
             result = next;
           }
         }
       }
 
-/*      console.log('return = ' + result);*/
+/*      console.log('return = ' + result.toUTCString());*/
 
       return result;
     },
@@ -143,6 +166,14 @@ later.compile = function(schedDef) {
       return new Date(dir === 'next' ?
         tickConstraint.end(date).getTime() + later.SEC :
         tickConstraint.start(date).getTime() - later.SEC);
+    },
+
+    tickStart: function(date) {
+/*      console.log('TICK');
+      console.log('date=' + date);
+      console.log('next=' + new Date(tickConstraint.end(date).getTime() + later.SEC));*/
+
+      return tickConstraint.start(date);
     }
 
   };
