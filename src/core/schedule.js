@@ -27,34 +27,6 @@ later.schedule = function(sched) {
     exceptions.push(later.compile(sched.exceptions[j]));
   }
 
-
-  function print(msg, arr) {
-    console.log('------- ' + msg + ' -------');
-
-    for(var i = 0, len = arr.length; i < len; i++) {
-      var val = arr[i],
-          txt = '';
-
-      if(val instanceof Array) {
-        txt = 'Schedule ' + i + ': ';
-        txt += val[0] ? val[0].toUTCString() : 'undefined';
-        txt += val[0] ? ' to ' : '';
-        txt += val[0] && val[1] ? val[1].toUTCString() : '';
-      }
-      else {
-        txt = 'Schedule ' + i + ': ';
-        txt += val ? val.toUTCString() : 'undefined';
-      }
-
-      console.log(txt);
-    }
-
-    console.log('++++++++++++++++++++++');
-  }
-
-
-
-
   /**
   * Calculates count number of instances or ranges for the current schedule,
   * optionally between the specified startDate and endDate.
@@ -78,19 +50,10 @@ later.schedule = function(sched) {
     // Step 1: calculate the earliest start dates for each schedule
     updateNextStarts(dir, schedules, schedStarts, startDate);
 
-    //print('initial start dates', schedStarts);
-
     // Step 2: select the earliest of the start dates calculated
     while(maxAttempts-- && loopCount && (next = findNext(schedStarts, compare))) {
 
-      //console.log('Found next earliest start at ' + next.toUTCString());
-
       // Step 3: make sure the start date we found is in range
-      //if(compare(startDate, next)) {
-      //  tickStarts(dir, schedules, schedStarts, next);
-      //  continue;
-      //}
-
       if(endDate && compare(next, endDate)) {
         break;
       }
@@ -98,35 +61,16 @@ later.schedule = function(sched) {
       // Step 4: make sure we aren't in the middle of an exception range
       if(exceptionsLen) {
         updateRangeStarts(dir, exceptions, exceptStarts, next);
-
-        //print('update exception ranges', exceptStarts);
-
         if((end = calcRangeOverlap(dir, exceptStarts, next))) {
-
-          //console.log('Found exception overlap, ends at ' + end.toUTCString());
-
           updateNextStarts(dir, schedules, schedStarts, end);
-
-          //print('update start dates', schedStarts);
-
           continue;
         }
       }
 
-      // Step 5: If range, find the end of the range and update start dates
+      // Step 5: Date is good, if range, find the end of the range and update start dates
       if(isRange) {
-
         var maxEndDate = calcMaxEndDate(exceptStarts, compare);
-/*        if(compare(maxEndDate, endDate)) {
-          maxEndDate = endDate;
-        }*/
-
-        //console.log('Found max end date of ' + (maxEndDate ? maxEndDate.toUTCString() : 'none.'));
-
         end = calcEnd(dir, schedules, schedStarts, next, maxEndDate);
-
-        //console.log('Found end of ' + end.toUTCString());
-
         results.push( dir === 'next' ?
           [
             new Date(Math.max(startDate, next)),
@@ -138,38 +82,14 @@ later.schedule = function(sched) {
           ]
         );
 
-
-/*        if(dir === 'next') {
-          results.push([new Date(next), new Date(end)]);
-        }
-        else {
-          results.push([new Date(end.getTime()+later.SEC), new Date(next.getTime()+later.SEC)]);
-          //end = next;
-        }*/
-
-        //results.push(range);
-
-        //print('results', results);
-
-        // new end is either the end date when going forward, or just before
-        // the start date when going backwards
-        //end = dir === 'next' ? range[1] : new Date(range[0].getTime()- later.SEC);
         updateNextStarts(dir, schedules, schedStarts, end);
-
-        //print('update next start', schedStarts);
-
-
       }
       // otherwise store the start date and tick the start dates
       else {
-        //console.log('next = ' + next);
-
         results.push( dir === 'next' ?
           new Date(Math.max(startDate, next)) :
           getStart(schedules, schedStarts, next, endDate)
         );
-
-        //print('results', results);
 
         tickStarts(dir, schedules, schedStarts, next);
       }
@@ -220,21 +140,8 @@ later.schedule = function(sched) {
           rangesArr[i] = undefined;
         }
         else {
-/*          console.log('updating exceptions -----');
-          console.log('dir = ' + dir);
-          console.log('nextStart = ' + nextStart.toUTCString());
-          console.log('end = ' + schedArr[i].end(dir, nextStart).toUTCString());
-          console.log('tick = ' + schedArr[i].tick('next', nextStart));*/
-
           rangesArr[i] = [nextStart, schedArr[i].end(dir, nextStart)];
-
-
-          //rangesArr[i] = dir === 'next' ?
-          //  [nextStart, schedArr[i].end(dir, nextStart)] :
-          //  [new Date(schedArr[i].end(dir, nextStart).getTime() + later.SEC), schedArr[i].tick('next', nextStart)];
         }
-
-        //rangesArr[i] = nextStart ? [nextStart, schedArr[i].end('next', nextStart)] : undefined;
       }
     }
   }
@@ -256,7 +163,14 @@ later.schedule = function(sched) {
     }
   }
 
-
+  /**
+  * Determines the start date of the schedule that produced startDate
+  *
+  * @param {Array} schedArr: The set of compiled schedules to use
+  * @param {Array} startsArr: The set of cached start dates for the schedules
+  * @param {Date} startDate: The date that should cause a schedule to tick
+  * @param {Date} minEndDate: The minimum end date to return
+  */
   function getStart(schedArr, startsArr, startDate, minEndDate) {
     var result;
 
@@ -289,10 +203,6 @@ later.schedule = function(sched) {
   function calcRangeOverlap(dir, rangesArr, startDate) {
     var compare = compareFn(dir), result;
 
-/*    console.log('sched = ' + schedArr);
-    console.log('except = ' + rangesArr);
-    console.log('start = ' + startDate);*/
-
     for(var i = 0, len = rangesArr.length; i < len; i++) {
       var range = rangesArr[i];
       if(!range) continue;
@@ -303,28 +213,18 @@ later.schedule = function(sched) {
           result = range[1];
         }
       }
-
-
-
-
-/*      // see if startDate falls inside of the range
-      if(startDate.getTime() >= range[0].getTime() &&
-        (!range[1] || startDate.getTime() < range[1].getTime())) {
-
-        // end depends on direction, going forwards its the end of the exception
-        // schedule; going backwards it is the second immediatley before the
-        // start of the exception
-        var end = dir === 'next' ? range[1] : new Date(range[0].getTime()-1000);
-        if(!result || compare(end, result)) {
-          result = end;
-        }
-      }*/
     }
 
     return result;
   }
 
-
+  /**
+  * Calculates the earliest start of an exception schedule, this is the maximum
+  * end date of the schedule.
+  *
+  * @param {Array} exceptsArr: The set of cached exception ranges
+  * @param {Array} compare: The compare function to use to determine earliest
+  */
   function calcMaxEndDate(exceptsArr, compare) {
     var result;
 
@@ -369,8 +269,6 @@ later.schedule = function(sched) {
         result = end;
       }
     }
-
-    //console.log(result);
 
     return result;
   }

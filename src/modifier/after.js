@@ -77,9 +77,7 @@ later.modifier.after = later.modifier.a = function(constraint, values) {
     * Pass through to the constraint.
     */
     prev: function(startDate, val) {
-        val = val === value ? constraint.extent(startDate)[1] :
-            value - 1;
-
+        val = val === value ? constraint.extent(startDate)[1] : value - 1;
         return constraint.prev(startDate, val);
     }
 

@@ -105,12 +105,13 @@ later.partOfDay = later.pd = {
 };
 
 // use our new time period in a schedule
+later.date.localTime();
 var sched = later.parse.recur().every(15).minute().on(2).customPeriod('pd'),
     next = later.schedule(sched).next(5, new Date(2013, 3, 21));
 
 console.log(next);
-//[ Sun Apr 21 2013 18:00:00 GMT,
-//  Sun Apr 21 2013 18:15:00 GMT,
-//  Sun Apr 21 2013 18:30:00 GMT,
-//  Sun Apr 21 2013 18:45:00 GMT,
-//  Sun Apr 21 2013 19:00:00 GMT ]
+//[ Sun Apr 21 2013 18:00:00,
+//  Sun Apr 21 2013 18:15:00,
+//  Sun Apr 21 2013 18:30:00,
+//  Sun Apr 21 2013 18:45:00,
+//  Sun Apr 21 2013 19:00:00 ]

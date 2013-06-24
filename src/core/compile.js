@@ -65,9 +65,6 @@ later.compile = function(schedDef) {
           maxAttempts = 1000,
           done;
 
-/*      console.log('start ---------------------');
-      console.log('dir = ' + dir);*/
-
       while(maxAttempts-- && !done && next) {
         done = true;
 
@@ -79,13 +76,6 @@ later.compile = function(schedDef) {
               extent = constraint.extent(next),
               newVal = nextVal(curVal, constraints[i].vals, extent);
 
-/*          console.log('constraint = ' + constraint.name);
-          console.log('next = ' + next.toUTCString());
-          console.log('curVal = ' + curVal);
-          console.log('extent = ' + extent);
-          console.log('newVal = ' + newVal);
-          console.log('is valid = ' + constraint.isValid(next, newVal));*/
-
           if(!constraint.isValid(next, newVal)) {
             next = constraint[dir](next, newVal);
             done = false;
@@ -95,11 +85,6 @@ later.compile = function(schedDef) {
       }
 
       if(!next) return undefined;
-
-/*      console.log('return = ' + (dir === 'next' ? tickConstraint.start(next) : tickConstraint.end(next)));*/
-
-      //return dir === 'prev' && isRange ? tickConstraint.end(next) : tickConstraint.start(next);
-      //return dir === 'next' ? tickConstraint.start(next) : tickConstraint.end(next);
 
       // if next, move to start of time period. needed when moving backwards
       return dir === 'next' ? tickConstraint.start(next) : tickConstraint.end(next);
@@ -117,27 +102,12 @@ later.compile = function(schedDef) {
           nextVal = later.array[dir + 'Invalid'],
           compare = compareFn(dir);
 
-      //console.log('end ---------------------');
-      //console.log('dir = ' + dir);
-
       for(var i = constraintsLen-1; i >= 0; i--) {
         var constraint = constraints[i].constraint,
             curVal = constraint.val(startDate),
             extent = constraint.extent(startDate),
             newVal = nextVal(curVal, constraints[i].vals, extent),
             next;
-
-/*        console.log('constraint = ' + constraint.name);
-        console.log('start = ' + startDate.toUTCString());
-        console.log('curVal = ' + curVal);
-        console.log('extent = ' + extent);
-        console.log('vals = ' + constraints[i].vals);
-        console.log('newVal = ' + newVal);
-        console.log('is valid = ' + constraint.isValid(startDate, nextVal));*/
-
-        //if(constraint.isValid(startDate, nextVal)) {
-        //  return startDate;
-       // }
 
         if(newVal !== undefined) { // constraint has invalid value, use that
           next = constraint[dir](startDate, newVal);
@@ -146,8 +116,6 @@ later.compile = function(schedDef) {
           }
         }
       }
-
-/*      console.log('return = ' + result.toUTCString());*/
 
       return result;
     },
@@ -159,20 +127,17 @@ later.compile = function(schedDef) {
     * @param {Date} date: The start date to tick from
     */
     tick: function(dir, date) {
-/*      console.log('TICK');
-      console.log('date=' + date);
-      console.log('next=' + new Date(tickConstraint.end(date).getTime() + later.SEC));*/
-
       return new Date(dir === 'next' ?
         tickConstraint.end(date).getTime() + later.SEC :
         tickConstraint.start(date).getTime() - later.SEC);
     },
 
+    /**
+    * Ticks the date to the start of the minimum constraint
+    *
+    * @param {Date} date: The start date to tick from
+    */
     tickStart: function(date) {
-/*      console.log('TICK');
-      console.log('date=' + date);
-      console.log('next=' + new Date(tickConstraint.end(date).getTime() + later.SEC));*/
-
       return tickConstraint.start(date);
     }
 

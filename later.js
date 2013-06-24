@@ -599,23 +599,6 @@ later = function() {
     for (var j = 0; j < exceptionsLen; j++) {
       exceptions.push(later.compile(sched.exceptions[j]));
     }
-    function print(msg, arr) {
-      console.log("------- " + msg + " -------");
-      for (var i = 0, len = arr.length; i < len; i++) {
-        var val = arr[i], txt = "";
-        if (val instanceof Array) {
-          txt = "Schedule " + i + ": ";
-          txt += val[0] ? val[0].toUTCString() : "undefined";
-          txt += val[0] ? " to " : "";
-          txt += val[0] && val[1] ? val[1].toUTCString() : "";
-        } else {
-          txt = "Schedule " + i + ": ";
-          txt += val ? val.toUTCString() : "undefined";
-        }
-        console.log(txt);
-      }
-      console.log("++++++++++++++++++++++");
-    }
     function getInstances(dir, count, startDate, endDate, isRange) {
       var compare = compareFn(dir), loopCount = count, maxAttempts = 1e3, schedStarts = [], exceptStarts = [], next, end, results = [];
       startDate = startDate ? new Date(startDate) : new Date();

@@ -31,8 +31,8 @@ later.modifier.month = later.modifier.m = function(period, values) {
   };
 };
 
-
-var sched = {schedules: [{M_m: [2]}]},
+// use our new modifier in a schedule
+var sched = later.parse.recur().customModifier('m', 2).month(),
     next = later.schedule(sched).next(1, new Date(2013, 3, 21));
 
 console.log(next.toUTCString());
