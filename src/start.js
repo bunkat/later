@@ -6,4 +6,4 @@
 *     http://bunkat.github.com/later
 */
 later = (function() {
-  var later = {version: "0.1.0"}; // semver
+  var later = {version: "1.0.0"}; // semver
