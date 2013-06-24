@@ -1,2 +1,2 @@
 require("./later");
-module.exports = d3;
+module.exports = later;
