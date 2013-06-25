@@ -204,10 +204,10 @@
 
 <pre>
   // define a new schedule
-  var text = later.parse.text('at 10:15am every weekday');
-  var cron = later.parse.cron('0 0/5 14,18 * * ?');
-  var recur = later.parse.recur().last().dayOfMonth();
-  var manual = {schedules: [{M: 3, D: 21}]};
+  var textSched = later.parse.text('at 10:15am every weekday');
+  var cronSched = later.parse.cron('0 0/5 14,18 * * ?');
+  var recurSched = later.parse.recur().last().dayOfMonth();
+  var manualSched = {schedules: [{M: 3, D: 21}]};
 </pre>
 
           <p>Schedules can also get as complicated as you need:</p>
@@ -215,7 +215,7 @@
 <pre>
   // this schedule will fire on the closest weekday to the 15th
   // every month at 2:00 am except in March
-  var complex = later.parse.recur()
+  var complexSched = later.parse.recur()
                   .on(15).dayOfMonth().onWeekday().on(2).hour()
                 .and()
                   .on(14).dayOfMonth().on(6).dayOfWeek().on(2).hour()
@@ -252,11 +252,13 @@
             of appointments or events.</p>
 
 <pre>
-  // calculate the next 10 occurrences of the text schedule
-  var next = later.schedule(text).next(10);
+  // calculate the next 10 occurrences of a recur schedule
+  var recurSched = later.parse.recur().last().dayOfMonth();
+      next = later.schedule(recurSched).next(10);
 
   // calculate the previous occurrence starting from March 21, 2013
-  var next = later.schedule(text).prev(1, new Date(2013, 2, 21));
+  var cronSched = later.parse.cron('0 0/5 14,18 * * ?'),
+      next = later.schedule(cronSched).prev(1, new Date(2013, 2, 21));
 </pre>
 
           <small>More information on calculating
@@ -270,13 +272,22 @@
             on a schedule definition.</p>
 
 <pre>
-  // execute fn one time on the next occurrence of the text schedule
-  var timer = later.setTimeout(fn, text);
 
-  // execute fn for each successive occurrence of the text schedule
-  var timer2 = later.setInterval(fn, text);
+  // will fire every 5 minutes
+  var textSched = later.parse.text('every 5 min');
 
-  // clear the schedule when you are done
+  // execute logTime one time on the next occurrence of the text schedule
+  var timer = later.setTimeout(logTime, textSched);
+
+  // execute logTime for each successive occurrence of the text schedule
+  var timer2 = later.setInterval(logTime, textSched);
+
+  // function to execute
+  function logTime() {
+    console.log(new Date());
+  }
+
+  // clear the interval timer when you are done
   timer2.clear();
 </pre>
         <small>More information on
