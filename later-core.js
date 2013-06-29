@@ -574,7 +574,7 @@ later = function() {
           var constraint = constraints[i].constraint, curVal = constraint.val(startDate), extent = constraint.extent(startDate), newVal = nextVal(curVal, constraints[i].vals, extent), next;
           if (newVal !== undefined) {
             next = constraint[dir](startDate, newVal);
-            if (!result || compare(result, next)) {
+            if (next && (!result || compare(result, next))) {
               result = next;
             }
           }

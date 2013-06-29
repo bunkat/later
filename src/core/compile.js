@@ -111,7 +111,7 @@ later.compile = function(schedDef) {
 
         if(newVal !== undefined) { // constraint has invalid value, use that
           next = constraint[dir](startDate, newVal);
-          if(!result || compare(result, next)) {
+          if(next && (!result || compare(result, next))) {
             result = next;
           }
         }
