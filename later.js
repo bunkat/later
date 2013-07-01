@@ -633,8 +633,6 @@ later = function() {
       setNextStarts(dir, schedules, schedStarts, startDate);
       setRangeStarts(dir, exceptions, exceptStarts, startDate);
       while (maxAttempts-- && loopCount && (next = findNext(schedStarts, compare))) {
-        console.log(next);
-        console.log(exceptStarts);
         if (endDate && compare(next, endDate)) {
           break;
         }
