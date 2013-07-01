@@ -1,6 +1,6 @@
 later = function() {
   var later = {
-    version: "1.0.1"
+    version: "1.1.0"
   };
   if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function(searchElement) {
@@ -479,10 +479,35 @@ later = function() {
       return d.YEnd || (d.YEnd = later.date.prev(later.Y.val(d)));
     },
     next: function(d, val) {
-      return val > later.Y.val(d) && val <= later.Y.extent()[1] ? later.date.next(val) : undefined;
+      return val > later.Y.val(d) && val <= later.Y.extent()[1] ? later.date.next(val) : later.NEVER;
     },
     prev: function(d, val) {
-      return val < later.Y.val(d) && val >= later.Y.extent()[0] ? later.date.prev(val) : undefined;
+      return val < later.Y.val(d) && val >= later.Y.extent()[0] ? later.date.prev(val) : later.NEVER;
+    }
+  };
+  later.fullDate = later.fd = {
+    name: "full date",
+    range: 1,
+    val: function(d) {
+      return d.fd || (d.fd = d.getTime());
+    },
+    isValid: function(d, val) {
+      return later.fd.val(d) === val;
+    },
+    extent: function() {
+      return [ 0, 3250368e7 ];
+    },
+    start: function(d) {
+      return d;
+    },
+    end: function(d) {
+      return d;
+    },
+    next: function(d, val) {
+      return later.fd.val(d) < val ? new Date(val) : later.NEVER;
+    },
+    prev: function(d, val) {
+      return later.fd.val(d) > val ? new Date(val) : later.NEVER;
     }
   };
   later.modifier = {};
@@ -565,8 +590,10 @@ later = function() {
             }
           }
         }
-        if (!next) return undefined;
-        return dir === "next" ? tickConstraint.start(next) : tickConstraint.end(next);
+        if (next !== later.NEVER) {
+          next = dir === "next" ? tickConstraint.start(next) : tickConstraint.end(next);
+        }
+        return next;
       },
       end: function(dir, startDate) {
         var result, nextVal = later.array[dir + "Invalid"], compare = compareFn(dir);
@@ -603,7 +630,8 @@ later = function() {
       var compare = compareFn(dir), loopCount = count, maxAttempts = 1e3, schedStarts = [], exceptStarts = [], next, end, results = [];
       startDate = startDate ? new Date(startDate) : new Date();
       if (!startDate || !startDate.getTime()) throw new Error("Invalid start date.");
-      updateNextStarts(dir, schedules, schedStarts, startDate);
+      setNextStarts(dir, schedules, schedStarts, startDate);
+      setRangeStarts(dir, exceptions, exceptStarts, startDate);
       while (maxAttempts-- && loopCount && (next = findNext(schedStarts, compare))) {
         if (endDate && compare(next, endDate)) {
           break;
@@ -626,23 +654,39 @@ later = function() {
         }
         loopCount--;
       }
-      return results.length === 0 ? undefined : count === 1 ? results[0] : results;
+      return results.length === 0 ? later.NEVER : count === 1 ? results[0] : results;
+    }
+    function setNextStarts(dir, schedArr, startsArr, startDate) {
+      for (var i = 0, len = schedArr.length; i < len; i++) {
+        startsArr[i] = schedArr[i].start(dir, startDate);
+      }
     }
     function updateNextStarts(dir, schedArr, startsArr, startDate) {
       var compare = compareFn(dir);
       for (var i = 0, len = schedArr.length; i < len; i++) {
-        if (!startsArr[i] || !compare(startsArr[i], startDate)) {
+        if (startsArr[i] && !compare(startsArr[i], startDate)) {
           startsArr[i] = schedArr[i].start(dir, startDate);
+        }
+      }
+    }
+    function setRangeStarts(dir, schedArr, rangesArr, startDate) {
+      var compare = compareFn(dir);
+      for (var i = 0, len = schedArr.length; i < len; i++) {
+        var nextStart = schedArr[i].start(dir, startDate);
+        if (!nextStart) {
+          rangesArr[i] = later.NEVER;
+        } else {
+          rangesArr[i] = [ nextStart, schedArr[i].end(dir, nextStart) ];
         }
       }
     }
     function updateRangeStarts(dir, schedArr, rangesArr, startDate) {
       var compare = compareFn(dir);
       for (var i = 0, len = schedArr.length; i < len; i++) {
-        if (!rangesArr[i] || !compare(rangesArr[i][0], startDate)) {
+        if (rangesArr[i] && !compare(rangesArr[i][0], startDate)) {
           var nextStart = schedArr[i].start(dir, startDate);
           if (!nextStart) {
-            rangesArr[i] = undefined;
+            rangesArr[i] = later.NEVER;
           } else {
             rangesArr[i] = [ nextStart, schedArr[i].end(dir, nextStart) ];
           }
@@ -659,13 +703,14 @@ later = function() {
     function getStart(schedArr, startsArr, startDate, minEndDate) {
       var result;
       for (var i = 0, len = startsArr.length; i < len; i++) {
-        if (startsArr[i].getTime() !== startDate.getTime()) continue;
-        var start = schedArr[i].tickStart(startDate);
-        if (minEndDate && start < minEndDate) {
-          return minEndDate;
-        }
-        if (!result || start > result) {
-          result = start;
+        if (startsArr[i] && startsArr[i].getTime() === startDate.getTime()) {
+          var start = schedArr[i].tickStart(startDate);
+          if (minEndDate && start < minEndDate) {
+            return minEndDate;
+          }
+          if (!result || start > result) {
+            result = start;
+          }
         }
       }
       return result;
@@ -674,8 +719,7 @@ later = function() {
       var compare = compareFn(dir), result;
       for (var i = 0, len = rangesArr.length; i < len; i++) {
         var range = rangesArr[i];
-        if (!range) continue;
-        if (!compare(range[0], startDate) && compare(range[1], startDate)) {
+        if (range && !compare(range[0], startDate) && (!range[1] || compare(range[1], startDate))) {
           if (!result || compare(range[1], result)) {
             result = range[1];
           }
@@ -686,8 +730,7 @@ later = function() {
     function calcMaxEndDate(exceptsArr, compare) {
       var result;
       for (var i = 0, len = exceptsArr.length; i < len; i++) {
-        if (!exceptsArr[i]) continue;
-        if (!result || compare(result, exceptsArr[i][0])) {
+        if (exceptsArr[i] && (!result || compare(result, exceptsArr[i][0]))) {
           result = exceptsArr[i][0];
         }
       }
@@ -697,13 +740,14 @@ later = function() {
       var compare = compareFn(dir), result;
       for (var i = 0, len = schedArr.length; i < len; i++) {
         var start = startsArr[i];
-        if (!start || start.getTime() !== startDate.getTime()) continue;
-        var end = schedArr[i].end(dir, start);
-        if (maxEndDate && compare(end, maxEndDate)) {
-          return maxEndDate;
-        }
-        if (!result || compare(end, result)) {
-          result = end;
+        if (start && start.getTime() === startDate.getTime()) {
+          var end = schedArr[i].end(dir, start);
+          if (maxEndDate && compare(end, maxEndDate)) {
+            return maxEndDate;
+          }
+          if (!result || compare(end, result)) {
+            result = end;
+          }
         }
       }
       return result;
@@ -726,7 +770,7 @@ later = function() {
     }
     return {
       isValid: function(d) {
-        return getInstances("next", 1, d, d) !== undefined;
+        return getInstances("next", 1, d, d) !== later.NEVER;
       },
       next: function(count, startDate, endDate) {
         return getInstances("next", count || 1, startDate, endDate);
@@ -807,6 +851,7 @@ later = function() {
   later.DAY = later.HOUR * 24;
   later.WEEK = later.DAY * 7;
   later.DAYS_IN_MONTH = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+  later.NEVER = 0;
   later.date.next = function(Y, M, D, h, m, s) {
     return later.date.build(Y, M !== undefined ? M - 1 : 0, D !== undefined ? D : 1, h || 0, m || 0, s || 0);
   };

@@ -1,6 +1,6 @@
 later = function() {
   var later = {
-    version: "1.0.1"
+    version: "1.1.0"
   };
   if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function(searchElement) {
@@ -633,6 +633,8 @@ later = function() {
       setNextStarts(dir, schedules, schedStarts, startDate);
       setRangeStarts(dir, exceptions, exceptStarts, startDate);
       while (maxAttempts-- && loopCount && (next = findNext(schedStarts, compare))) {
+        console.log(next);
+        console.log(exceptStarts);
         if (endDate && compare(next, endDate)) {
           break;
         }

@@ -53,6 +53,11 @@ Have a bug or a feature request? [Please open a new issue](https://github.com/bu
 
 ## Change Log
 
+### Later v1.1.0
+
+* Implemented fullDate (fd) constraint to specify a specific occurrence (or exception)
+    - `later.parse.recur().on(new Date(2013,3,21,10,30,0)).fullDate()`
+
 ### Later v1.0.0
 
 * Refactored core engine so that it could be better tested
