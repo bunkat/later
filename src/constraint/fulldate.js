@@ -1,33 +1,33 @@
 /**
-* Year Constraint (Y)
+* Full date (fd)
 * (c) 2013 Bill, BunKat LLC.
 *
-* Definition for a year constraint type.
+* Definition for specifying a full date and time.
 *
 * Later is freely distributable under the MIT license.
 * For all details and documentation:
 *     http://github.com/bunkat/later
 */
-later.year = later.Y = {
+later.fullDate = later.fd = {
 
   /**
   * The name of this constraint.
   */
-  name: 'year',
+  name: 'full date',
 
   /**
   * The rough amount of seconds between start and end for this constraint.
   * (doesn't need to be exact)
   */
-  range: 31556900,
+  range: 1,
 
   /**
-  * The year value of the specified date.
+  * The time value of the specified date.
   *
   * @param {Date} d: The date to calculate the value of
   */
   val: function(d) {
-    return d.Y || (d.Y = later.date.getYear.call(d));
+    return d.fd || (d.fd = d.getTime());
   },
 
   /**
@@ -37,56 +37,52 @@ later.year = later.Y = {
   * @param {Integer} val: The value to validate
   */
   isValid: function(d, val) {
-    return later.Y.val(d) === val;
+    return later.fd.val(d) === val;
   },
 
   /**
-  * The minimum and maximum valid values for the year constraint.
-  * If max is past 2099, later.D.extent must be fixed to calculate leap years
-  * correctly.
+  * The minimum and maximum valid time values.
   */
   extent: function() {
-    return [1970, 2099];
+    return [0, 32503680000000];
   },
 
   /**
-  * The start of the year of the specified date.
+  * Returns the specified date.
   *
   * @param {Date} d: The specified date
   */
   start: function(d) {
-    return d.YStart || (d.YStart = later.date.next(later.Y.val(d)));
+    return d;
   },
 
   /**
-  * The end of the year of the specified date.
+  * Returns the specified date.
   *
   * @param {Date} d: The specified date
   */
   end: function(d) {
-    return d.YEnd || (d.YEnd = later.date.prev(later.Y.val(d)));
+    return d;
   },
 
   /**
-  * Returns the start of the next instance of the year value indicated.
+  * Returns the start of the next instance of the time value indicated.
   *
   * @param {Date} d: The starting date
   * @param {int} val: The desired value, must be within extent
   */
   next: function(d, val) {
-    return val > later.Y.val(d) && val <= later.Y.extent()[1] ?
-      later.date.next(val) : later.NEVER;
+    return later.fd.val(d) < val ? new Date(val) : later.NEVER;
   },
 
   /**
-  * Returns the end of the previous instance of the year value indicated.
+  * Returns the end of the previous instance of the time value indicated.
   *
   * @param {Date} d: The starting date
   * @param {int} val: The desired value, must be within extent
   */
   prev: function(d, val) {
-    return val < later.Y.val(d) && val >= later.Y.extent()[0] ?
-      later.date.prev(val) : later.NEVER;
+    return later.fd.val(d) > val ? new Date(val) : later.NEVER;
   }
 
 };

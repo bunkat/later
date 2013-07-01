@@ -5,6 +5,38 @@ describe('Recur Examples', function() {
 
   describe('instances', function() {
 
+    it('At 11:30am on March 21, 2013', function() {
+      later.date.UTC();
+
+      var sched = later.parse.recur().on(new Date('2013-03-21T11:30:00')).fullDate();
+
+      var start = new Date('2013-03-11T03:05:23Z'),
+          end = new Date('2013-04-21T03:40:10Z'),
+          expected = new Date('2013-03-21T11:30:00Z');
+
+      var next = later.schedule(sched).next(1, start, end);
+      next.should.eql(expected);
+
+      var prev = later.schedule(sched).prev(1, end, start);
+      prev.should.eql(expected);
+    });
+
+    it('At 11:30am on March 21, 2013 starting past the date should not occur', function() {
+      later.date.UTC();
+
+      var sched = later.parse.recur().on(new Date('2013-03-21T11:30:00')).fullDate();
+
+      var start = new Date('2013-03-31T03:05:23Z'),
+          end = new Date('2013-02-21T03:40:10Z'),
+          expected = later.NEVER;
+
+      var next = later.schedule(sched).next(1, start, end);
+      next.should.eql(expected);
+
+      var prev = later.schedule(sched).prev(1, end, start);
+      prev.should.eql(expected);
+    });
+
     it('Every 5 minutes', function() {
       later.date.UTC();
 
@@ -520,7 +552,7 @@ describe('Recur Examples', function() {
       var start = new Date('2013-03-21T03:05:23Z'),
           end = new Date('2013-03-21T10:40:10Z');
 
-      should.not.exist(later.schedule(sched).nextRange(1, start, end));
+      later.schedule(sched).nextRange(1, start, end).should.eql(later.NEVER);
     });
 
     it('Every second after 30 minutes except seconds multiples of 5', function() {

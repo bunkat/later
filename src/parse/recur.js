@@ -380,7 +380,7 @@ later.parse.recur = function () {
 
     /**
     * Year time period, denotes the four digit year.
-    * Minimum value is 1970, maximum value is 2450 (arbitrary)
+    * Minimum value is 1970, maximum value is Jan 1, 2100 (arbitrary)
     *
     * recur().on(2011, 2012, 2013).year();
     *
@@ -388,6 +388,23 @@ later.parse.recur = function () {
     */
     year: function () {
       add('Y', 1970, 2450);
+      return this;
+    },
+
+    /**
+    * Full date period, denotes a full date and time.
+    * Minimum value is Jan 1, 1970, maximum value is Jan 1, 2100 (arbitrary)
+    *
+    * recur().on(new Date(2013, 3, 2, 10, 30, 0)).fullDate();
+    *
+    * @api public
+    */
+    fullDate: function () {
+      for (var i = 0, len = values.length; i < len; i++) {
+        values[i] = values[i].getTime();
+      }
+
+      add('fd');
       return this;
     },
 

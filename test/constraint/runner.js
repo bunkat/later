@@ -58,7 +58,7 @@ module.exports = runner = function (later, constraint) {
       // be at the start of the time period
       // if check is hack to support year constraints which can return undefined
       if(constraint.name === 'year' && (amt <= constraint.val(date) || amt > later.Y.extent()[1])) {
-        should.not.exist(next);
+        next.should.eql(later.NEVER);
       }
       else {
         constraint.isValid(next, ex).should.eql(true);
@@ -93,7 +93,7 @@ module.exports = runner = function (later, constraint) {
       // be at the start of the time period
       // if check is hack to support year constraints which can return undefined
       if(constraint.name === 'year' && (amt >= constraint.val(date) || amt < later.Y.extent()[0])) {
-        should.not.exist(prev);
+        prev.should.eql(later.NEVER);
       }
       else {
         constraint.isValid(prev, ex).should.eql(true);

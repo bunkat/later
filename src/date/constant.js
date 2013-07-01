@@ -18,3 +18,6 @@ later.WEEK = later.DAY * 7;
 
 // Array of days in each month, must be corrected for leap years
 later.DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+// constant for specifying that a schedule can never occur
+later.NEVER = 0;

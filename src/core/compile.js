@@ -71,6 +71,7 @@ later.compile = function(schedDef) {
         // verify all of the constraints in order since we want to make the
         // largest jumps possible to find the first valid value
         for(var i = 0; i < constraintsLen; i++) {
+
           var constraint = constraints[i].constraint,
               curVal = constraint.val(next),
               extent = constraint.extent(next),
@@ -84,10 +85,13 @@ later.compile = function(schedDef) {
         }
       }
 
-      if(!next) return undefined;
+      if(next !== later.NEVER) {
+        next = dir === 'next' ? tickConstraint.start(next) :
+          tickConstraint.end(next);
+      }
 
       // if next, move to start of time period. needed when moving backwards
-      return dir === 'next' ? tickConstraint.start(next) : tickConstraint.end(next);
+      return next;
     },
 
     /**

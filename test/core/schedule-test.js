@@ -53,14 +53,14 @@ describe('Schedule', function() {
         ]);
     });
 
-    it('should return undefined if no next valid date exists', function() {
+    it('should return later.NEVER if no next valid date exists', function() {
       var s = {schedules: [{Y:[2012]}]};
-      should.equal(schedule(s).next(1, d), undefined);
+      should.equal(schedule(s).next(1, d), later.NEVER);
     });
 
-    it('should return undefined if end date precludes a valid schedule', function() {
+    it('should return later.NEVER if end date precludes a valid schedule', function() {
       var s = {schedules: [{Y:[2017]}]};
-      should.equal(schedule(s).next(1, d, e), undefined);
+      should.equal(schedule(s).next(1, d, e), later.NEVER);
     });
 
   });
@@ -93,28 +93,46 @@ describe('Schedule', function() {
         ]);
     });
 
-    it('should return undefined if no prev valid date exists', function() {
+    it('should return later.NEVER if no prev valid date exists', function() {
       var s = {schedules: [{Y:[2017]}]};
-      should.equal(schedule(s).prev(1,d), undefined);
+      should.equal(schedule(s).prev(1,d), later.NEVER);
     });
 
-    it('should return undefined if end date precludes a valid schedule', function() {
+    it('should return later.NEVER if end date precludes a valid schedule', function() {
       var s = {schedules: [{Y:[2009]}]};
-      should.equal(schedule(s).prev(1,d, e), undefined);
+      should.equal(schedule(s).prev(1,d, e), later.NEVER);
     });
 
   });
 
   describe('nextRange', function() {
-    var d = new Date('2013-03-21T00:00:05Z'),
-        e = new Date('2016-01-01T00:00:05Z');
-
     it('should return next valid range if one exists', function() {
+      var d = new Date('2013-03-21T00:00:05Z'),
+          e = new Date('2016-01-01T00:00:05Z');
+
       var s = {schedules: [{Y:[2015,2016,2017]}]};
       schedule(s).nextRange(1, d).should.eql([
         new Date('2015-01-01T00:00:00Z'),
         new Date('2018-01-01T00:00:00Z')
       ]);
+    });
+
+    it('should correctly calculate ranges', function() {
+      var d = new Date('2013-03-21T00:00:05Z');
+
+      var s = {
+          schedules: [ { dw: [ 2, 3, 4, 5, 6 ], h_a: [ 8 ], h_b: [ 16 ] } ],
+          exceptions:
+             [ { fd_a: [ 1362420000000 ], fd_b: [ 1362434400000 ] },
+               { fd_a: [ 1363852800000 ], fd_b: [ 1363860000000 ] },
+               { fd_a: [ 1364499200000 ], fd_b: [ 1364516000000 ] } ]
+        };
+
+      schedule(s).nextRange(1, d).should.eql([
+        new Date('2013-03-21T10:00:00Z'),
+        new Date('2013-03-21T16:00:00Z')
+      ]);
+
     });
 
   });
