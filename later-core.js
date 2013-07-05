@@ -1,6 +1,6 @@
 later = function() {
   var later = {
-    version: "1.1.0"
+    version: "1.1.1"
   };
   if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function(searchElement) {
@@ -646,7 +646,7 @@ later = function() {
         if (isRange) {
           var maxEndDate = calcMaxEndDate(exceptStarts, compare);
           end = calcEnd(dir, schedules, schedStarts, next, maxEndDate);
-          results.push(dir === "next" ? [ new Date(Math.max(startDate, next)), end ? new Date(endDate ? Math.min(end, endDate) : end) : undefined ] : [ new Date(endDate ? Math.max(endDate, end.getTime() + later.SEC) : end.getTime() + later.SEC), end ? new Date(Math.min(startDate, next.getTime() + later.SEC)) : undefined ]);
+          results.push(dir === "next" ? [ new Date(Math.max(startDate, next)), end ? new Date(endDate ? Math.min(end, endDate) : end) : undefined ] : [ end ? new Date(endDate ? Math.max(endDate, end.getTime() + later.SEC) : end.getTime() + later.SEC) : undefined, new Date(Math.min(startDate, next.getTime() + later.SEC)) ]);
           if (!end) break;
           updateNextStarts(dir, schedules, schedStarts, end);
         } else {

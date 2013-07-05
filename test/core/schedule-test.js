@@ -161,6 +161,17 @@ describe('Schedule', function() {
       ]);
     });
 
+    it('should return undefined as end if there is no end date', function() {
+      var d = new Date('2013-03-21T00:00:05Z');
+
+      var s = {
+          schedules: [ { fd_b: [ 1363824005000 ] } ]
+        };
+
+      schedule(s).prevRange(3, d).should.eql([
+        [undefined, new Date('2013-03-21T00:00:05Z')]
+      ]);
+    });
   });
 
 });

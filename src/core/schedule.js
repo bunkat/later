@@ -78,8 +78,8 @@ later.schedule = function(sched) {
             end ? new Date(endDate ? Math.min(end, endDate) : end) : undefined
           ] :
           [
-            new Date(endDate ? Math.max(endDate, end.getTime()+later.SEC) : end.getTime()+later.SEC),
-            end ? new Date(Math.min(startDate, next.getTime()+later.SEC)) : undefined
+            end ? (new Date(endDate ? Math.max(endDate, end.getTime()+later.SEC) : end.getTime()+later.SEC)) : undefined,
+            new Date(Math.min(startDate, next.getTime()+later.SEC))
           ]
         );
 
