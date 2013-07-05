@@ -75,14 +75,15 @@ later.schedule = function(sched) {
         results.push( dir === 'next' ?
           [
             new Date(Math.max(startDate, next)),
-            new Date(endDate ? Math.min(end, endDate) : end)
+            end ? new Date(endDate ? Math.min(end, endDate) : end) : undefined
           ] :
           [
             new Date(endDate ? Math.max(endDate, end.getTime()+later.SEC) : end.getTime()+later.SEC),
-            new Date(Math.min(startDate, next.getTime()+later.SEC))
+            end ? new Date(Math.min(startDate, next.getTime()+later.SEC)) : undefined
           ]
         );
 
+        if(!end) break; // last iteration valid until the end of time
         updateNextStarts(dir, schedules, schedStarts, end);
       }
       // otherwise store the start date and tick the start dates
@@ -322,8 +323,8 @@ later.schedule = function(sched) {
   */
   function compareFn(dir) {
     return dir === 'next' ?
-      function(a,b) { return a.getTime() > b.getTime(); } :
-      function(a,b) { return b.getTime() > a.getTime(); };
+      function(a,b) { return !b || (a.getTime() > b.getTime()); } :
+      function(a,b) { return !a || (b.getTime() > a.getTime()); };
   }
 
   /**

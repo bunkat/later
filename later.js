@@ -646,7 +646,8 @@ later = function() {
         if (isRange) {
           var maxEndDate = calcMaxEndDate(exceptStarts, compare);
           end = calcEnd(dir, schedules, schedStarts, next, maxEndDate);
-          results.push(dir === "next" ? [ new Date(Math.max(startDate, next)), new Date(endDate ? Math.min(end, endDate) : end) ] : [ new Date(endDate ? Math.max(endDate, end.getTime() + later.SEC) : end.getTime() + later.SEC), new Date(Math.min(startDate, next.getTime() + later.SEC)) ]);
+          results.push(dir === "next" ? [ new Date(Math.max(startDate, next)), end ? new Date(endDate ? Math.min(end, endDate) : end) : undefined ] : [ new Date(endDate ? Math.max(endDate, end.getTime() + later.SEC) : end.getTime() + later.SEC), end ? new Date(Math.min(startDate, next.getTime() + later.SEC)) : undefined ]);
+          if (!end) break;
           updateNextStarts(dir, schedules, schedStarts, end);
         } else {
           results.push(dir === "next" ? new Date(Math.max(startDate, next)) : getStart(schedules, schedStarts, next, endDate));
@@ -754,9 +755,9 @@ later = function() {
     }
     function compareFn(dir) {
       return dir === "next" ? function(a, b) {
-        return a.getTime() > b.getTime();
+        return !b || a.getTime() > b.getTime();
       } : function(a, b) {
-        return b.getTime() > a.getTime();
+        return !a || b.getTime() > a.getTime();
       };
     }
     function findNext(arr, compare) {
