@@ -300,7 +300,7 @@ later.schedule = function(sched) {
         var end = schedArr[i].end(dir, start);
 
         // if the end date is past the maxEndDate, just return the maxEndDate
-        if(maxEndDate && compare(end, maxEndDate)) {
+        if(maxEndDate && (!end || compare(end, maxEndDate))) {
           return maxEndDate;
         }
 
