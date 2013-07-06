@@ -26,6 +26,7 @@ console.log(JSON.stringify({
     "uglify-js": "*",
     "benchmark": "*"
   },
+  "license": "MIT",
   "scripts": {
     "test": "./node_modules/.bin/mocha test/**/*-test.js"
   }
