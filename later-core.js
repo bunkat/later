@@ -1,6 +1,6 @@
 later = function() {
   var later = {
-    version: "1.1.1"
+    version: "1.1.2"
   };
   if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function(searchElement) {
@@ -743,7 +743,7 @@ later = function() {
         var start = startsArr[i];
         if (start && start.getTime() === startDate.getTime()) {
           var end = schedArr[i].end(dir, start);
-          if (maxEndDate && compare(end, maxEndDate)) {
+          if (maxEndDate && (!end || compare(end, maxEndDate))) {
             return maxEndDate;
           }
           if (!result || compare(end, result)) {

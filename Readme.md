@@ -1,4 +1,4 @@
-# [Later v1.1.1](http://bunkat.github.io/later/) [![Build Status](https://travis-ci.org/bunkat/later.png)](https://travis-ci.org/bunkat/later)
+# [Later v1.1.2](http://bunkat.github.io/later/) [![Build Status](https://travis-ci.org/bunkat/later.png)](https://travis-ci.org/bunkat/later)
 
 _Later_ is a library for describing recurring schedules and calculating their future occurrences.  It supports a very flexible schedule definition including support for composite schedules and schedule exceptions. Create new schedules manually, via Cron expression, via text expressions, or using a fully chainable API.
 
@@ -53,7 +53,7 @@ Have a bug or a feature request? [Please open a new issue](https://github.com/bu
 
 ## Change Log
 
-### Later v1.1.1
+### Later v1.1.1 and v1.1.2
 
 * Fixed handling of ranged schedules which never go invalid. End date is undefined for these types of schedules.
 
