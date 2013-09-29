@@ -147,6 +147,20 @@ describe('Schedule', function() {
       ]);
     });
 
+    // issue #27
+    it('should merge valid ranges across anded schedule definitions', function() {
+      var d = new Date("Sat Sep 28 2013 11:00:00 GMT+0600 (YEKT)");
+
+      var s = later.parse.recur()
+        .every().hour().between(0,8).onWeekday()
+        .and()
+        .onWeekend();
+
+      schedule(s).nextRange(2, d).should.eql([
+        [new Date('2013-09-28T05:00:00Z'), new Date('2013-09-30T09:00:00Z')],
+        [new Date('2013-10-01T00:00:00Z'), new Date('2013-10-01T09:00:00Z')]
+      ]);
+    });
   });
 
   describe('prevRange', function() {
@@ -170,6 +184,21 @@ describe('Schedule', function() {
 
       schedule(s).prevRange(3, d).should.eql([
         [undefined, new Date('2013-03-21T00:00:05Z')]
+      ]);
+    });
+
+    // issue #27
+    it('should merge valid ranges across anded schedule definitions', function() {
+      var d = new Date("2013-09-30T09:00:00Z");
+
+      var s = later.parse.recur()
+        .every().hour().between(0,8).onWeekday()
+        .and()
+        .onWeekend();
+
+      schedule(s).prevRange(2, d).should.eql([
+        [new Date('2013-09-28T00:00:00Z'), new Date('2013-09-30T09:00:00Z')],
+        [new Date('2013-09-27T00:00:00Z'), new Date('2013-09-27T09:00:00Z')]
       ]);
     });
   });

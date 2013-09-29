@@ -627,7 +627,7 @@ later = function() {
       exceptions.push(later.compile(sched.exceptions[j]));
     }
     function getInstances(dir, count, startDate, endDate, isRange) {
-      var compare = compareFn(dir), loopCount = count, maxAttempts = 1e3, schedStarts = [], exceptStarts = [], next, end, results = [];
+      var compare = compareFn(dir), loopCount = count, maxAttempts = 1e3, schedStarts = [], exceptStarts = [], next, end, results = [], isForward = dir === "next", lastResult, rStart = isForward ? 0 : 1, rEnd = isForward ? 1 : 0;
       startDate = startDate ? new Date(startDate) : new Date();
       if (!startDate || !startDate.getTime()) throw new Error("Invalid start date.");
       setNextStarts(dir, schedules, schedStarts, startDate);
@@ -646,11 +646,18 @@ later = function() {
         if (isRange) {
           var maxEndDate = calcMaxEndDate(exceptStarts, compare);
           end = calcEnd(dir, schedules, schedStarts, next, maxEndDate);
-          results.push(dir === "next" ? [ new Date(Math.max(startDate, next)), end ? new Date(endDate ? Math.min(end, endDate) : end) : undefined ] : [ end ? new Date(endDate ? Math.max(endDate, end.getTime() + later.SEC) : end.getTime() + later.SEC) : undefined, new Date(Math.min(startDate, next.getTime() + later.SEC)) ]);
+          r = isForward ? [ new Date(Math.max(startDate, next)), end ? new Date(endDate ? Math.min(end, endDate) : end) : undefined ] : [ end ? new Date(endDate ? Math.max(endDate, end.getTime() + later.SEC) : end.getTime() + later.SEC) : undefined, new Date(Math.min(startDate, next.getTime() + later.SEC)) ];
+          if (lastResult && r[rStart].getTime() === lastResult[rEnd].getTime()) {
+            lastResult[rEnd] = r[rEnd];
+            loopCount++;
+          } else {
+            lastResult = r;
+            results.push(lastResult);
+          }
           if (!end) break;
           updateNextStarts(dir, schedules, schedStarts, end);
         } else {
-          results.push(dir === "next" ? new Date(Math.max(startDate, next)) : getStart(schedules, schedStarts, next, endDate));
+          results.push(isForward ? new Date(Math.max(startDate, next)) : getStart(schedules, schedStarts, next, endDate));
           tickStarts(dir, schedules, schedStarts, next);
         }
         loopCount--;
