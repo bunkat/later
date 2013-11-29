@@ -998,6 +998,9 @@ later = function() {
       return isHash(a) && !isHash(b) ? 1 : 0;
     }
     function parseExpr(expr) {
+      if (expr === "* * * * * *") {
+        expr = "0/1 * * * * *";
+      }
       var schedule = {
         schedules: [ {} ],
         exceptions: []

@@ -5,9 +5,15 @@ describe('Parse Cron', function() {
 
 	describe('seconds', function() {
 
-		it('should parse asterisk to mean any value', function() {
+		it('should parse all asterisk to mean every second', function() {
 			var p = parse('* * * * * *', true);
-			p.schedules[0].should.not.have.ownProperty('s');
+			p.schedules[0].should.eql({s: [
+				0,1,2,3,4,5,6,7,8,9,
+				10,11,12,13,14,15,16,17,18,19,
+				20,21,22,23,24,25,26,27,28,29,
+				30,31,32,33,34,35,36,37,38,39,
+				40,41,42,43,44,45,46,47,48,49,
+				50,51,52,53,54,55,56,57,58,59]});
 		});
 
 		it('should parse a single value', function() {
@@ -49,8 +55,13 @@ describe('Parse Cron', function() {
 	describe('minutes', function() {
 
 		it('should parse asterisk to mean any value', function() {
-			var p = parse('* * * * * *', true);
+			var p = parse('0 * * * * *', true);
 			p.schedules[0].should.not.have.ownProperty('m');
+		});
+
+		it('should parse all asterisk to mean every minute at zero seconds', function() {
+			var p = parse('* * * * *');
+			p.schedules[0].should.eql({s: [0]});
 		});
 
 		it('should parse a single value', function() {
@@ -92,7 +103,7 @@ describe('Parse Cron', function() {
 	describe('hours', function() {
 
 		it('should parse asterisk to mean any value', function() {
-			var p = parse('* * * * * *', true);
+			var p = parse('* 0 * * * *', true);
 			p.schedules[0].should.not.have.ownProperty('h');
 		});
 
@@ -135,7 +146,7 @@ describe('Parse Cron', function() {
 	describe('day of month', function() {
 
 		it('should parse asterisk to mean any value', function() {
-			var p = parse('* * * * * *', true);
+			var p = parse('0 0 0 * * *', true);
 			p.schedules[0].should.not.have.ownProperty('D');
 		});
 
@@ -202,7 +213,7 @@ describe('Parse Cron', function() {
 	describe('months', function() {
 
 		it('should parse asterisk to mean any value', function() {
-			var p = parse('* * * * * *', true);
+			var p = parse('0 0 0 0 * *', true);
 			p.schedules[0].should.not.have.ownProperty('M');
 		});
 
@@ -256,7 +267,7 @@ describe('Parse Cron', function() {
 	describe('day of week', function() {
 
 		it('should parse asterisk to mean any value', function() {
-			var p = parse('* * * * * *', true);
+			var p = parse('0 0 0 0 0 *', true);
 			p.schedules[0].should.not.have.ownProperty('d');
 		});
 
@@ -361,7 +372,7 @@ describe('Parse Cron', function() {
 	describe('years', function() {
 
 		it('should parse asterisk to mean any value', function() {
-			var p = parse('* * * * * * *', true);
+			var p = parse('0 0 0 0 0 0 *', true);
 			p.schedules[0].should.not.have.ownProperty('Y');
 		});
 

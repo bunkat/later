@@ -233,6 +233,11 @@ later.parse.cron = function (expr, hasSeconds) {
   * @param {String} expr: The cron expression to parse
   */
   function parseExpr(expr) {
+    // replace every minute expression with one that parses
+    if (expr === '* * * * * *') {
+      expr = '0/1 * * * * *';
+    }
+
     var schedule = {schedules: [{}], exceptions: []},
         components = expr.split(' '),
         field, f, component, items;
