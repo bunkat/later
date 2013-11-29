@@ -1,6 +1,6 @@
 later = function() {
   var later = {
-    version: "1.1.4"
+    version: "1.1.5"
   };
   if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function(searchElement) {
