@@ -1,6 +1,6 @@
 later = function() {
   var later = {
-    version: "1.1.5"
+    version: "1.1.6"
   };
   if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function(searchElement) {
@@ -566,7 +566,8 @@ later = function() {
       constraintsLen++;
     }
     constraints.sort(function(a, b) {
-      return a.constraint.range < b.constraint.range;
+      var ra = a.constraint.range, rb = b.constraint.range;
+      return rb < ra ? -1 : rb > ra ? 1 : 0;
     });
     tickConstraint = constraints[constraintsLen - 1].constraint;
     function compareFn(dir) {
