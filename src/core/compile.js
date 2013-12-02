@@ -30,7 +30,8 @@ later.compile = function(schedDef) {
   // always skip the largest block of time possible to find the next valid
   // value)
   constraints.sort(function(a,b) {
-    return a.constraint.range < b.constraint.range;
+    var ra = a.constraint.range, rb = b.constraint.range;
+    return (rb < ra) ? -1 : (rb > ra) ? 1 : 0;
   });
 
   // this is the smallest constraint, we use this one to tick the schedule when
