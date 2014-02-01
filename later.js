@@ -763,9 +763,9 @@ later = function() {
     }
     function compareFn(dir) {
       return dir === "next" ? function(a, b) {
-        return !b || a.getTime() > b.getTime();
+        return !a ? true : (!b || a.getTime() > b.getTime());
       } : function(a, b) {
-        return !a || b.getTime() > a.getTime();
+        return !b ? true : (!a || b.getTime() > a.getTime());
       };
     }
     function findNext(arr, compare) {
