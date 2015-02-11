@@ -25,7 +25,7 @@ Using bower:
 
 To build the minified javascript files for _later_, run `npm install` to install dependencies and then:
 
-    $ make build
+    $ make all
 
 ## Running tests
 
