@@ -135,7 +135,7 @@
   var sched = later.parse.text('every 5 mins'),
       occurrences = later.schedule(sched).next(10);
 
-  for(var i = 0, i &lt; 10; i++) {
+  for(var i = 0; i &lt; 10; i++) {
     console.log(occurrences[i]);
   }
 </pre>
