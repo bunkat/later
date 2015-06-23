@@ -22,8 +22,12 @@ later.setTimeout = function(fn, sched) {
   */
   function scheduleTimeout() {
     var now = Date.now(),
-        next = s.next(2, now),
-        diff = next[0].getTime() - now;
+        next = s.next(2, now);
+    //make sure there actually is a next occurence before trying to call .getTime() on it
+    if(!next[0]){
+     return;
+    }
+    var diff = next[0].getTime() - now;
 
     // minimum time to fire is one second, use next occurrence instead
     if(diff < 1000) {
