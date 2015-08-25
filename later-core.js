@@ -630,7 +630,8 @@ later = function() {
     function getInstances(dir, count, startDate, endDate, isRange) {
       var compare = compareFn(dir), loopCount = count, maxAttempts = 1e3, schedStarts = [], exceptStarts = [], next, end, results = [], isForward = dir === "next", lastResult, rStart = isForward ? 0 : 1, rEnd = isForward ? 1 : 0;
       startDate = startDate ? new Date(startDate) : new Date();
-      if (!startDate || !startDate.getTime()) throw new Error("Invalid start date.");
+      var time = startDate.getTime();
+      if (!startDate || (!time && time !== 0)) throw new Error("Invalid start date.");
       setNextStarts(dir, schedules, schedStarts, startDate);
       setRangeStarts(dir, exceptions, exceptStarts, startDate);
       while (maxAttempts-- && loopCount && (next = findNext(schedStarts, compare))) {

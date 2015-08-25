@@ -49,7 +49,8 @@ later.schedule = function(sched) {
         rEnd = isForward ? 1 : 0;
 
     startDate = startDate ? new Date(startDate) : new Date();
-    if(!startDate || !startDate.getTime()) throw new Error('Invalid start date.');
+    var time = startDate.getTime();
+    if (!startDate || (!time && time !== 0)) throw new Error("Invalid start date.");
 
     // Step 1: calculate the earliest start dates for each schedule and exception
     setNextStarts(dir, schedules, schedStarts, startDate);
