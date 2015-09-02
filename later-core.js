@@ -1,6 +1,7 @@
 later = function() {
+  "use strict";
   var later = {
-    version: "1.1.6"
+    version: "1.1.7"
   };
   if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function(searchElement) {
@@ -647,7 +648,7 @@ later = function() {
         if (isRange) {
           var maxEndDate = calcMaxEndDate(exceptStarts, compare);
           end = calcEnd(dir, schedules, schedStarts, next, maxEndDate);
-          r = isForward ? [ new Date(Math.max(startDate, next)), end ? new Date(endDate ? Math.min(end, endDate) : end) : undefined ] : [ end ? new Date(endDate ? Math.max(endDate, end.getTime() + later.SEC) : end.getTime() + later.SEC) : undefined, new Date(Math.min(startDate, next.getTime() + later.SEC)) ];
+          var r = isForward ? [ new Date(Math.max(startDate, next)), end ? new Date(endDate ? Math.min(end, endDate) : end) : undefined ] : [ end ? new Date(endDate ? Math.max(endDate, end.getTime() + later.SEC) : end.getTime() + later.SEC) : undefined, new Date(Math.min(startDate, next.getTime() + later.SEC)) ];
           if (lastResult && r[rStart].getTime() === lastResult[rEnd].getTime()) {
             lastResult[rEnd] = r[rEnd];
             loopCount++;
@@ -663,7 +664,17 @@ later = function() {
         }
         loopCount--;
       }
+      for (var i = 0, len = results.length; i < len; i++) {
+        var result = results[i];
+        results[i] = Object.prototype.toString.call(result) === "[object Array]" ? [ cleanDate(result[0]), cleanDate(result[1]) ] : cleanDate(result);
+      }
       return results.length === 0 ? later.NEVER : count === 1 ? results[0] : results;
+    }
+    function cleanDate(d) {
+      if (d instanceof Date && !isNaN(d.valueOf())) {
+        return new Date(d);
+      }
+      return undefined;
     }
     function setNextStarts(dir, schedArr, startsArr, startDate) {
       for (var i = 0, len = schedArr.length; i < len; i++) {
@@ -797,9 +808,16 @@ later = function() {
   };
   later.setTimeout = function(fn, sched) {
     var s = later.schedule(sched), t;
-    scheduleTimeout();
+    if (fn) {
+      scheduleTimeout();
+    }
     function scheduleTimeout() {
-      var now = Date.now(), next = s.next(2, now), diff = next[0].getTime() - now;
+      var now = Date.now(), next = s.next(2, now);
+      if (!next[0] || !next[1]) {
+        t = undefined;
+        return;
+      }
+      var diff = next[0].getTime() - now;
       if (diff < 1e3) {
         diff = next[1].getTime() - now;
       }
@@ -810,13 +828,19 @@ later = function() {
       }
     }
     return {
+      isDone: function() {
+        return !t;
+      },
       clear: function() {
         clearTimeout(t);
       }
     };
   };
   later.setInterval = function(fn, sched) {
-    var t = later.setTimeout(scheduleTimeout, sched), done = false;
+    if (!fn) {
+      return;
+    }
+    var t = later.setTimeout(scheduleTimeout, sched), done = t.isDone();
     function scheduleTimeout() {
       if (!done) {
         fn();
@@ -824,6 +848,9 @@ later = function() {
       }
     }
     return {
+      isDone: function() {
+        return t.isDone();
+      },
       clear: function() {
         done = true;
         t.clear();

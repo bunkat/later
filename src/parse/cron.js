@@ -92,9 +92,7 @@ later.parse.cron = function (expr, hasSeconds) {
       i += inc || 1;
     }
 
-    console.log(sched[name]);
     sched[name].sort(function(a,b) { return a - b; });
-    console.log(sched[name]);
   }
 
   /**
