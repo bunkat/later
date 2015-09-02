@@ -807,10 +807,13 @@ later = function() {
   };
   later.setTimeout = function(fn, sched) {
     var s = later.schedule(sched), t;
-    scheduleTimeout();
+    if (fn) {
+      scheduleTimeout();
+    }
     function scheduleTimeout() {
       var now = Date.now(), next = s.next(2, now);
       if (!next[0] || !next[1]) {
+        t = undefined;
         return;
       }
       var diff = next[0].getTime() - now;
@@ -824,13 +827,19 @@ later = function() {
       }
     }
     return {
+      isDone: function() {
+        return !t;
+      },
       clear: function() {
         clearTimeout(t);
       }
     };
   };
   later.setInterval = function(fn, sched) {
-    var t = later.setTimeout(scheduleTimeout, sched), done = false;
+    if (!fn) {
+      return;
+    }
+    var t = later.setTimeout(scheduleTimeout, sched), done = t.isDone();
     function scheduleTimeout() {
       if (!done) {
         fn();
@@ -838,6 +847,9 @@ later = function() {
       }
     }
     return {
+      isDone: function() {
+        return t.isDone();
+      },
       clear: function() {
         done = true;
         t.clear();

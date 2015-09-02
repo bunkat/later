@@ -16,7 +16,7 @@ later.setInterval = function(fn, sched) {
   }
 
   var t = later.setTimeout(scheduleTimeout, sched),
-      done = false;
+      done = t.isDone();
 
   /**
   * Executes the specified function and then sets the timeout for the next
@@ -30,6 +30,10 @@ later.setInterval = function(fn, sched) {
   }
 
   return {
+
+    isDone: function() {
+      return t.isDone();
+    },
 
     /**
     * Clears the timeout.

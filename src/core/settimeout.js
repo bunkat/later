@@ -11,12 +11,11 @@
 */
 
 later.setTimeout = function(fn, sched) {
-  if (!fn) {
-    return;
-  }
 
   var s = later.schedule(sched), t;
-  scheduleTimeout();
+  if (fn) {
+    scheduleTimeout();
+  }
 
   /**
   * Schedules the timeout to occur. If the next occurrence is greater than the
@@ -28,6 +27,7 @@ later.setTimeout = function(fn, sched) {
         next = s.next(2, now);
 
     if (!next[0] || !next[1]) {
+      t = undefined;
       return;
     }
 
@@ -47,6 +47,10 @@ later.setTimeout = function(fn, sched) {
   }
 
   return {
+
+    isDone: function() {
+      return !t;
+    },
 
     /**
     * Clears the timeout.
