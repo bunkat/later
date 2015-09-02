@@ -157,6 +157,11 @@ describe('Parse Cron', function() {
 			var p = parse('* 		*    5/10 *   * *', true);
 			p.schedules[0].should.eql({h: [5, 15]});
 		});
+
+		it('should parse issue #107 correctly', function() {
+			var p = parse('* */4,16,18-20 * * *');
+			p.schedules[0].should.eql({s: [0], h: [0, 4, 8, 12, 16, 18, 19, 20]});
+		});
 	});
 
 	describe('day of month', function() {

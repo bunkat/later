@@ -963,6 +963,11 @@ later = function() {
         }
         i += inc || 1;
       }
+      console.log(sched[name]);
+      sched[name].sort(function(a, b) {
+        return a - b;
+      });
+      console.log(sched[name]);
     }
     function addHash(schedules, curSched, value, hash) {
       if (curSched.d && !curSched.dc || curSched.dc && curSched.dc.indexOf(hash) < 0) {
@@ -1023,7 +1028,7 @@ later = function() {
       return item.indexOf("#") > -1 || item.indexOf("L") > 0;
     }
     function itemSorter(a, b) {
-      return isHash(a) && !isHash(b) ? 1 : +a > +b;
+      return isHash(a) && !isHash(b) ? 1 : a - b;
     }
     function parseExpr(expr) {
       if (expr === "* * * * * *") {

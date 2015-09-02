@@ -91,6 +91,10 @@ later.parse.cron = function (expr, hasSeconds) {
       }
       i += inc || 1;
     }
+
+    console.log(sched[name]);
+    sched[name].sort(function(a,b) { return a - b; });
+    console.log(sched[name]);
   }
 
   /**
@@ -165,6 +169,7 @@ later.parse.cron = function (expr, hasSeconds) {
       // fix for issue #13, range may be single digit
       max = getValue(rangeSplit[1], offset, max) || max;
     }
+
     add(curSched, name, min, max, inc);
   }
 
@@ -223,7 +228,7 @@ later.parse.cron = function (expr, hasSeconds) {
 
 
   function itemSorter(a,b) {
-    return isHash(a) && !isHash(b) ? 1 : +a > +b;
+    return isHash(a) && !isHash(b) ? 1 : a - b;
   }
 
   /**
