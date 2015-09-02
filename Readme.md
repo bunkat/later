@@ -1,4 +1,4 @@
-# [Later v1.1.6](http://bunkat.github.io/later/) [![Build Status](https://travis-ci.org/bunkat/later.png)](https://travis-ci.org/bunkat/later)
+# [Later v1.1.7](http://bunkat.github.io/later/) [![Build Status](https://travis-ci.org/bunkat/later.png)](https://travis-ci.org/bunkat/later)
 
 _Later_ is a library for describing recurring schedules and calculating their future occurrences.  It supports a very flexible schedule definition including support for composite schedules and schedule exceptions. Create new schedules manually, via Cron expression, via text expressions, or using a fully chainable API.
 
@@ -52,6 +52,10 @@ For more information on SemVer, please visit [http://semver.org/](http://semver.
 Have a bug or a feature request? [Please open a new issue](https://github.com/bunkat/later/issues).
 
 ## Change Log
+
+### Later v1.1.7
+
+* Various bug fixes
 
 ### Later v1.1.3
 
