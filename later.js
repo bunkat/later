@@ -1,4 +1,5 @@
 later = function() {
+  "use strict";
   var later = {
     version: "1.1.6"
   };
