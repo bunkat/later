@@ -223,7 +223,7 @@ later.parse.cron = function (expr, hasSeconds) {
 
 
   function itemSorter(a,b) {
-    return isHash(a) && !isHash(b) ? 1 : 0;
+    return isHash(a) && !isHash(b) ? 1 : +a > +b;
   }
 
   /**

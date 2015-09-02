@@ -26,6 +26,11 @@ describe('Parse Cron', function() {
 			p.schedules[0].should.eql({s: [1,5,10]});
 		});
 
+		it('should parse unsorted values and sort them', function() {
+			var p = parse('1,10,5 * * * * *', true);
+			p.schedules[0].should.eql({s: [1,5,10]});
+		});
+
 		it('should parse a range value', function() {
 			var p = parse('1-5 * * * * *', true);
 			p.schedules[0].should.eql({s: [1,2,3,4,5]});
@@ -70,7 +75,7 @@ describe('Parse Cron', function() {
 		});
 
 		it('should parse multiple values', function() {
-			var p = parse('* 1,5,10 * * * *', true);
+			var p = parse('* 10,5,1 * * * *', true);
 			p.schedules[0].should.eql({m: [1,5,10]});
 		});
 

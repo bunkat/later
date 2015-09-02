@@ -1006,7 +1006,7 @@ later = function() {
       return item.indexOf("#") > -1 || item.indexOf("L") > 0;
     }
     function itemSorter(a, b) {
-      return isHash(a) && !isHash(b) ? 1 : 0;
+      return isHash(a) && !isHash(b) ? 1 : +a > +b;
     }
     function parseExpr(expr) {
       if (expr === "* * * * * *") {
