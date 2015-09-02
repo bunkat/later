@@ -47,8 +47,8 @@ later.parse.cron = function (expr, hasSeconds) {
   * @param {Int,String} value: The value that should be parsed
   * @param {Int} offset: Any offset that must be added to the value
   */
-  function getValue(value, offset) {
-    return isNaN(value) ? NAMES[value] || null : +value + (offset || 0);
+  function getValue(value, offset, max) {
+    return isNaN(value) ? NAMES[value] || null : Math.min(+value + (offset || 0), max || 9999);
   }
 
   /**
@@ -160,10 +160,10 @@ later.parse.cron = function (expr, hasSeconds) {
     // parse x-y or * or 0
     if (range !== '*' && range !== '0') {
       var rangeSplit = range.split('-');
-      min = getValue(rangeSplit[0], offset);
+      min = getValue(rangeSplit[0], offset, max);
 
       // fix for issue #13, range may be single digit
-      max = getValue(rangeSplit[1], offset) || max;
+      max = getValue(rangeSplit[1], offset, max) || max;
     }
     add(curSched, name, min, max, inc);
   }
@@ -190,20 +190,20 @@ later.parse.cron = function (expr, hasSeconds) {
     }
 
     // parse x
-    if ((value = getValue(item, offset)) !== null) {
+    if ((value = getValue(item, offset, max)) !== null) {
       add(curSched, name, value, value);
     }
     // parse xW
-    else if ((value = getValue(item.replace('W', ''), offset)) !== null) {
+    else if ((value = getValue(item.replace('W', ''), offset, max)) !== null) {
       addWeekday(s, curSched, value);
     }
     // parse xL
-    else if ((value = getValue(item.replace('L', ''), offset)) !== null) {
+    else if ((value = getValue(item.replace('L', ''), offset, max)) !== null) {
       addHash(schedules, curSched, value, min-1);
     }
     // parse x#y
     else if ((split = item.split('#')).length === 2) {
-      value = getValue(split[0], offset);
+      value = getValue(split[0], offset, max);
       addHash(schedules, curSched, value, getValue(split[1]));
     }
     // parse x-y or x-y/z or */z or 0/z
