@@ -963,11 +963,9 @@ later = function() {
         }
         i += inc || 1;
       }
-      console.log(sched[name]);
       sched[name].sort(function(a, b) {
         return a - b;
       });
-      console.log(sched[name]);
     }
     function addHash(schedules, curSched, value, hash) {
       if (curSched.d && !curSched.dc || curSched.dc && curSched.dc.indexOf(hash) < 0) {

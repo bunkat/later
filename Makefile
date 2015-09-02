@@ -7,7 +7,7 @@ all: \
 	later-core.js \
 	later-core.min.js \
 	component.json \
-	bowser.json \
+	bower.json \
 	package.json
 
 .PHONY: clean all test test-cov
