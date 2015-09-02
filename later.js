@@ -1015,7 +1015,7 @@ later = function() {
       var schedule = {
         schedules: [ {} ],
         exceptions: []
-      }, components = expr.split(" "), field, f, component, items;
+      }, components = expr.replace(/(\s)+/g, " ").split(" "), field, f, component, items;
       for (field in FIELDS) {
         f = FIELDS[field];
         component = components[f[0]];

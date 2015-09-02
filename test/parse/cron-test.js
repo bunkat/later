@@ -55,6 +55,12 @@ describe('Parse Cron', function() {
 			var p = parse('5/15 * * * *', true);
 			p.schedules[0].should.eql({s: [5,20,35,50]});
 		});
+
+		it('should parse with various spaces and/or tabs', function() {
+			var p = parse('1-6/2    * * 		* * *', true);
+			p.schedules[0].should.eql({s: [1,3,5]});
+		});
+
 	});
 
 	describe('minutes', function() {
@@ -144,6 +150,11 @@ describe('Parse Cron', function() {
 
 		it('should parse a non-zero with increment value', function() {
 			var p = parse('* * 5/10 * * *', true);
+			p.schedules[0].should.eql({h: [5, 15]});
+		});
+
+		it('should parse with various spaces and/or tabs', function() {
+			var p = parse('* 		*    5/10 *   * *', true);
 			p.schedules[0].should.eql({h: [5, 15]});
 		});
 	});

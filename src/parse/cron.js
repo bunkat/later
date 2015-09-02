@@ -239,7 +239,7 @@ later.parse.cron = function (expr, hasSeconds) {
     }
 
     var schedule = {schedules: [{}], exceptions: []},
-        components = expr.split(' '),
+        components = expr.replace(/(\s)+/g, ' ').split(' '),
         field, f, component, items;
 
     for(field in FIELDS) {
