@@ -11,6 +11,9 @@
 */
 
 later.setTimeout = function(fn, sched) {
+  if (!fn) {
+    return;
+  }
 
   var s = later.schedule(sched), t;
   scheduleTimeout();

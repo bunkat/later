@@ -809,7 +809,11 @@ later = function() {
     var s = later.schedule(sched), t;
     scheduleTimeout();
     function scheduleTimeout() {
-      var now = Date.now(), next = s.next(2, now), diff = next[0].getTime() - now;
+      var now = Date.now(), next = s.next(2, now);
+      if (!next[0] || !next[1]) {
+        return;
+      }
+      var diff = next[0].getTime() - now;
       if (diff < 1e3) {
         diff = next[1].getTime() - now;
       }
