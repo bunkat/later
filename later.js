@@ -663,7 +663,17 @@ later = function() {
         }
         loopCount--;
       }
+      for (var i = 0, len = results.length; i < len; i++) {
+        var result = results[i];
+        results[i] = Object.prototype.toString.call(result) === "[object Array]" ? [ cleanDate(result[0]), cleanDate(result[1]) ] : cleanDate(result);
+      }
       return results.length === 0 ? later.NEVER : count === 1 ? results[0] : results;
+    }
+    function cleanDate(d) {
+      if (d instanceof Date && !isNaN(d.valueOf())) {
+        return new Date(d);
+      }
+      return undefined;
     }
     function setNextStarts(dir, schedArr, startsArr, startDate) {
       for (var i = 0, len = schedArr.length; i < len; i++) {

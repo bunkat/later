@@ -8,7 +8,7 @@
     "recur",
     "cron"
   ],
-  "author": "BunKat <bill@bunkat.com>",
+  "author": "BunKat <bill@levelstory.com>",
   "repository": {
     "type": "git",
     "url": "git://github.com/bunkat/later.git"
@@ -31,6 +31,6 @@
   },
   "license": "MIT",
   "scripts": {
-    "test": "./node_modules/.bin/mocha test/**/*-test.js"
+    "test": "./node_modules/.bin/mocha test/**/*-test.js --reporter dot --bail"
   }
 }

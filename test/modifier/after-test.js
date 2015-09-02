@@ -319,7 +319,7 @@ describe('Modifier After', function() {
           expected = new Date('2013-03-21T03:10:00Z'),
           actual = c.start('next', d);
 
-      actual.should.eql(expected);
+      actual.getTime().should.eql(expected.getTime());
     });
 
     it('should go the prev valid value when invalid', function() {
@@ -328,7 +328,7 @@ describe('Modifier After', function() {
           expected = new Date('2013-03-20T23:59:59Z'),
           actual = c.start('prev', d);
 
-      actual.should.eql(expected);
+      actual.getTime().should.eql(expected.getTime());
     });
 
     it('should go the start of constraint value when valid for prev', function() {
@@ -337,7 +337,7 @@ describe('Modifier After', function() {
           expected = new Date('2013-03-21T03:10:10Z'),
           actual = c.start('prev', d);
 
-      actual.should.eql(expected);
+      actual.getTime().should.eql(expected.getTime());
     });
 
     it('should go the start of constraint value when valid for next', function() {
@@ -346,7 +346,7 @@ describe('Modifier After', function() {
           expected = new Date('2013-03-21T03:10:10Z'),
           actual = c.start('next', d);
 
-      actual.should.eql(expected);
+      actual.getTime().should.eql(expected.getTime());
     });
 
     it('should go the end of the constraint', function() {
@@ -355,7 +355,7 @@ describe('Modifier After', function() {
           expected = new Date('2013-03-22T00:00:00Z'),
           actual = c.end('next', d);
 
-      actual.should.eql(expected);
+      actual.getTime().should.eql(expected.getTime());
     });
 
   });

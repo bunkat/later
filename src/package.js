@@ -28,6 +28,6 @@ console.log(JSON.stringify({
   },
   "license": "MIT",
   "scripts": {
-    "test": "./node_modules/.bin/mocha test/**/*-test.js"
+    "test": "./node_modules/.bin/mocha test/**/*-test.js --reporter dot --bail"
   }
 }, null, 2));

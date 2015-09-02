@@ -15,7 +15,10 @@ module.exports = runner = function (later, constraint) {
 
     it('should return ' + exString + ' for ' + dateString, function() {
       if(utc) later.date.UTC(); else later.date.localTime();
-      constraint[fn](date).should.eql(ex);
+      var actual = constraint[fn](date);
+      actual = actual instanceof Date ? actual.getTime() : actual;
+      ex = ex instanceof Date ? ex.getTime() : ex;
+      actual.should.eql(ex);
     });
   }
 
