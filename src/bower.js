@@ -11,23 +11,5 @@ console.log(JSON.stringify({
     "url" : "git://github.com/bunkat/later.git"
   },
   "main": "index.js",
-  "browserify": "index-browserify.js",
-  "jam": {
-    "main": "later.js",
-    "shim": {
-      "exports": "later"
-    }
-  },
-  "devDependencies": {
-    "smash": "~0.0.8",
-    "mocha": "*",
-    "should": ">=0.6.3",
-    "jslint": "*",
-    "uglify-js": "*",
-    "benchmark": "*"
-  },
-  "license": "MIT",
-  "scripts": {
-    "test": "./node_modules/.bin/mocha test/**/*-test.js"
-  }
+  "license": "MIT"
 }, null, 2));

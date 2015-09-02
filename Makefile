@@ -70,5 +70,10 @@ package.json: src/package.js later.js
 	node src/package.js > $@
 	@chmod a-w $@
 
+bower.json: src/bower.js later.js
+	@rm -f $@
+	node src/bower.js > $@
+	@chmod a-w $@
+
 clean:
-	rm -f later*.js package.json component.json
+	rm -f later*.js package.json component.json bower.json
