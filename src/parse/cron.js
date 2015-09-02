@@ -79,17 +79,33 @@ later.parse.cron = function (expr, hasSeconds) {
   * @param {Int} inc: The increment to use between min and max
   */
   function add(sched, name, min, max, inc) {
-    var i = min;
-
-    if (!sched[name]) {
+     if (!sched[name]) {
       sched[name] = [];
     }
 
-    while (i <= max) {
-      if (sched[name].indexOf(i) < 0) {
-        sched[name].push(i);
+    var loopTo = function(start, max){
+      var i = start;
+
+      while (i <= max) {
+        if (sched[name].indexOf(i) < 0) {
+          sched[name].push(i);
+        }
+        i += inc || 1;
       }
-      i += inc || 1;
+    }
+
+    // if the min is greater than the max, loop it
+    if (min > max) {
+      var field = FIELDS[name];
+
+      // add up to the max value
+      loopTo(min, field[2]);
+
+      // loop it over
+      loopTo(field[1], max);
+    }
+    else{
+      loopTo(min, max);
     }
   }
 

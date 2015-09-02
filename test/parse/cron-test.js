@@ -262,6 +262,10 @@ describe('Parse Cron', function() {
 			p.schedules[0].should.eql({M: [1,3,5]});
 		});
 
+		it('should parse a wrapped range value', function() {
+			var p = parse('* * * * 11-2 *', true);
+			p.schedules[0].should.eql({M: [11,12,1,2]});
+		});
 	});
 
 	describe('day of week', function() {
