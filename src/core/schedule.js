@@ -76,7 +76,7 @@ later.schedule = function(sched) {
       if(isRange) {
         var maxEndDate = calcMaxEndDate(exceptStarts, compare);
         end = calcEnd(dir, schedules, schedStarts, next, maxEndDate);
-        r = isForward ?
+        var r = isForward ?
           [
             new Date(Math.max(startDate, next)),
             end ? new Date(endDate ? Math.min(end, endDate) : end) : undefined

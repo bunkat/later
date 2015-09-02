@@ -647,7 +647,7 @@ later = function() {
         if (isRange) {
           var maxEndDate = calcMaxEndDate(exceptStarts, compare);
           end = calcEnd(dir, schedules, schedStarts, next, maxEndDate);
-          r = isForward ? [ new Date(Math.max(startDate, next)), end ? new Date(endDate ? Math.min(end, endDate) : end) : undefined ] : [ end ? new Date(endDate ? Math.max(endDate, end.getTime() + later.SEC) : end.getTime() + later.SEC) : undefined, new Date(Math.min(startDate, next.getTime() + later.SEC)) ];
+          var r = isForward ? [ new Date(Math.max(startDate, next)), end ? new Date(endDate ? Math.min(end, endDate) : end) : undefined ] : [ end ? new Date(endDate ? Math.max(endDate, end.getTime() + later.SEC) : end.getTime() + later.SEC) : undefined, new Date(Math.min(startDate, next.getTime() + later.SEC)) ];
           if (lastResult && r[rStart].getTime() === lastResult[rEnd].getTime()) {
             lastResult[rEnd] = r[rEnd];
             loopCount++;
