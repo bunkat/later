@@ -10,6 +10,6 @@ console.log(JSON.stringify({
     "type" : "git",
     "url" : "git://github.com/bunkat/later.git"
   },
-  "main": "index.js",
+  "main": "later.js",
   "license": "MIT"
 }, null, 2));
