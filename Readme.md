@@ -53,6 +53,10 @@ Have a bug or a feature request? [Please open a new issue](https://github.com/bu
 
 ## Change Log
 
+### Later v1.1.8
+
+* Fixed npm and bower entry points
+
 ### Later v1.1.7
 
 * Various bug fixes
