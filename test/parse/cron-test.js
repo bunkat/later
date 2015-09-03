@@ -63,7 +63,7 @@ describe('Parse Cron', function() {
 
 	});
 
-	describe('minutes', function() {
+	describe.only('minutes', function() {
 
 		it('should parse asterisk to mean any value', function() {
 			var p = parse('0 * * * * *', true);
@@ -109,6 +109,12 @@ describe('Parse Cron', function() {
 			var p = parse('0 4/10 * * * *', true);
 			p.schedules[0].should.eql({s: [0], m: [4,14,24,34,44,54]});
 		});
+
+		it('should parse issue #100 correctly', function() {
+			var p = parse('4,9,14,19,24,29,34,39,44,49,54,59 * * * *', false);
+			p.schedules[0].should.eql({s: [0], m: [4,9,14,19,24,29,34,39,44,49,54,59]});
+		});
+
 	});
 
 	describe('hours', function() {

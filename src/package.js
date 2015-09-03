@@ -10,7 +10,7 @@ console.log(JSON.stringify({
     "type" : "git",
     "url" : "git://github.com/bunkat/later.git"
   },
-  "main": "later.js",
+  "main": "index.js",
   "browserify": "index-browserify.js",
   "jam": {
     "main": "later.js",
