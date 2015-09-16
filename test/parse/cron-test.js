@@ -63,7 +63,7 @@ describe('Parse Cron', function() {
 
 	});
 
-	describe.only('minutes', function() {
+	describe('minutes', function() {
 
 		it('should parse asterisk to mean any value', function() {
 			var p = parse('0 * * * * *', true);
