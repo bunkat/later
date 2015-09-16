@@ -1,7 +1,7 @@
 later = function() {
   "use strict";
   var later = {
-    version: "1.1.9"
+    version: "1.1.10"
   };
   if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function(searchElement) {
