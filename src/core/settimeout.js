@@ -26,7 +26,7 @@ later.setTimeout = function(fn, sched) {
     var now = Date.now(),
         next = s.next(2, now);
 
-    if (!next[0] || !next[1]) {
+    if (!next[0]) {
       t = undefined;
       return;
     }
@@ -35,7 +35,7 @@ later.setTimeout = function(fn, sched) {
 
     // minimum time to fire is one second, use next occurrence instead
     if(diff < 1000) {
-      diff = next[1].getTime() - now;
+      diff = next[1] ? next[1].getTime() - now : 1000;
     }
 
     if(diff < 2147483647) {

@@ -813,13 +813,13 @@ later = function() {
     }
     function scheduleTimeout() {
       var now = Date.now(), next = s.next(2, now);
-      if (!next[0] || !next[1]) {
+      if (!next[0]) {
         t = undefined;
         return;
       }
       var diff = next[0].getTime() - now;
       if (diff < 1e3) {
-        diff = next[1].getTime() - now;
+        diff = next[1] ? next[1].getTime() - now : 1e3;
       }
       if (diff < 2147483647) {
         t = setTimeout(fn, diff);
