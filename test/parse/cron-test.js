@@ -446,4 +446,44 @@ describe('Parse Cron', function() {
 		});
 
 	});
+
+	describe('keywords', function() {
+
+		it('should parse @yearly', function() {
+			var p = parse('@yearly', false);
+			var pe = parse('0 0 1 1 *', false);
+			p.schedules[0].should.eql(pe.schedules[0]);
+		});
+
+		it('should parse @annually', function() {
+			var p = parse('@annually', false);
+			var pe = parse('0 0 1 1 *', false);
+			p.schedules[0].should.eql(pe.schedules[0]);
+		});
+
+		it('should parse @monthly', function() {
+			var p = parse('@monthly', false);
+			var pe = parse('0 0 1 * *', false);
+			p.schedules[0].should.eql(pe.schedules[0]);
+		});
+
+		it('should parse @weekly', function() {
+			var p = parse('@weekly', false);
+			var pe = parse('0 0 * * 0', false);
+			p.schedules[0].should.eql(pe.schedules[0]);
+		});
+
+		it('should parse @daily', function() {
+			var p = parse('@daily', false);
+			var pe = parse('0 0 * * *', false);
+			p.schedules[0].should.eql(pe.schedules[0]);
+		});
+
+		it('should parse @hourly', function() {
+			var p = parse('@hourly', false);
+			var pe = parse('0 * * * *', false);
+			p.schedules[0].should.eql(pe.schedules[0]);
+		});
+
+	});
 });
