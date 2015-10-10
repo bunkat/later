@@ -53,6 +53,11 @@ Have a bug or a feature request? [Please open a new issue](https://github.com/bu
 
 ## Change Log
 
+### Later v1.2.0
+* Implemented predefined scheduling definitions for cron
+  - @yearly, @annually, @monthly, @weekly, @daily, and @hourly are now parsed correctly
+  - Submitted by pekeler (thanks!)
+
 ### Later v1.1.8, v1.1.9
 
 * Fixed npm and bower entry points

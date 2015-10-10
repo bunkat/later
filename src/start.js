@@ -8,4 +8,4 @@
 later = (function() {
   'use strict';
 
-  var later = {version: "1.1.10"}; // semver
+  var later = {version: "1.2.0"}; // semver
