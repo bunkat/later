@@ -28,6 +28,17 @@ later.parse.cron = function (expr, hasSeconds) {
     SUN: 1, MON: 2, TUE: 3, WED: 4, THU: 5, FRI: 6, SAT: 7
   };
 
+  // Parsable replacements for common expressions
+  var REPLACEMENTS = {
+    '* * * * * *': '0/1 * * * * *',
+    '@YEARLY': '0 0 1 1 *',
+    '@ANNUALLY': '0 0 1 1 *',
+    '@MONTHLY': '0 0 1 * *',
+    '@WEEKLY': '0 0 * * 0',
+    '@DAILY': '0 0 * * *',
+    '@HOURLY': '0 * * * *'
+  };
+
   // Contains the index, min, and max for each of the constraints
   var FIELDS = {
     s: [0, 0, 59],      // seconds
@@ -236,11 +247,6 @@ later.parse.cron = function (expr, hasSeconds) {
   * @param {String} expr: The cron expression to parse
   */
   function parseExpr(expr) {
-    // replace every minute expression with one that parses
-    if (expr === '* * * * * *') {
-      expr = '0/1 * * * * *';
-    }
-
     var schedule = {schedules: [{}], exceptions: []},
         components = expr.replace(/(\s)+/g, ' ').split(' '),
         field, f, component, items;
@@ -263,6 +269,16 @@ later.parse.cron = function (expr, hasSeconds) {
     return schedule;
   }
 
-  var e = expr.toUpperCase();
+  /**
+  * Make cron expression parsable.
+  *
+  * @param {String} expr: The cron expression to prepare
+  */
+  function prepareExpr(expr) {
+    var prepared = expr.toUpperCase();
+    return REPLACEMENTS[prepared] || prepared;
+  }
+
+  var e = prepareExpr(expr);
   return parseExpr(hasSeconds ? e : '0 ' + e);
 };

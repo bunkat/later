@@ -931,6 +931,15 @@ later = function() {
       FRI: 6,
       SAT: 7
     };
+    var REPLACEMENTS = {
+      "* * * * * *": "0/1 * * * * *",
+      "@YEARLY": "0 0 1 1 *",
+      "@ANNUALLY": "0 0 1 1 *",
+      "@MONTHLY": "0 0 1 * *",
+      "@WEEKLY": "0 0 * * 0",
+      "@DAILY": "0 0 * * *",
+      "@HOURLY": "0 * * * *"
+    };
     var FIELDS = {
       s: [ 0, 0, 59 ],
       m: [ 1, 0, 59 ],
@@ -1029,9 +1038,6 @@ later = function() {
       return isHash(a) && !isHash(b) ? 1 : a - b;
     }
     function parseExpr(expr) {
-      if (expr === "* * * * * *") {
-        expr = "0/1 * * * * *";
-      }
       var schedule = {
         schedules: [ {} ],
         exceptions: []
@@ -1049,7 +1055,11 @@ later = function() {
       }
       return schedule;
     }
-    var e = expr.toUpperCase();
+    function prepareExpr(expr) {
+      var prepared = expr.toUpperCase();
+      return REPLACEMENTS[prepared] || prepared;
+    }
+    var e = prepareExpr(expr);
     return parseExpr(hasSeconds ? e : "0 " + e);
   };
   later.parse.recur = function() {
