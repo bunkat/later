@@ -71,6 +71,22 @@ describe('Parse Text', function() {
 			p.schedules[0].M.should.eql([1, 6, 11]);
 		});
 
+		it('should parse every day of year restriction', function() {
+			var p = parse('every 10 days of the year');
+			var restriction = [];
+			for (var i = 0; i < 37; ++i) { restriction.push(i * 10 + 1); }
+			p.schedules[0].should.have.ownProperty('dy');
+			p.schedules[0].dy.should.eql(restriction);
+		});
+
+		it('should parse every day of year restriction starting on 65', function() {
+			var p = parse('every 10 days of the year starting on the 65th day of the year');
+			var restriction = [];
+			for (var i = 6; i < 37; ++i) { restriction.push(i * 10 + 5); }
+			p.schedules[0].should.have.ownProperty('dy');
+			p.schedules[0].dy.should.eql(restriction);
+		});
+
 		it('should parse every week of year restriction', function() {
 			var p = parse('every 10 weeks of the year');
 			p.schedules[0].should.have.ownProperty('wy');
