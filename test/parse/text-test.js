@@ -412,6 +412,17 @@ describe('Parse Text', function() {
 			p.schedules[0].should.have.ownProperty('t');
 			p.schedules[0].t.should.eql([61200]);
 		});
+		it('should parse 12 hour time in the am on exact hour eg. 5 am', function() {
+			var p = parse('at 5 am');
+			p.schedules[0].should.have.ownProperty('t');
+			p.schedules[0].t.should.eql([18000]);
+		});
+
+		it('should parse 12 hour time in the pm on exact hour eg. 5 pm', function() {
+			var p = parse('at 5 pm');
+			p.schedules[0].should.have.ownProperty('t');
+			p.schedules[0].t.should.eql([61200]);
+		});
 	});
 
 	describe('on', function() {
