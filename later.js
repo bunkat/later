@@ -1231,7 +1231,7 @@ later = function() {
     var TOKENTYPES = {
       eof: /^$/,
       rank: /^((\d\d\d\d)|([2-5]?1(st)?|[2-5]?2(nd)?|[2-5]?3(rd)?|(0|[1-5]?[4-9]|[1-5]0|1[1-3])(th)?))\b/,
-      time: /^((([0]?[1-9]|1[0-2]):[0-5]\d(\s)?(am|pm))|(([0]?\d|1\d|2[0-3]):[0-5]\d))\b/,
+      time: /^((([0]?[1-9]|1[0-2])(:[0-5]\d)?(\s)?(am|pm))|(([0]?\d|1\d|2[0-3]):[0-5]\d))\b/,
       dayName: /^((sun|mon|tue(s)?|wed(nes)?|thu(r(s)?)?|fri|sat(ur)?)(day)?)\b/,
       monthName: /^(jan(uary)?|feb(ruary)?|ma((r(ch)?)?|y)|apr(il)?|ju(ly|ne)|aug(ust)?|oct(ober)?|(sept|nov|dec)(ember)?)\b/,
       yearIndex: /^(\d\d\d\d)\b/,
@@ -1528,8 +1528,13 @@ later = function() {
       var output = str;
       switch (tokenType) {
        case TOKENTYPES.time:
-        var parts = str.split(/(:|am|pm)/), hour = parts[3] === "pm" && parts[0] < 12 ? parseInt(parts[0], 10) + 12 : parts[0], min = parts[2].trim();
-        output = (hour.length === 1 ? "0" : "") + hour + ":" + min;
+        if (str.indexOf(":") >= 0) {
+          var parts = str.split(/(:|am|pm)/), hour = parts[3] === "pm" && parts[0] < 12 ? parseInt(parts[0], 10) + 12 : parts[0], min = parts[2].trim();
+          output = (hour.length === 1 ? "0" : "") + hour + ":" + min;
+        } else {
+          var parts = str.split(/(am|pm)/), hour = parts[1] === "pm" && parts[0] < 12 ? parseInt(parts[0], 10) + 12 : parts[0], min = "00";
+          output = (hour.length === 1 ? "0" : "") + hour + ":" + min;
+        }
         break;
 
        case TOKENTYPES.rank:
