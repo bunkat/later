@@ -26,6 +26,11 @@ describe('Parse Cron', function() {
 			p.schedules[0].should.eql({s: [1,5,10]});
 		});
 
+		it('should parse limits', function() {
+			var p = parse('0,59 * * * * *', true);
+			p.schedules[0].should.eql({s: [0,59]});
+		});
+
 		it('should parse unsorted values and sort them', function() {
 			var p = parse('1,10,5 * * * * *', true);
 			p.schedules[0].should.eql({s: [1,5,10]});
@@ -85,6 +90,11 @@ describe('Parse Cron', function() {
 			p.schedules[0].should.eql({m: [1,5,10]});
 		});
 
+		it('should parse limits', function() {
+			var p = parse('* 0,59 * * * *', true);
+			p.schedules[0].should.eql({m: [0,59]});
+		});
+
 		it('should parse a range value', function() {
 			var p = parse('* 1-5 * * * *', true);
 			p.schedules[0].should.eql({m: [1,2,3,4,5]});
@@ -132,6 +142,11 @@ describe('Parse Cron', function() {
 		it('should parse multiple values', function() {
 			var p = parse('* * 1,5,10 * * *', true);
 			p.schedules[0].should.eql({h: [1,5,10]});
+		});
+
+		it('should parse limits', function() {
+			var p = parse('* * 0,23 * * *', true);
+			p.schedules[0].should.eql({h: [0,23]});
 		});
 
 		it('should parse a range value', function() {
@@ -190,6 +205,11 @@ describe('Parse Cron', function() {
 		it('should parse multiple values', function() {
 			var p = parse('* * * 1,5,10 * *', true);
 			p.schedules[0].should.eql({D: [1,5,10]});
+		});
+
+		it('should parse limits', function() {
+			var p = parse('* * * 1,31 * *', true);
+			p.schedules[0].should.eql({D: [1,31]});
 		});
 
 		it('should parse a range value', function() {
@@ -254,6 +274,11 @@ describe('Parse Cron', function() {
 			p.schedules[0].should.eql({M: [1,5,10]});
 		});
 
+		it('should parse limits', function() {
+			var p = parse('* * * * 1,12 *', true);
+			p.schedules[0].should.eql({M: [1,12]});
+		});
+
 		it('should parse a range value', function() {
 			var p = parse('* * * * 1-5 *', true);
 			p.schedules[0].should.eql({M: [1,2,3,4,5]});
@@ -310,7 +335,7 @@ describe('Parse Cron', function() {
 
 		it('should parse 7 as Sunday', function() {
 			var p = parse('* * * * * 7', true);
-			p.schedules[0].should.eql({d: [7]});
+			p.schedules[0].should.eql({d: [1]});
 		});
 
 		it('should parse multiple values', function() {
@@ -318,9 +343,14 @@ describe('Parse Cron', function() {
 			p.schedules[0].should.eql({d: [2,3,6]});
 		});
 
+		it('should parse limits', function() {
+			var p = parse('* * * * * 0,6,7', true);
+			p.schedules[0].should.eql({d: [1,7]});
+		});
+
 		it('should parse multiple values with 7', function() {
 			var p = parse('* * * * * 1,2,5,7', true);
-			p.schedules[0].should.eql({d: [2,3,6,7]});
+			p.schedules[0].should.eql({d: [1,2,3,6]});
 		});
 
 		it('should parse a range value', function() {
@@ -388,7 +418,7 @@ describe('Parse Cron', function() {
 			var p = parse('* * * * * 2,1#2,7#3', true);
 			p.schedules[0].should.eql({d: [3]});
 			p.schedules[1].should.eql({d: [2], dc:[2]});
-			p.schedules[2].should.eql({d: [7], dc:[3]});
+			p.schedules[2].should.eql({d: [1], dc:[3]});
 		});
 
 		it('should parse a single value in words', function() {
@@ -428,6 +458,11 @@ describe('Parse Cron', function() {
 		it('should parse multiple values', function() {
 			var p = parse('* * * * * * 2012,2014,2020', true);
 			p.schedules[0].should.eql({Y: [2012,2014,2020]});
+		});
+
+		it('should parse limits', function() {
+			var p = parse('* * * * * * 1970,2099', true);
+			p.schedules[0].should.eql({Y: [1970,2099]});
 		});
 
 		it('should parse a range value', function() {

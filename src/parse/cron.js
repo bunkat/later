@@ -57,9 +57,14 @@ later.parse.cron = function (expr, hasSeconds) {
   *
   * @param {Int,String} value: The value that should be parsed
   * @param {Int} offset: Any offset that must be added to the value
+  * @param {Int} min: Minimum value for this value
+  * @param {Int} max: Maximum value for this value
   */
-  function getValue(value, offset, max) {
-    return isNaN(value) ? NAMES[value] || null : Math.min(+value + (offset || 0), max || 9999);
+  function getValue(value, offset, min, max) {
+    offset = offset || 0;
+    min = min || 0;
+    max = max || 9999;
+    return isNaN(value) ? NAMES[value] || null : ((+value + offset - min) % (max + 1 - min)) + min;
   }
 
   /**
@@ -173,10 +178,10 @@ later.parse.cron = function (expr, hasSeconds) {
     // parse x-y or * or 0
     if (range !== '*' && range !== '0') {
       var rangeSplit = range.split('-');
-      min = getValue(rangeSplit[0], offset, max);
+      min = getValue(rangeSplit[0], offset, min, max);
 
       // fix for issue #13, range may be single digit
-      max = getValue(rangeSplit[1], offset, max) || max;
+      max = getValue(rangeSplit[1], offset, min, max) || max;
     }
 
     add(curSched, name, min, max, inc);
@@ -204,20 +209,20 @@ later.parse.cron = function (expr, hasSeconds) {
     }
 
     // parse x
-    if ((value = getValue(item, offset, max)) !== null) {
+    if ((value = getValue(item, offset, min, max)) !== null) {
       add(curSched, name, value, value);
     }
     // parse xW
-    else if ((value = getValue(item.replace('W', ''), offset, max)) !== null) {
+    else if ((value = getValue(item.replace('W', ''), offset, min, max)) !== null) {
       addWeekday(s, curSched, value);
     }
     // parse xL
-    else if ((value = getValue(item.replace('L', ''), offset, max)) !== null) {
+    else if ((value = getValue(item.replace('L', ''), offset, min, max)) !== null) {
       addHash(schedules, curSched, value, min-1);
     }
     // parse x#y
     else if ((split = item.split('#')).length === 2) {
-      value = getValue(split[0], offset, max);
+      value = getValue(split[0], offset, min, max);
       addHash(schedules, curSched, value, getValue(split[1]));
     }
     // parse x-y or x-y/z or */z or 0/z

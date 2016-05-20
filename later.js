@@ -949,8 +949,11 @@ later = function() {
       Y: [ 6, 1970, 2099 ],
       d: [ 5, 1, 7, 1 ]
     };
-    function getValue(value, offset, max) {
-      return isNaN(value) ? NAMES[value] || null : Math.min(+value + (offset || 0), max || 9999);
+    function getValue(value, offset, min, max) {
+      offset = offset || 0;
+      min = min || 0;
+      max = max || 9999;
+      return isNaN(value) ? NAMES[value] || null : (+value + offset - min) % (max + 1 - min) + min;
     }
     function cloneSchedule(sched) {
       var clone = {}, field;
@@ -1008,8 +1011,8 @@ later = function() {
       var incSplit = item.split("/"), inc = +incSplit[1], range = incSplit[0];
       if (range !== "*" && range !== "0") {
         var rangeSplit = range.split("-");
-        min = getValue(rangeSplit[0], offset, max);
-        max = getValue(rangeSplit[1], offset, max) || max;
+        min = getValue(rangeSplit[0], offset, min, max);
+        max = getValue(rangeSplit[1], offset, min, max) || max;
       }
       add(curSched, name, min, max, inc);
     }
@@ -1018,14 +1021,14 @@ later = function() {
       if (item === "L") {
         item = min - 1;
       }
-      if ((value = getValue(item, offset, max)) !== null) {
+      if ((value = getValue(item, offset, min, max)) !== null) {
         add(curSched, name, value, value);
-      } else if ((value = getValue(item.replace("W", ""), offset, max)) !== null) {
+      } else if ((value = getValue(item.replace("W", ""), offset, min, max)) !== null) {
         addWeekday(s, curSched, value);
-      } else if ((value = getValue(item.replace("L", ""), offset, max)) !== null) {
+      } else if ((value = getValue(item.replace("L", ""), offset, min, max)) !== null) {
         addHash(schedules, curSched, value, min - 1);
       } else if ((split = item.split("#")).length === 2) {
-        value = getValue(split[0], offset, max);
+        value = getValue(split[0], offset, min, max);
         addHash(schedules, curSched, value, getValue(split[1]));
       } else {
         addRange(item, curSched, name, min, max, offset);
