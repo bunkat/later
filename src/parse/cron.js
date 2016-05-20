@@ -39,27 +39,34 @@ later.parse.cron = function (expr, hasSeconds) {
     '@HOURLY': '0 * * * *'
   };
 
-  // Contains the index, min, and max for each of the constraints
+  // Contains the index, min, max, and translation for each of the constraints
   var FIELDS = {
-    s: [0, 0, 59],      // seconds
-    m: [1, 0, 59],      // minutes
-    h: [2, 0, 23],      // hours
-    D: [3, 1, 31],      // day of month
-    M: [4, 1, 12],      // month
-    Y: [6, 1970, 2099], // year
-    d: [5, 1, 7, 1]     // day of week
+    s: [0, 0, 59],                                          // seconds
+    m: [1, 0, 59],                                          // minutes
+    h: [2, 0, 23],                                          // hours
+    D: [3, 1, 31],                                          // day of month
+    M: [4, 1, 12],                                          // month
+    Y: [6, 1970, 2099],                                     // year
+    d: [5, 1, 7, {0:1, 1:2, 2:3, 3:4, 4:5, 5:6, 6:7, 7:1}]  // day of week
   };
 
   /**
-  * Returns the value + offset if value is a number, otherwise it
+  * Returns the value if value is a number, otherwise it
   * attempts to look up the value in the NAMES table and returns
   * that result instead.
   *
   * @param {Int,String} value: The value that should be parsed
-  * @param {Int} offset: Any offset that must be added to the value
+  * @param {Object} translation: translation for number values
   */
-  function getValue(value, offset, max) {
-    return isNaN(value) ? NAMES[value] || null : Math.min(+value + (offset || 0), max || 9999);
+  function getValue(value, translation, max) {
+    var number;
+    if (isNaN(value)) {
+      number = NAMES[value] || null;
+    } else {
+      number = Math.min(+value, max || 9999);
+      number = translation ? translation[number] || null : number;
+    }
+    return number;
   }
 
   /**
@@ -162,9 +169,9 @@ later.parse.cron = function (expr, hasSeconds) {
   * @param {String} name: The name to use for this constraint
   * @param {Int} min: The min value for the constraint
   * @param {Int} max: The max value for the constraint
-  * @param {Int} offset: The offset to apply to the cron value
+  * @param {Object} translation: The translation to apply to the cron value
   */
-  function addRange(item, curSched, name, min, max, offset) {
+  function addRange(item, curSched, name, min, max, translation) {
     // parse range/x
     var incSplit = item.split('/'),
         inc = +incSplit[1],
@@ -173,10 +180,10 @@ later.parse.cron = function (expr, hasSeconds) {
     // parse x-y or * or 0
     if (range !== '*' && range !== '0') {
       var rangeSplit = range.split('-');
-      min = getValue(rangeSplit[0], offset, max);
+      min = getValue(rangeSplit[0], translation, max);
 
       // fix for issue #13, range may be single digit
-      max = getValue(rangeSplit[1], offset, max) || max;
+      max = getValue(rangeSplit[1], translation, max) || max;
     }
 
     add(curSched, name, min, max, inc);
@@ -190,9 +197,9 @@ later.parse.cron = function (expr, hasSeconds) {
   * @param {String} name: The name to use for this constraint
   * @param {Int} min: The min value for the constraint
   * @param {Int} max: The max value for the constraint
-  * @param {Int} offset: The offset to apply to the cron value
+  * @param {Object} translation: The translation to apply to the cron value
   */
-  function parse(item, s, name, min, max, offset) {
+  function parse(item, s, name, min, max, translation) {
     var value,
         split,
         schedules = s.schedules,
@@ -204,25 +211,25 @@ later.parse.cron = function (expr, hasSeconds) {
     }
 
     // parse x
-    if ((value = getValue(item, offset, max)) !== null) {
+    if ((value = getValue(item, translation, max)) !== null) {
       add(curSched, name, value, value);
     }
     // parse xW
-    else if ((value = getValue(item.replace('W', ''), offset, max)) !== null) {
+    else if ((value = getValue(item.replace('W', ''), translation, max)) !== null) {
       addWeekday(s, curSched, value);
     }
     // parse xL
-    else if ((value = getValue(item.replace('L', ''), offset, max)) !== null) {
+    else if ((value = getValue(item.replace('L', ''), translation, max)) !== null) {
       addHash(schedules, curSched, value, min-1);
     }
     // parse x#y
     else if ((split = item.split('#')).length === 2) {
-      value = getValue(split[0], offset, max);
+      value = getValue(split[0], translation, max);
       addHash(schedules, curSched, value, getValue(split[1]));
     }
     // parse x-y or x-y/z or */z or 0/z
     else {
-      addRange(item, curSched, name, min, max, offset);
+      addRange(item, curSched, name, min, max, translation);
     }
   }
 
