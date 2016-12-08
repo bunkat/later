@@ -962,15 +962,25 @@ later = function() {
       return clone;
     }
     function add(sched, name, min, max, inc) {
-      var i = min;
       if (!sched[name]) {
         sched[name] = [];
       }
-      while (i <= max) {
-        if (sched[name].indexOf(i) < 0) {
-          sched[name].push(i);
+      var loopTo = function(start, max){
+        var i = start;
+        while ( i <= max ){
+          if (sched[name].indexOf(i) < 0) {
+            sched[name].push(i);
+          }
+          i += inc || 1;
         }
-        i += inc || 1;
+      }
+      if ( min > max ){
+        var field = FIELDS[name];
+        loopTo(min, field[2]);
+        loopTo(field[1], max);
+      }
+      else{
+        loopTo(min, max);
       }
       sched[name].sort(function(a, b) {
         return a - b;
