@@ -1,3 +1,5 @@
+## This project is no longer being maintained. It should be treated as sample code on one technique to calculate future instances of complex schedules. If you are looking to fire a task every 1 minute, use a cron scheduler instead.
+
 # [Later](http://bunkat.github.io/later/) [![Build Status](https://travis-ci.org/bunkat/later.svg)](https://travis-ci.org/bunkat/later)
 
 _Later_ is a library for describing recurring schedules and calculating their future occurrences.  It supports a very flexible schedule definition including support for composite schedules and schedule exceptions. Create new schedules manually, via Cron expression, via text expressions, or using a fully chainable API.
@@ -9,7 +11,7 @@ Types of schedules supported by _Later_:
 * Gather CPU metrics every 10 mins Mon - Fri and every 30 mins Sat - Sun
 * Send out a scary e-mail at 13:13:13 every Friday the 13th
 
-####For complete documentation visit [http://bunkat.github.io/later/](http://bunkat.github.io/later/).
+#### For complete documentation visit [http://bunkat.github.io/later/](http://bunkat.github.io/later/).
 
 
 ## Installation
