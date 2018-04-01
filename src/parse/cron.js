@@ -25,7 +25,7 @@ later.parse.cron = function (expr, hasSeconds) {
   var NAMES = {
     JAN: 1, FEB: 2, MAR: 3, APR: 4, MAY: 5, JUN: 6, JUL: 7, AUG: 8,
     SEP: 9, OCT: 10, NOV: 11, DEC: 12,
-    SUN: 1, MON: 2, TUE: 3, WED: 4, THU: 5, FRI: 6, SAT: 7
+    SUN: 0, MON: 1, TUE: 2, WED: 3, THU: 4, FRI: 5, SAT: 6
   };
 
   // Parsable replacements for common expressions
@@ -47,19 +47,19 @@ later.parse.cron = function (expr, hasSeconds) {
     D: [3, 1, 31],      // day of month
     M: [4, 1, 12],      // month
     Y: [6, 1970, 2099], // year
-    d: [5, 1, 7, 1]     // day of week
+    d: [5, 0, 7]        // day of week
   };
 
   /**
-  * Returns the value + offset if value is a number, otherwise it
+  * Returns the value if value is a number, otherwise it
   * attempts to look up the value in the NAMES table and returns
   * that result instead.
   *
   * @param {Int,String} value: The value that should be parsed
-  * @param {Int} offset: Any offset that must be added to the value
   */
-  function getValue(value, offset, max) {
-    return isNaN(value) ? NAMES[value] || null : Math.min(+value + (offset || 0), max || 9999);
+  function getValue(value, max) {
+    var result = isNaN(value) ? NAMES[value] /*|| null*/ : Math.min(+value, max || 9999);
+    return result === undefined ? null : result;
   }
 
   /**
@@ -162,9 +162,8 @@ later.parse.cron = function (expr, hasSeconds) {
   * @param {String} name: The name to use for this constraint
   * @param {Int} min: The min value for the constraint
   * @param {Int} max: The max value for the constraint
-  * @param {Int} offset: The offset to apply to the cron value
   */
-  function addRange(item, curSched, name, min, max, offset) {
+  function addRange(item, curSched, name, min, max) {
     // parse range/x
     var incSplit = item.split('/'),
         inc = +incSplit[1],
@@ -173,10 +172,10 @@ later.parse.cron = function (expr, hasSeconds) {
     // parse x-y or * or 0
     if (range !== '*' && range !== '0') {
       var rangeSplit = range.split('-');
-      min = getValue(rangeSplit[0], offset, max);
+      min = getValue(rangeSplit[0], max);
 
       // fix for issue #13, range may be single digit
-      max = getValue(rangeSplit[1], offset, max) || max;
+      max = getValue(rangeSplit[1], max) || max;
     }
 
     add(curSched, name, min, max, inc);
@@ -190,9 +189,8 @@ later.parse.cron = function (expr, hasSeconds) {
   * @param {String} name: The name to use for this constraint
   * @param {Int} min: The min value for the constraint
   * @param {Int} max: The max value for the constraint
-  * @param {Int} offset: The offset to apply to the cron value
   */
-  function parse(item, s, name, min, max, offset) {
+  function parse(item, s, name, min, max) {
     var value,
         split,
         schedules = s.schedules,
@@ -204,25 +202,25 @@ later.parse.cron = function (expr, hasSeconds) {
     }
 
     // parse x
-    if ((value = getValue(item, offset, max)) !== null) {
+    if ((value = getValue(item, max)) !== null) {
       add(curSched, name, value, value);
     }
     // parse xW
-    else if ((value = getValue(item.replace('W', ''), offset, max)) !== null) {
+    else if ((value = getValue(item.replace('W', ''), max)) !== null) {
       addWeekday(s, curSched, value);
     }
     // parse xL
-    else if ((value = getValue(item.replace('L', ''), offset, max)) !== null) {
-      addHash(schedules, curSched, value, min-1);
+    else if ((value = getValue(item.replace('L', ''), max)) !== null) {
+      addHash(schedules, curSched, value, min);
     }
     // parse x#y
     else if ((split = item.split('#')).length === 2) {
-      value = getValue(split[0], offset, max);
+      value = getValue(split[0], max);
       addHash(schedules, curSched, value, getValue(split[1]));
     }
     // parse x-y or x-y/z or */z or 0/z
     else {
-      addRange(item, curSched, name, min, max, offset);
+      addRange(item, curSched, name, min, max);
     }
   }
 
@@ -279,6 +277,39 @@ later.parse.cron = function (expr, hasSeconds) {
     return REPLACEMENTS[prepared] || prepared;
   }
 
+  /**
+  * Make final adjustments to days of week.
+  * Cron uses 0-7 for SUN-SUN. Convert it to 1-7 for SUN-SAT
+  * while preserving order and uniqueness.
+  *
+  * @param {Schedule} sched: The set of schedules
+  */
+  function postProcessSchedule(sched) {
+    function process(collection) {
+      var s, i, length, di, dlength;
+      length = collection.length;
+      for (i = 0; i < length; i++) {
+        s = collection[i];
+        if (s.d) {
+          dlength = s.d.length;
+          for (di = 0; di < dlength; di++) {
+            s.d[di] += 1;
+          }
+          if (s.d[dlength - 1] === 8) {
+            s.d.pop();
+            if (s.d[0] !== 1) {
+              s.d.unshift(1);
+            }
+          }
+        }
+      }
+    }
+    process(sched.schedules);
+    process(sched.exceptions);
+  }
+
   var e = prepareExpr(expr);
-  return parseExpr(hasSeconds ? e : '0 ' + e);
+  var s = parseExpr(hasSeconds ? e : '0 ' + e);
+  postProcessSchedule(s);
+  return s;
 };
