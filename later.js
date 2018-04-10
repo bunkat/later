@@ -618,6 +618,36 @@ later = function() {
       }
     };
   };
+  /*
+  If you want to display the next scheduling time of a cron job which is scheduled minutely then
+  you can pass the cron expression of the job and the number of matches you need & start date
+  considering the end date as 2099/12/31.
+  
+  @param1 : cronExpression of the job which is scheduled minutely
+  @param2 : number of next best scheduling matches you need 
+  @param3 : Day on which cron job was scheduled
+  @returns : array of next best scheduled matches with the length same as count
+
+   */
+  later.nextMinSChedules = function(cronExp, count, startDate) {
+        
+    if(!cronExp) throw new Error("Missing Cron Expression");
+    if(!count) throw new Error("Missing the number of instances");
+    if(!startDate) throw new Error("Missing Start date");
+    var incrementVal = Number(cronExp.split(' ')[0].split('/')[1]); // evry x mins
+    var myResults = [];                                             // arr of next schedules
+    myResults.push(new Date(startDate));
+    for(var i=1;i<count;i++){
+      myResults.push(new Date(myResults[i-1].toString()));
+      var dateInMillSec = myResults[i].setMinutes(myResults[i].getMinutes()+incrementVal);
+      var nextSchedDate = new Date(dateInMillSec);
+      myResults[i] = nextSchedDate;
+      if(myResults[i].getTime() >= new Date(2099, 12, 31).getTime()){ // chk if date is greater than end date and break
+        break;
+      }
+    }
+    return myResults;
+  };
   later.schedule = function(sched) {
     if (!sched) throw new Error("Missing schedule definition.");
     if (!sched.schedules) throw new Error("Definition must include at least one schedule.");
