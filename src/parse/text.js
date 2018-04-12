@@ -393,8 +393,16 @@ later.parse.text = function(str) {
     switch (tokenType) {
       case TOKENTYPES.time:
         var parts = str.split(/(:|am|pm)/),
-            hour = parts[3] === 'pm' && parts[0] < 12 ? parseInt(parts[0],10) + 12 : parts[0],
+            hour = parseInt(parts[0],10),
             min = parts[2].trim();
+
+        if (parts[3] === 'pm' && hour < 12) {
+          hour += 12;
+        } else if (parts[3] === 'am' && hour === 12) {
+          hour -= 12;
+        }
+
+        hour = '' + hour;
 
         output = (hour.length === 1 ? '0' : '') + hour + ":" + min;
         break;
