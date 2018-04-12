@@ -2,7 +2,7 @@
 * Timezone
 * (c) 2013 Bill, BunKat LLC.
 *
-* Configures helper functions to switch between useing local time and UTC. Later
+* Configures helper functions to switch between using local time and UTC. Later
 * uses UTC time by default.
 *
 * Later is freely distributable under the MIT license.
