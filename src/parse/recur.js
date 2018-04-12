@@ -14,6 +14,8 @@ later.parse.recur = function () {
 
   var schedules = [],
       exceptions = [],
+      newException = {},
+      settingException = false,
       cur,
       curArr = schedules,
       curName,
@@ -29,7 +31,9 @@ later.parse.recur = function () {
   function add(name, min, max) {
     name = modifier ? name + '_' + modifier : name;
 
-    if (!cur) {
+    if (settingException && !cur) {
+      cur = curArr[curArr.push(newException) - 1];
+    } else if (!cur) {
       curArr.push({});
       cur = curArr[0];
     }
@@ -484,10 +488,19 @@ later.parse.recur = function () {
     * recur().every(5).minutes().on(1).dayOfWeek().and().every(10)
     *    .minutes().on(2).dayOfWeek();
     *
+    * @param {String} exceptionTag: An optional tag used to cancel an exception in a composite exception schedule
     * @api public
     */
-    and: function () {
-      cur = curArr[curArr.push({}) - 1];
+    and: function (exceptionTag) {
+      if (exceptionTag && settingException) {
+        cur = curArr[curArr.push({tag: exceptionTag}) - 1];
+      } else {
+        cur = curArr[curArr.push({}) - 1];
+      }
+      if (curArr !== exceptions) {
+        newException = {};
+        settingException = false;
+      }
       return this;
     },
 
@@ -502,11 +515,39 @@ later.parse.recur = function () {
     * recur().at('08:00:00').on(2).dayOfWeek().except()
     *    .dayOfWeekCount(1);
     *
+    * @param {String} tag: An optional tag used to cancel an exception
     * @api public
     */
-    except: function () {
+    except: function (tag) {
+      if (tag) {
+        newException.tag = tag;
+      }
+      settingException = true;
       curArr = exceptions;
       cur = null;
+      return this;
+    },
+
+    /**
+    * Removes exceptions from a schedule. The given tag will be checked
+    * against the exceptions' tags in the array and will be removed
+    * based on a matching String tag. To remove an
+    * exception:
+    *
+    * var schedule = recur().at('08:00:00').on(2).dayOfWeek().except('Monday')
+    *    .dayOfWeekCount(1);
+    * schedule.removeException('Monday');
+    *
+    * @param {String} tag: An optional tag used to cancel an exception
+    * @api public
+    */
+    removeException: function (tag) {
+      for (var i = 0; i < exceptions.length; i++) {
+        if (exceptions[i].tag === tag) {
+          exceptions.splice(i, 1);
+          break;
+        }
+      }
       return this;
     }
   };

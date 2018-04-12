@@ -219,6 +219,36 @@ describe('Parse Recur', function() {
 			r.exceptions[1].M.should.eql([0]);
 		});
 
+		it('should tag exception schedules', function() {
+			var r = recur().except('Sunday').on(0).dayOfWeek();
+			r.exceptions[0].should.eql({tag: 'Sunday', d: [0]});
+			r.exceptions[0].tag.should.eql('Sunday');
+		});
+
+		it('should tag both exception schedules when using .and()', function() {
+			var r = recur().except('Start time').on(5).minute().and('Skip month').on(0).month();
+			r.exceptions[0].should.eql({tag: 'Start time', m: [5]});
+			r.exceptions[1].should.eql({tag: 'Skip month', M: [0]});
+			r.exceptions[0].tag.should.eql('Start time');
+			r.exceptions[1].tag.should.eql('Skip month');
+		});
+
+		it('should remove an exception from the exception schedule', function() {
+			var r = recur().except('Sunday').on(0).dayOfWeek();
+			r.removeException('Sunday');
+			r.exceptions.should.eql([]);
+		});
+
+		it('should remove an exception from a composite exception schedule', function() {
+			var r = recur().except('Start time').on(5).minute().and('Skip month').on(0).month();
+			r.exceptions[0].tag.should.eql('Start time');
+			r.exceptions[1].tag.should.eql('Skip month');
+			r.removeException('Start time');
+			r.exceptions[0].tag.should.eql('Skip month');
+			r.removeException('Skip month');
+			r.exceptions.should.eql([]);
+		});
+
 	});
 
 });

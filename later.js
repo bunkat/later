@@ -1063,10 +1063,12 @@ later = function() {
     return parseExpr(hasSeconds ? e : "0 " + e);
   };
   later.parse.recur = function() {
-    var schedules = [], exceptions = [], cur, curArr = schedules, curName, values, every, modifier, applyMin, applyMax, i, last;
+    var schedules = [], exceptions = [], newException = {}, settingException = false, cur, curArr = schedules, curName, values, every, modifier, applyMin, applyMax, i, last;
     function add(name, min, max) {
       name = modifier ? name + "_" + modifier : name;
-      if (!cur) {
+      if (settingException && !cur) {
+        cur = curArr[curArr.push(newException) - 1];
+      } else if (!cur) {
         curArr.push({});
         cur = curArr[0];
       }
@@ -1215,13 +1217,36 @@ later = function() {
         add(last.n, start, end);
         return this;
       },
-      and: function() {
-        cur = curArr[curArr.push({}) - 1];
+      and: function(exceptionTag) {
+        if (exceptionTag && settingException) {
+          cur = curArr[curArr.push({
+            tag: exceptionTag
+          }) - 1];
+        } else {
+          cur = curArr[curArr.push({}) - 1];
+        }
+        if (curArr !== exceptions) {
+          newException = {};
+          settingException = false;
+        }
         return this;
       },
-      except: function() {
+      except: function(tag) {
+        if (tag) {
+          newException.tag = tag;
+        }
+        settingException = true;
         curArr = exceptions;
         cur = null;
+        return this;
+      },
+      removeException: function(tag) {
+        for (var i = 0; i < exceptions.length; i++) {
+          if (exceptions[i].tag === tag) {
+            exceptions.splice(i, 1);
+            break;
+          }
+        }
         return this;
       }
     };
