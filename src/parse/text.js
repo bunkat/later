@@ -153,6 +153,10 @@ later.parse.text = function(str) {
     while (checkAndParse(TOKENTYPES.and)) {
       nums = nums.concat(parseThroughExpr(tokenType));
     }
+    // Patch: sort and deduplicate for dayName
+    if (tokenType === TOKENTYPES.dayName) {
+      nums = Array.from(new Set(nums)).sort(function(a, b) { return a - b; });
+    }
     return nums;
   }
 
