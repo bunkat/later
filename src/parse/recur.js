@@ -323,7 +323,7 @@ later.parse.recur = function () {
     * Weeks of month time period, denotes number of weeks within a
     * month. The first week is the week that includes the 1st of the
     * month. Subsequent weeks start on Sunday.
-    * Minimum value is 1, maximum value is 5.  Specify 0 for last.
+    * Minimum value is 1, maximum value is 6.  Specify 0 for last.
     * February 2nd,  2012 - Week 1
     * February 5th,  2012 - Week 2
     * February 12th, 2012 - Week 3
@@ -335,7 +335,7 @@ later.parse.recur = function () {
     * @api public
     */
     weekOfMonth: function () {
-      add('wm', 1, applyMax ? 0 : 5);
+      add('wm', 1, applyMax ? 0 : 6);
       return this;
     },
 

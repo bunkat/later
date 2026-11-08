@@ -1171,7 +1171,7 @@ later = function() {
         return this;
       },
       weekOfMonth: function() {
-        add("wm", 1, applyMax ? 0 : 5);
+        add("wm", 1, applyMax ? 0 : 6);
         return this;
       },
       weekOfYear: function() {
